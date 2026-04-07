@@ -15,8 +15,16 @@
 
   onMount(async () => {
     const rawProjects = await loadTodData();
-    const geoRes = await fetch('/data/TODLocations_4.4.26.geojson');
+
+    const [geoRes, nhoodRes] = await Promise.all([
+      fetch('/data/TODLocations_4.4.26.geojson'),
+      fetch('/data/Boston%20Neighborhoods/Boston_Neighborhoods.geojson.json')
+    ]);
+
     const geojson = await geoRes.json();
+    const nhoodData = await nhoodRes.json();
+
+    neighborhoods = nhoodData.features;
 
     projects = geojson.features.map(feature => {
       const csvMatch = rawProjects.find(p => p.project === feature.properties.j_Project);
@@ -39,6 +47,25 @@
       features: projects.map(p => ({ type: "Feature", geometry: p.geometry }))
     });
 
+  // map
+  // $: projection = d3.geoIdentity()
+  //   .reflectY(true)
+  //   .fitSize([width, height], {
+  //     type: "FeatureCollection",
+  //     features: neighborhoods.length > 0 ? neighborhoods : projects.map(p => ({ type: "Feature", geometry: p.geometry }))
+  //   });
+
+
+  // mercator
+  // $: projection = d3.geoMercator()
+  // .fitSize([width, height], {
+  //   type: "FeatureCollection",
+  //   features: neighborhoods.length > 0 ? neighborhoods : projects.map(p => ({ type: "Feature", geometry: p.geometry }))
+  // });
+
+
+  $: pathGenerator = d3.geoPath().projection(projection);
+
   $: colorScale = d3.scaleLinear()
     .domain([-0.5, 0, 0.5])
     .range(["#d73027", "#f7f7f7", "#1a9850"])
@@ -57,6 +84,19 @@
 <div class="map-container" bind:clientWidth={width}>
   <svg bind:this={svgElement} {width} {height}>
     <g transform="translate({transform.x}, {transform.y}) scale({transform.k})">
+
+      <g class="basemap">
+        {#each neighborhoods as feature}
+          <path
+            d={pathGenerator(feature)}
+            fill="#f5f5f5"
+            stroke="#ccc"
+            stroke-width={0.5 / transform.k}
+            style="vector-effect: non-scaling-stroke;"
+          />
+        {/each}
+      </g>
+
       {#each projects as project}
         {@const [x, y] = projection(project.geometry.coordinates)}
 
