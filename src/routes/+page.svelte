@@ -3,6 +3,7 @@
   import { loadTodData } from "$lib/data/TODdata";
   import TodScatterplot from "$lib/components/todscatter.svelte";
   import TodDetailPanel from "$lib/components/toddetailpanel.svelte";
+  import Map from "$lib/components/map.svelte";
 
   let todData = [];
   let selectedTod = null;
@@ -50,6 +51,14 @@
     <section class="detail-block">
       <TodDetailPanel tod={selectedTod} />
     </section>
+
+    <section class="map-block">
+      <Map
+        data={todData}
+        selectedId={selectedTod?.id}
+        onSelect={handleScatterSelect}
+      />
+    </section>
   </main>
 {/if}
 
@@ -87,5 +96,13 @@
     background: white;
     border: 1px solid #e5e7eb;
     border-radius: 10px;
+  }
+
+  .map-block {
+    margin-bottom: 2rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem;
   }
 </style>
