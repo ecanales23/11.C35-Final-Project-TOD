@@ -81,6 +81,15 @@
   }
 </script>
 
+
+<div class="map-wrapper">
+  <div class="header">
+    <h2>Boston Transit-Oriented Development</h2>
+    <p>Hover over each project to see overview.</p>
+  </div>
+  </div>
+
+
 <div class="map-container" bind:clientWidth={width}>
   <svg bind:this={svgElement} {width} {height}>
     <g transform="translate({transform.x}, {transform.y}) scale({transform.k})">
@@ -154,6 +163,15 @@
   {/if}
 </div>
 
+<div class="legend">
+    <div class="bar"></div>
+    <div class="labels">
+      <span>Under-serving Demand</span>
+      <span>Balanced</span>
+      <span>Exceeding Demand</span>
+    </div>
+  </div>
+
 <style>
   .map-container {
     position: relative;
@@ -177,6 +195,34 @@
     width: 220px;
     font-size: 0.85rem;
     z-index: 10;
+  }
+
+  .map-wrapper {
+    position: relative;
+    font-family: 'Helvetica Neue', sans-serif;
+    background: #fcfcfc;
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .legend {
+    width: 300px;
+    margin-top: 10px;
+  }
+
+  .legend .bar {
+    height: 8px;
+    width: 100%;
+    background: linear-gradient(to right, #d73027, #f7f7f7, #1a9850);
+    border-radius: 4px;
+  }
+
+  .legend .labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #888;
+    margin-top: 5px;
   }
 
   .stat-row { display: flex; justify-content: space-between; margin: 4px 0; }
