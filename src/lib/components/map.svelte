@@ -117,7 +117,7 @@
 <style>
   .map-container {
     position: relative;
-    background: #fff;
+    background: #b3d6ee;
     border-radius: 4px;
     cursor: grab;
     overflow: hidden;
