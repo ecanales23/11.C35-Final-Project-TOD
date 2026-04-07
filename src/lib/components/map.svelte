@@ -18,7 +18,7 @@
 
     const [geoRes, nhoodRes] = await Promise.all([
       fetch('/data/TODLocations_4.4.26.geojson'),
-      fetch('/data/Boston%20Neighborhoods/Boston_Neighborhoods.geojson.json')
+      fetch('/data/MAPC_census_tracts/mapc_census_tracts.geojson')
     ]);
 
     const geojson = await geoRes.json();
@@ -47,23 +47,6 @@
       features: projects.map(p => ({ type: "Feature", geometry: p.geometry }))
     });
 
-  // map
-  // $: projection = d3.geoIdentity()
-  //   .reflectY(true)
-  //   .fitSize([width, height], {
-  //     type: "FeatureCollection",
-  //     features: neighborhoods.length > 0 ? neighborhoods : projects.map(p => ({ type: "Feature", geometry: p.geometry }))
-  //   });
-
-
-  // mercator
-  // $: projection = d3.geoMercator()
-  // .fitSize([width, height], {
-  //   type: "FeatureCollection",
-  //   features: neighborhoods.length > 0 ? neighborhoods : projects.map(p => ({ type: "Feature", geometry: p.geometry }))
-  // });
-
-
   $: pathGenerator = d3.geoPath().projection(projection);
 
   $: colorScale = d3.scaleLinear()
@@ -81,14 +64,12 @@
   }
 </script>
 
-
 <div class="map-wrapper">
   <div class="header">
-    <h2>Boston Transit-Oriented Development</h2>
-    <p>Hover over each project to see overview.</p>
+    <h2>Boston Transit-Oriented Development Map</h2>
+    <p>Hover over each project to see an overview.</p>
   </div>
   </div>
-
 
 <div class="map-container" bind:clientWidth={width}>
   <svg bind:this={svgElement} {width} {height}>

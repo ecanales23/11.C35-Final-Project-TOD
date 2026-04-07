@@ -1,0 +1,85 @@
+Title: 2020 Census Tracts for the MAPC Region
+Table: 2020 Census Tracts MAPC Region
+Type: geojson
+
+Data Source:
+2020 MAPC Census Tract Boundaries:
+    Source: MAPC Data Common
+    Link: N/A
+    Data URL: N/A
+    Last Updated: N/A
+
+Description:
+The 2020 MAPC Census Tracts dataset provides geographic representations of census tracts in the Metro Boston region, based on the 2020 U.S. Census. The dataset includes attributes such as tract identifiers, land and water area measurements, and polygon geometries suitable for spatial analysis and GIS applications. This dataset is used for demographic, planning, and policy studies. The data is in WGS84 (SRID 4326) Latitude/Longitude format.
+
+Attributes:
+    objectid:
+        type: Number
+        description: Internal feature identifier for the census tract.
+        example: 1188
+
+    statefp:
+        type: String
+        description: Current state Federal Information Processing Series (FIPS) code.
+        example: 25
+
+    countyfp:
+        type: String
+        description: Current county Federal Information Processing Series (FIPS) code.
+        example: 009
+
+    tractce:
+        type: String
+        description: Current census tract code.
+        example: 221902
+
+    geoid:
+        type: String
+        description: Census tract identifier; a concatenation of the state and county FIPS codes with the tract code.
+        example: 25009221902
+
+    name:
+        type: String
+        description: Current census tract name.
+        example: 2219.02
+
+    namelsad:
+        type: String
+        description: Name and the translated legal/statistical area description for the census tract.
+        example: Census Tract 2219.02
+
+    mtfcc:
+        type: String
+        description: MAF/TIGER Feature Class Code (MTFCC).
+        example: G5020
+
+    funcstat:
+        type: String
+        description: Current functional status.
+        example: S
+
+    aland:
+        type: Number
+        description: Land area of the census tract in square meters.
+        example: 21411588.0
+
+    awater:
+        type: Number
+        description: Water area of the census tract in square meters.
+        example: 5055952.0
+
+    intptlat:
+        type: Number
+        description: Latitude of the internal centroid point of the census tract.
+        example: +42.6328453
+
+    intptlon:
+        type: Number
+        description: Longitude of the internal centroid point of the census tract.
+        example: -70.7140276
+
+    geometry:
+        type: MultiPolygon
+        description: GeoJSON MultiPolygon geometry representing the census tract boundaries.
+        example: MULTIPOLYGON (((-70.739 42.644, -70.739 42.644, -70.739 42.644, -70.738 42.644)))
+
