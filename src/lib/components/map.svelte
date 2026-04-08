@@ -1,6 +1,7 @@
 <script>
   import * as d3 from "d3";
   import { onMount } from "svelte";
+  import { base } from "$app/paths";
 
   export let data = [];
   export let selectedId = null;
@@ -18,10 +19,10 @@
   let zoomBehavior;
 
   onMount(async () => {
-    const [geoRes, nhoodRes] = await Promise.all([
-      fetch("/data/TODLocations_4.4.26.geojson"),
-      fetch("/data/MAPC_census_tracts/mapc_census_tracts.geojson")
-    ]);
+  const [geoRes, nhoodRes] = await Promise.all([
+    fetch(`${base}/data/TODLocations_4.4.26.geojson`),
+    fetch(`${base}/data/MAPC_census_tracts/mapc_census_tracts.geojson`)
+  ]);
 
     geojson = await geoRes.json();
     const nhoodData = await nhoodRes.json();
