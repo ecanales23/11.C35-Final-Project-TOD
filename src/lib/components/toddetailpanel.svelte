@@ -1,4 +1,5 @@
 <script>
+  import * as d3 from "d3";
   import UnitSplitChart from "./todunitsplit.svelte";
   import DemandByIncomeChart from "./demandbyincome.svelte";
   import DemandFitChart from "./demandbyhousingstock.svelte";
@@ -8,64 +9,126 @@
 
 {#if tod}
   <div class="panel">
-    <h2>{tod.project}</h2>
-    <p>{tod.address}</p>
-
-    <div class="stat-row">
-      <div><strong>{tod.totalUnits}</strong><span>Total units</span></div>
-      <div><strong>{tod.affordableUnits}</strong><span>Affordable units</span></div>
-      <div><strong>{tod.marketRateUnits}</strong><span>Market-rate units</span></div>
+    <div class="header">
+      <p class="eyebrow">Selected project</p>
+      <h2>{tod.project}</h2>
+      <p class="address">{tod.address}</p>
     </div>
 
-    <UnitSplitChart {tod} />
-    <DemandByIncomeChart {tod} />
-    <DemandFitChart {tod} />
+    <div class="stats">
+      <div class="stat-card">
+        <span>Total units</span>
+        <strong>{tod.totalUnits}</strong>
+      </div>
+      <div class="stat-card">
+        <span>Affordable units</span>
+        <strong>{tod.affordableUnits}</strong>
+      </div>
+      <div class="stat-card">
+        <span>Affordable share</span>
+        <strong>{d3.format(".0%")(tod.affordableShare)}</strong>
+      </div>
+      <div class="stat-card">
+        <span>Gap score</span>
+        <strong>{d3.format("+.0%")(tod.mismatchScore)}</strong>
+      </div>
+    </div>
 
-    {#if tod.note}
-      <p class="note"><strong>Note:</strong> {tod.note}</p>
-    {/if}
+    <div class="chart-group">
+      <UnitSplitChart {tod} width={360} />
+    </div>
+
+    <div class="chart-group">
+      <DemandFitChart {tod} width={360} />
+    </div>
+
+    <div class="chart-group">
+      <DemandByIncomeChart {tod} width={360} />
+    </div>
+
+    <div class="note-box">
+      <p><strong>Interpretation:</strong> This project’s affordable unit share is {tod.mismatchScore < 0 ? "below" : "above"} the nearby lower-income renter share by {Math.abs(tod.mismatchScore * 100).toFixed(1)} percentage points.</p>
+      <p><strong>Affordable units per 100 nearby lower-income renters:</strong> {tod.affordableUnitsPer100LowIncomeRenters.toFixed(1)}</p>
+      {#if tod.note}
+        <p><strong>Project note:</strong> {tod.note}</p>
+      {/if}
+    </div>
   </div>
 {/if}
 
 <style>
   .panel {
-    padding: 1rem;
-    border-left: 1px solid #e5e7eb;
-    background: #fff;
-    overflow-y: auto;
+    padding: 20px;
   }
+
+  .eyebrow {
+    margin: 0 0 6px 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    font-weight: 700;
+  }
+
   h2 {
-    margin: 0 0 0.25rem 0;
-    font-size: 1rem;
+    margin: 0 0 4px 0;
+    font-size: 1.2rem;
+    line-height: 1.2;
   }
-  p {
-    margin: 0 0 0.75rem 0;
+
+  .address {
+    margin: 0 0 16px 0;
+    color: #5b6b7a;
     font-size: 0.9rem;
-    color: #444;
   }
-  .stat-row {
+
+  .stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
   }
-  .stat-row div {
+
+  .stat-card {
     background: #f8fafc;
-    border-radius: 8px;
-    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
   }
-  .stat-row strong {
+
+  .stat-card span {
     display: block;
-    font-size: 1.1rem;
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 4px;
   }
-  .stat-row span {
-    font-size: 0.75rem;
-    color: #666;
+
+  .stat-card strong {
+    font-size: 1.05rem;
   }
-  .note {
-    font-size: 0.8rem;
+
+  .chart-group {
+    margin-bottom: 14px;
+    padding: 12px;
+    background: #fcfdff;
+    border: 1px solid #e6ebf0;
+    border-radius: 12px;
+  }
+
+  .note-box {
+    margin-top: 10px;
+    padding: 12px;
     background: #f8fafc;
-    padding: 0.75rem;
-    border-radius: 8px;
+    border-radius: 12px;
+    font-size: 0.84rem;
+    color: #334155;
+  }
+
+  .note-box p {
+    margin: 0 0 8px 0;
+  }
+
+  .note-box p:last-child {
+    margin-bottom: 0;
   }
 </style>
