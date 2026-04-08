@@ -2,9 +2,7 @@
   import { onMount } from "svelte";
   import { loadTodData, enrichTodWithThreshold } from "$lib/data/TODdata";
   import Map from "$lib/components/map.svelte";
-  import TodScatterplot from "$lib/components/todscatter.svelte";
   import TodDetailPanel from "$lib/components/toddetailpanel.svelte";
-  import TopMismatchPanel from "$lib/components/demandmetrics.svelte";
   import StorySteps from "$lib/components/standouts.svelte";
 
   let baseTodData = [];
@@ -109,11 +107,33 @@
         <p class="eyebrow">Greater Boston TOD dashboard</p>
         <h1>Do current TOD projects match nearby lower-income housing demand?</h1>
         <p class="subtitle">
-          This dashboard compares the affordable share of each project with the share of nearby renter households under a selected income threshold.
-          Use the map and scatterplot together to identify where supply appears most out of step with neighborhood need.
+          This dashboard compares the affordable share of each transit-oriented development (TOD) with the share of nearby renter households under a selected income threshold.
+          The goal is not to prove whether a project fully meets housing need, but to show where new housing supply appears more or less aligned with nearby lower-income demand.
         </p>
       </div>
     </header>
+
+    <section class="intro card">
+      <div class="intro-inner">
+        <div>
+          <p class="eyebrow">Why this matters</p>
+          <h2>Why planners and policymakers should care</h2>
+          <p>
+            TOD projects are often evaluated by how many total units they add, but that does not show whether they are creating housing that matches the needs of nearby residents.
+            This visualization helps planners and policymakers compare where projects appear to under-serve or better match nearby lower-income renter demand, using a simple affordability-gap measure.
+          </p>
+        </div>
+
+        <div>
+          <p class="eyebrow">What this visualization shows</p>
+          <h2>How to read it</h2>
+          <p>
+            Each point on the map is a TOD project. The large dashed circle shows the buffer area used to summarize nearby census data around that project.
+            Color shows whether the project’s affordable share is below, near, or above the nearby lower-income renter share. Clicking a project updates the detail panel on the right.
+          </p>
+        </div>
+      </div>
+    </section>
 
     <section class="controls">
       <div class="control-group">
@@ -166,7 +186,7 @@
       <StorySteps onApplyStep={applyStoryStep} />
     </section>
 
-    <section class="top-grid">
+    <section class="main-grid">
       <div class="card large">
         <Map
           data={todData}
@@ -177,24 +197,6 @@
 
       <div class="card side">
         <TodDetailPanel tod={selectedTod} />
-      </div>
-    </section>
-
-    <section class="bottom-grid">
-      <div class="card">
-        <TodScatterplot
-          data={todData}
-          selectedId={selectedTod?.id}
-          onSelect={handleSelect}
-        />
-      </div>
-
-      <div class="card">
-        <TopMismatchPanel
-          data={todData}
-          selectedId={selectedTod?.id}
-          onSelect={handleSelect}
-        />
       </div>
     </section>
   </main>
@@ -233,18 +235,49 @@
     line-height: 1.08;
   }
 
+  h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+
   .subtitle {
     margin: 0;
-    max-width: 920px;
+    max-width: 980px;
     color: #5b6b7a;
-    line-height: 1.45;
+    line-height: 1.5;
+  }
+
+  .card {
+    background: white;
+    border: 1px solid #d9e0e7;
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    overflow: hidden;
+  }
+
+  .intro {
+    margin-bottom: 20px;
+  }
+
+  .intro-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 20px;
+  }
+
+  .intro-inner p {
+    margin: 0;
+    color: #5b6b7a;
+    line-height: 1.5;
   }
 
   .controls {
     display: grid;
     grid-template-columns: repeat(5, minmax(160px, 1fr));
     gap: 16px;
-    margin: 20px 0 12px;
+    margin: 0 0 12px;
   }
 
   .control-group {
@@ -287,45 +320,32 @@
     font-size: 0.9rem;
   }
 
-  .card {
-    background: white;
-    border: 1px solid #d9e0e7;
-    border-radius: 16px;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-    overflow: hidden;
-  }
-
-  .top-grid {
+  .main-grid {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(340px, 420px);
+    grid-template-columns: minmax(0, 2fr) minmax(360px, 430px);
     gap: 20px;
     align-items: start;
     margin-top: 20px;
   }
 
-  .bottom-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
-    gap: 20px;
-    margin-top: 20px;
-  }
-
   .large {
-    min-height: 720px;
+    min-height: 760px;
   }
 
   .side {
-    min-height: 720px;
+    min-height: 760px;
   }
 
   @media (max-width: 1150px) {
-    .controls {
-      grid-template-columns: 1fr 1fr;
+    .intro-inner,
+    .controls,
+    .main-grid {
+      grid-template-columns: 1fr;
     }
 
-    .top-grid,
-    .bottom-grid {
-      grid-template-columns: 1fr;
+    .large,
+    .side {
+      min-height: unset;
     }
   }
 </style>

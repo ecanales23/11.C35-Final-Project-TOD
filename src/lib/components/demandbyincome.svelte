@@ -2,9 +2,9 @@
   import * as d3 from "d3";
   export let tod;
   export let width = 360;
-  export let height = 220;
+  export let height = 240;
 
-  const margin = { top: 26, right: 12, bottom: 44, left: 52 };
+  const margin = { top: 36, right: 12, bottom: 44, left: 52 };
   $: innerWidth = width - margin.left - margin.right;
   $: innerHeight = height - margin.top - margin.bottom;
   $: bins = tod?.renterBins ?? [];
@@ -16,7 +16,10 @@
 
 <svg {width} {height}>
   <g transform={`translate(${margin.left},${margin.top})`}>
-    <text x="0" y="-8" font-size="12" font-weight="700">Nearby renter households by income</text>
+    <text x="0" y="-18" font-size="12" font-weight="700">Nearby renter households by income</text>
+    <text x="0" y="-6" font-size="10" fill="#64748b">
+      These households come from the census-based buffer area around the selected TOD.
+    </text>
 
     {#each yTicks as tick}
       <line x1="0" x2={innerWidth} y1={y(tick)} y2={y(tick)} stroke="#edf2f7" />

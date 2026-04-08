@@ -11,7 +11,7 @@
   let projects = [];
 
   let width = 900;
-  let height = 640;
+  let height = 680;
   let hoveredProject = null;
   let svgElement;
   let transform = d3.zoomIdentity;
@@ -89,9 +89,11 @@
   <div class="header">
     <div>
       <p class="eyebrow">Map view</p>
-      <h2>Where TOD project supply appears aligned — or misaligned — with nearby renter demand</h2>
+      <h2>How to read the map</h2>
       <p class="caption">
-        Circle color shows the gap between affordable unit share and the share of nearby lower-income renters. Click a project to update all charts.
+        Each filled circle is a TOD project. The selected project is shown with a larger filled circle and darker outline.
+        The large dashed circle shows the surrounding buffer area used to summarize nearby census data.
+        Circle color shows whether the project’s affordable share is below, near, or above nearby lower-income renter demand.
       </p>
     </div>
     <button class="reset" on:click={resetZoom}>Reset view</button>
@@ -160,7 +162,7 @@
             <strong>{(hoveredProject.affordableShare * 100).toFixed(0)}%</strong>
           </div>
           <div class="stat-row">
-            <span>Lower-income demand</span>
+            <span>Nearby lower-income demand</span>
             <strong>{(hoveredProject.lowerIncomeDemandShare * 100).toFixed(0)}%</strong>
           </div>
           <div class="stat-row">
@@ -170,19 +172,36 @@
         </div>
 
         <div class="mismatch-flag" style={`background:${colorScale(hoveredProject.mismatchScore)}22`}>
-          <strong>Gap: {(hoveredProject.mismatchScore * 100).toFixed(1)} pts</strong>
-          <p>{hoveredProject.mismatchScore < 0 ? "Affordable share falls short of nearby demand." : "Affordable share exceeds nearby demand share."}</p>
+          <strong>Gap: {(hoveredProject.mismatchScore * 100).toFixed(1)} percentage points</strong>
+          <p>{hoveredProject.mismatchScore < 0 ? "Affordable share falls short of nearby lower-income demand." : "Affordable share is above nearby lower-income demand share."}</p>
         </div>
       </div>
     {/if}
   </div>
 
-  <div class="legend">
-    <div class="bar"></div>
-    <div class="labels">
-      <span>Under-serving</span>
-      <span>Balanced</span>
-      <span>Exceeding</span>
+  <div class="legend-section">
+    <div class="legend">
+      <div class="bar"></div>
+      <div class="labels">
+        <span>Under-serving</span>
+        <span>Balanced</span>
+        <span>Exceeding</span>
+      </div>
+    </div>
+
+    <div class="symbol-legend">
+      <div class="symbol-item">
+        <span class="symbol dashed"></span>
+        <span>Analysis buffer around each TOD</span>
+      </div>
+      <div class="symbol-item">
+        <span class="symbol selected"></span>
+        <span>Selected TOD project</span>
+      </div>
+      <div class="symbol-item">
+        <span class="symbol default"></span>
+        <span>Other TOD projects</span>
+      </div>
     </div>
   </div>
 </div>
@@ -192,8 +211,8 @@
   <div class="annotation-box">
     <strong>Current takeaway</strong>
     <p>
-      The largest gap in the filtered view appears at <em>{worst.project}</em>,
-      where the affordable share of the project trails nearby lower-income demand by
+      In the current filtered view, the largest affordability gap appears at <em>{worst.project}</em>,
+      where the project’s affordable unit share falls below nearby lower-income renter demand by
       {(Math.abs(worst.mismatchScore) * 100).toFixed(1)} percentage points.
     </p>
   </div>
@@ -229,9 +248,10 @@
 
   .caption {
     margin: 0;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     color: #5b6b7a;
-    max-width: 720px;
+    max-width: 760px;
+    line-height: 1.5;
   }
 
   .reset {
@@ -257,7 +277,7 @@
 
   .tooltip {
     position: absolute;
-    width: 250px;
+    width: 260px;
     background: white;
     border: 1px solid #cfd8df;
     border-radius: 12px;
@@ -302,9 +322,16 @@
     margin: 4px 0 0 0;
   }
 
+  .legend-section {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 20px;
+    margin-top: 12px;
+    align-items: start;
+  }
+
   .legend {
     width: 320px;
-    margin-top: 10px;
   }
 
   .bar {
@@ -321,6 +348,46 @@
     margin-top: 6px;
   }
 
+  .symbol-legend {
+    display: grid;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: #475569;
+  }
+
+  .symbol-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .symbol {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    flex: 0 0 auto;
+  }
+
+  .symbol.default {
+    background: #4f7cac;
+    border: 2px solid white;
+  }
+
+  .symbol.selected {
+    background: #d1495b;
+    border: 3px solid #111827;
+    width: 22px;
+    height: 22px;
+  }
+
+  .symbol.dashed {
+    background: rgba(31, 41, 55, 0.04);
+    border: 2px dashed #6b7280;
+    width: 26px;
+    height: 26px;
+  }
+
   .project-node {
     cursor: pointer;
     transition: opacity 0.15s ease;
@@ -328,7 +395,7 @@
 
   .annotation-box {
     margin-top: 12px;
-    max-width: 520px;
+    max-width: 620px;
     padding: 12px;
     border-radius: 12px;
     background: #f8fafc;
@@ -339,5 +406,11 @@
 
   .annotation-box p {
     margin: 6px 0 0 0;
+  }
+
+  @media (max-width: 900px) {
+    .legend-section {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

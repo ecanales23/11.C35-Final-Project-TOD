@@ -1,6 +1,5 @@
 <script>
   import * as d3 from "d3";
-  import UnitSplitChart from "./todunitsplit.svelte";
   import DemandByIncomeChart from "./demandbyincome.svelte";
   import DemandFitChart from "./demandbyhousingstock.svelte";
 
@@ -13,6 +12,13 @@
       <p class="eyebrow">Selected project</p>
       <h2>{tod.project}</h2>
       <p class="address">{tod.address}</p>
+    </div>
+
+    <div class="intro-box">
+      <p>
+        <strong>What this panel shows:</strong> This project is compared with nearby renter households in the surrounding buffer area shown on the map.
+        The goal is to show whether the project’s affordable share appears low, similar to, or high relative to nearby lower-income renter demand.
+      </p>
     </div>
 
     <div class="stats">
@@ -34,8 +40,12 @@
       </div>
     </div>
 
-    <div class="chart-group">
-      <UnitSplitChart {tod} width={360} />
+    <div class="sentence-box">
+      <p>
+        For <strong>{tod.project}</strong>, the affordability rate is <strong>{d3.format(".0%")(tod.affordableShare)}</strong>
+        because this TOD includes <strong>{tod.affordableUnits}</strong> affordable units and
+        <strong>{tod.marketRateUnits}</strong> market-rate units out of <strong>{tod.totalUnits}</strong> total units.
+      </p>
     </div>
 
     <div class="chart-group">
@@ -47,8 +57,25 @@
     </div>
 
     <div class="note-box">
-      <p><strong>Interpretation:</strong> This project’s affordable unit share is {tod.mismatchScore < 0 ? "below" : "above"} the nearby lower-income renter share by {Math.abs(tod.mismatchScore * 100).toFixed(1)} percentage points.</p>
-      <p><strong>Affordable units per 100 nearby lower-income renters:</strong> {tod.affordableUnitsPer100LowIncomeRenters.toFixed(1)}</p>
+      <p>
+        <strong>Interpretation:</strong>
+        This project’s affordable unit share is
+        {tod.mismatchScore < 0 ? " below " : " above "}
+        the nearby lower-income renter share by
+        <strong>{Math.abs(tod.mismatchScore * 100).toFixed(1)} percentage points</strong>.
+      </p>
+
+      <p>
+        <strong>Affordable units per 100 nearby lower-income renters:</strong>
+        {tod.affordableUnitsPer100LowIncomeRenters.toFixed(1)}
+      </p>
+
+      <p>
+        <strong>Important note:</strong>
+        This comparison is a proxy for local fit, not a full measure of whether the project meets all housing demand.
+        It compares project affordability with nearby renter income distribution, not exact eligibility tiers or regional housing need.
+      </p>
+
       {#if tod.note}
         <p><strong>Project note:</strong> {tod.note}</p>
       {/if}
@@ -82,11 +109,26 @@
     font-size: 0.9rem;
   }
 
+  .intro-box {
+    margin-bottom: 14px;
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.84rem;
+    color: #334155;
+    line-height: 1.45;
+  }
+
+  .intro-box p {
+    margin: 0;
+  }
+
   .stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
   }
 
   .stat-card {
@@ -107,6 +149,21 @@
     font-size: 1.05rem;
   }
 
+  .sentence-box {
+    margin-bottom: 14px;
+    padding: 12px;
+    background: #fcfdff;
+    border: 1px solid #e6ebf0;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: #334155;
+    line-height: 1.5;
+  }
+
+  .sentence-box p {
+    margin: 0;
+  }
+
   .chart-group {
     margin-bottom: 14px;
     padding: 12px;
@@ -122,6 +179,7 @@
     border-radius: 12px;
     font-size: 0.84rem;
     color: #334155;
+    line-height: 1.45;
   }
 
   .note-box p {

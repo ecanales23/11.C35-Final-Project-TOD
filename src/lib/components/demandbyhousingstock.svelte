@@ -2,15 +2,15 @@
   import * as d3 from "d3";
   export let tod;
   export let width = 360;
-  export let height = 165;
+  export let height = 180;
 
-  const margin = { top: 28, right: 18, bottom: 32, left: 140 };
+  const margin = { top: 34, right: 18, bottom: 32, left: 150 };
   $: innerWidth = width - margin.left - margin.right;
   $: innerHeight = height - margin.top - margin.bottom;
 
   $: data = tod ? [
-    { label: "Affordable share", value: tod.affordableShare, color: "#2f7f5f" },
-    { label: "Lower-income demand", value: tod.lowerIncomeDemandShare, color: "#b56576" }
+    { label: "Affordable share of TOD", value: tod.affordableShare, color: "#2f7f5f" },
+    { label: "Nearby lower-income demand", value: tod.lowerIncomeDemandShare, color: "#b56576" }
   ] : [];
 
   $: x = d3.scaleLinear().domain([0, 1]).range([0, innerWidth]);
@@ -20,7 +20,10 @@
 
 <svg {width} {height}>
   <g transform={`translate(${margin.left},${margin.top})`}>
-    <text x="0" y="-10" font-size="12" font-weight="700">Project supply vs. local demand</text>
+    <text x="0" y="-14" font-size="12" font-weight="700">Project supply vs. nearby demand</text>
+    <text x="0" y="-2" font-size="10" fill="#64748b">
+      This compares the affordable share of the TOD with the share of nearby renters under the selected income threshold.
+    </text>
 
     {#each xTicks as tick}
       <line x1={x(tick)} x2={x(tick)} y1="0" y2={innerHeight} stroke="#edf2f7" />
