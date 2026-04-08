@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { base } from "$app/paths";
 
 const RENTER_FIELDS = {
   zeroNeg: "D_Renter-Occupied Housing Units: Zero Or Negative Income",
@@ -72,7 +73,7 @@ function demandForThreshold(bins, threshold = "50k") {
 }
 
 export async function loadTodData() {
-  const rows = await d3.csv("/data/TODLocation+BufferDemoAvgs.csv");
+  const rows = await d3.csv(`${base}/data/TODLocation+BufferDemoAvgs.csv`);
 
   return rows.map((row, i) => {
     const { total, affordable, marketRate, affordableShare } = cleanUnits(row);
