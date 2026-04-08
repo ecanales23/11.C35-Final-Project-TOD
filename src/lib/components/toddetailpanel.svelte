@@ -61,7 +61,7 @@
         <strong>Interpretation:</strong>
         This project’s affordable unit share is
         {tod.mismatchScore < 0 ? " below " : " above "}
-        the nearby lower-income renter share by
+        the nearby lower-income renter share by:
         <strong>{Math.abs(tod.mismatchScore * 100).toFixed(1)} percentage points</strong>.
       </p>
 

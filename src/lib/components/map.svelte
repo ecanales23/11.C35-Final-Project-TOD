@@ -193,7 +193,7 @@
     <div class="symbol-legend">
       <div class="symbol-item">
         <span class="symbol dashed"></span>
-        <span>Analysis buffer around each TOD</span>
+        <span>0.5 mile-radius analysis buffer around each TOD</span>
       </div>
       <div class="symbol-item">
         <span class="symbol selected"></span>
@@ -209,14 +209,17 @@
 
 {#if data.length}
   {@const worst = [...data].sort((a, b) => a.mismatchScore - b.mismatchScore)[0]}
-  <div class="annotation-box">
-    <strong>Current takeaway</strong>
-    <p>
-      In the current filtered view, the largest affordability gap appears at <em>{worst.project}</em>,
-      where the project’s affordable unit share falls below nearby lower-income renter demand by
-      {(Math.abs(worst.mismatchScore) * 100).toFixed(1)} percentage points.
-    </p>
-  </div>
+  <footer class="insight-bar">
+    <div class="insight-icon">💡</div>
+    <div class="insight-content">
+      <span class="insight-label">Current Takeaway</span>
+      <p>
+        In the current filtered view, the largest affordability gap appears at <strong>{worst.project}</strong>,
+        where the project’s affordable unit share falls below nearby demand by
+        <strong>{(Math.abs(worst.mismatchScore) * 100).toFixed(1)}</strong> percentage points.
+      </p>
+    </div>
+  </footer>
 {/if}
 
 <style>
@@ -394,19 +397,55 @@
     transition: opacity 0.15s ease;
   }
 
-  .annotation-box {
-    margin-top: 12px;
-    max-width: 620px;
-    padding: 12px;
-    border-radius: 12px;
+.insight-bar {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 16px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    font-size: 0.84rem;
+    color: #475569;
+
+    padding: 10px 14px;
+    border-radius: 10px;
+    width: fit-content;
+    max-width: 920px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .insight-icon {
+    font-size: 14px;
+    background: #fef3c7;
+    padding: 6px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .insight-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .insight-label {
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+  }
+
+  .insight-bar p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
     color: #334155;
   }
 
-  .annotation-box p {
-    margin: 6px 0 0 0;
+  .insight-bar strong {
+    color: #0f172a;
+    font-weight: 700;
   }
 
   @media (max-width: 900px) {
