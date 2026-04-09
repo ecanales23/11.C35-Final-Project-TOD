@@ -10,7 +10,7 @@
 
   $: data = tod ? [
     { label: "Affordable share of TOD", value: tod.affordableShare, color: "#2f7f5f" },
-    { label: "Nearby lower-income demand", value: tod.lowerIncomeDemandShare, color: "#b56576" }
+    { label: "Nearby lower-income demand", value: tod.lowerIncomeDemandShare, color: "#d80073" }
   ] : [];
 
   $: x = d3.scaleLinear().domain([0, 1]).range([0, innerWidth]);
@@ -23,6 +23,7 @@
     <text x="-75" y="-45" font-size="12" font-weight="700" fill="#000">
       Project supply vs. nearby demand
     </text>
+
     <text x="-155" y="-30" font-size="9" fill="#64748b">
       <tspan x="-155" dy="0">This compares the affordable share of the TOD with the share of nearby renters </tspan>
       <tspan x="-55" dy="12">under the selected income threshold.</tspan>

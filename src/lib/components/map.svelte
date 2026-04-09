@@ -67,9 +67,9 @@
   $: pathGenerator = projection ? d3.geoPath().projection(projection) : null;
 
   $: colorScale = d3.scaleLinear()
-    .domain([-0.5, 0, 0.5])
-    .range(["#c65a46", "#f5f4ef", "#2f7f5f"])
-    .clamp(true);
+      .domain([-0.5, 0, 0.5])
+      .range(["#d80073", "#f5f4ef", "#2f7f5f"])
+      .clamp(true);
 
   function getProjectedCoords(geometry) {
     if (!projection) return [0, 0];
@@ -338,10 +338,10 @@
     width: 320px;
   }
 
-  .bar {
+.bar {
     height: 10px;
     border-radius: 8px;
-    background: linear-gradient(to right, #c65a46, #f5f4ef, #2f7f5f);
+    background: linear-gradient(to right, #d80073, #f5f4ef, #2f7f5f);
   }
 
   .labels {
@@ -379,11 +379,11 @@
   }
 
   .symbol.selected {
-    background: #d1495b;
-    border: 3px solid #111827;
-    width: 22px;
-    height: 22px;
-  }
+      background: #d80073;
+      border: 3px solid #111827;
+      width: 22px;
+      height: 22px;
+    }
 
   .symbol.dashed {
     background: rgba(31, 41, 55, 0.04);
