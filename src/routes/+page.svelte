@@ -227,8 +227,11 @@
     padding: 24px;
   }
 
-  .hero {
-    margin-bottom: 20px;
+.hero {
+    text-align: center;
+    margin-bottom: 48px;
+    display: flex;
+    justify-content: center;
   }
 
   .eyebrow {
