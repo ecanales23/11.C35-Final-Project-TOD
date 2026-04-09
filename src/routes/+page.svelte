@@ -107,31 +107,42 @@
         <p class="eyebrow">Greater Boston TOD dashboard</p>
         <h1>Do current TOD projects match nearby lower-income housing demand?</h1>
         <p class="subtitle">
-          This dashboard compares the affordable share of each transit-oriented development (TOD) with the share of nearby renter households under a selected income threshold.
-          The goal is not to prove whether a project fully meets housing need, but to show where new housing supply appears more or less aligned with nearby lower-income demand.
+          This dashboard compares the affordable share of each transit-oriented development (TOD) with the share of nearby renter households under a selected income threshold. Our goal is to show where new housing supply appears more or less aligned with nearby lower-income demand.
         </p>
       </div>
     </header>
 
-    <section class="intro card">
+  <section class="intro">
       <div class="intro-inner">
-        <div>
-          <p class="eyebrow">Why this matters</p>
-          <h2>Why planners and policymakers should care</h2>
-          <p>
-            TOD projects are often evaluated by how many total units they add, but that does not show whether they are creating housing that matches the needs of nearby residents.
-            This visualization helps planners and policymakers compare where projects appear to under-serve or better match nearby lower-income renter demand, using a simple affordability-gap measure.
-          </p>
-        </div>
+        <details class="info-box yellow">
+          <summary>
+            <div class="summary-content">
+              <p class="eyebrow">Why this matters</p>
+              <h2>Why planners and policymakers should care</h2>
+            </div>
+          </summary>
+          <div class="details-content">
+            <p>
+              TOD projects are often evaluated by how many total units they add, but that does not show whether they are creating housing that matches the needs of nearby residents.
+              This visualization helps planners and policymakers compare where projects appear to under-serve or better match nearby lower-income renter demand, using a simple affordability-gap measure.
+            </p>
+          </div>
+        </details>
 
-        <div>
-          <p class="eyebrow">What this visualization shows</p>
-          <h2>How to read it</h2>
-          <p>
-            Each point on the map is a TOD project. The large dashed circle shows the buffer area used to summarize nearby census data around that project.
-            Color shows whether the project’s affordable share is below, near, or above the nearby lower-income renter share. Clicking a project updates the detail panel on the right.
-          </p>
-        </div>
+    <details class="info-box yellow">
+          <summary>
+            <div class="summary-content">
+              <p class="eyebrow">What this visualization shows</p>
+              <h2>How to read it</h2>
+            </div>
+          </summary>
+          <div class="details-content">
+            <p>
+              Each point on the map is a TOD project. The large dashed circle shows the buffer area used to summarize nearby census data around that project.
+              Color shows whether the project’s affordable share is below, near, or above the nearby lower-income renter share. Clicking a project updates the detail panel on the right.
+            </p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -346,6 +357,65 @@
     .large,
     .side {
       min-height: unset;
+    }
+  }
+
+  .intro-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .info-box.yellow {
+    background: #fefce8;
+    border: 1px solid #fef08a;
+    border-radius: 16px;
+    overflow: hidden;
+    height: fit-content;
+  }
+
+  .info-box summary {
+    padding: 20px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .info-box summary::before {
+    content: "▶";
+    font-size: 0.8rem;
+    margin-top: 24px;
+    margin-right: 12px;
+    color: #a16207;
+    transition: transform 0.2s;
+  }
+
+  .info-box[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+  .summary-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .summary-content h2,
+  .summary-content .eyebrow {
+    margin: 0;
+  }
+
+  .details-content {
+    padding: 0 20px 20px 52px;
+    color: #713f12;
+    line-height: 1.5;
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 1150px) {
+    .intro-inner {
+      grid-template-columns: 1fr;
     }
   }
 </style>
