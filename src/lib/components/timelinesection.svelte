@@ -190,12 +190,28 @@
       <p class="section-eyebrow">Transit-oriented development &amp; affordability</p>
       <h2>Boston is adding transit-oriented housing. But for whom?</h2>
       <p class="section-desc">
-        Transit-oriented developments have the potential to put housing where people need it: near jobs,
-        near transit, in the heart of the city. But did Boston's TODs actually add housing for the
-        people already living near transit? Scroll through a decade of neighborhood data to see
-        what the supply-demand relationship really looks like.
+        Transit-oriented developments (TODs) have the potential to put housing where people need it: near jobs, near transit, in the heart of the city. But do Boston's TODs actually add housing for the people already living near transit? Scroll through a decade of neighborhood data to see what the supply-demand relationship really looks like.
       </p>
     </header>
+
+      <section class="research-context card">
+      <div class="context-grid">
+        <div class="question-block">
+          <h2>Research Question</h2>
+          <p class="main-q">To what extent does the affordable share of current transit-oriented development (TOD) projects in Greater Boston align with nearby lower-income renter demand?</p>
+          <p>
+            We provide planners and policymakers with a "mismatch score" that measures the gap between new supply and local demand. By analyzing data within a 0.5-mile radius of each station, we expose whether these projects serve the existing community or cater to higher-income residents.
+          </p>
+        </div>
+
+        <div class="importance-block">
+          <h2>Why is Affordability Important?</h2>
+          <p>
+            Housing affordability determines who can actually afford to live and work in the city. When housing costs exceed 30% of a household's income, families need to cut back on other necessities like healthcare and healthy food. In a city like Boston where so much depends on the T, a lack of affordable housing near transit stations makes it harder for lower-income workers to access reliable transportation. This can push the people who rely most on public transit further away from the city center and result in significantly longer commutes.
+          </p>
+        </div>
+      </div>
+    </section>
 
     <div class="scrolly-grid">
 
@@ -564,4 +580,41 @@
       border-color: #b45309;
     }
   }
+
+    .research-context {
+    padding: 40px;
+    margin-bottom: 48px;
+    background: #ffffff;
+    border-left: 6px solid #3b82f6;
+  }
+
+  .context-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+
+  .research-context h2 {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #3b82f6;
+    margin-bottom: 16px;
+  }
+
+  .main-q {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #111827;
+    margin-bottom: 16px;
+  }
+
+  .research-context p {
+    margin: 0 0 16px 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #4b5563;
+  }
+
 </style>

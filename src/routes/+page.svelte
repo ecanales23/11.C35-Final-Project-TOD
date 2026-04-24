@@ -188,7 +188,6 @@
     background: #f4f6f8;
     color: #1f2937;
     font-family: Inter, system-ui, sans-serif;
-
   }
 
   .page {
@@ -197,7 +196,7 @@
     padding: 24px;
   }
 
-.hero {
+  .hero {
     text-align: center;
     margin-bottom: 48px;
     display: flex;
@@ -217,8 +216,8 @@
     margin: 0 0 8px 0;
     font-size: 2rem;
     line-height: 1.08;
+    color: #111827;
   }
-
 
   .subtitle {
     margin: 0;
@@ -268,10 +267,7 @@
     gap: 8px;
     margin-bottom: 8px;
     font-size: 13px;
-  }
-
-  .checkbox-group label:last-child {
-    margin-bottom: 0;
+    color: #374151;
   }
 
   .status-bar {
@@ -290,15 +286,16 @@
     margin-top: 20px;
   }
 
-  .large {
-    min-height: 760px;
-  }
-
-  .side {
+  .large, .side {
     min-height: 760px;
   }
 
   @media (max-width: 1150px) {
+    .context-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
     .controls,
     .main-grid {
       grid-template-columns: 1fr;
