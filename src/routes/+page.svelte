@@ -5,6 +5,7 @@
   import TodDetailPanel from "$lib/components/toddetailpanel.svelte";
   import StorySteps from "$lib/components/standouts.svelte";
   import Scrolly from "$lib/components/scrolly.svelte";
+  import TimelineSection from "$lib/components/timelinesection.svelte";
 
   let baseTodData = [];
   let todData = [];
@@ -103,6 +104,8 @@
   <p>Loading…</p>
 {:else}
   <main class="page">
+    <TimelineSection />
+
     <header class="hero">
       <div>
         <p class="eyebrow">Greater Boston TOD dashboard</p>
@@ -186,6 +189,7 @@
     background: #f4f6f8;
     color: #1f2937;
     font-family: Inter, system-ui, sans-serif;
+    
   }
 
   .page {
