@@ -184,28 +184,28 @@
     <p>Loading neighborhood data…</p>
   </div>
 {:else}
-  <section class="timeline-section">
-
-    <header class="section-header">
-      <p class="section-eyebrow">Transit-oriented development &amp; affordability</p>
-      <h2>Boston is adding transit-oriented housing. But for whom?</h2>
-      <p class="section-desc">
-        Transit-oriented developments (TODs) have the potential to put housing where people need it: near jobs, near transit, in the heart of the city. But do Boston's TODs actually add housing for the people already living near transit? Scroll through a decade of neighborhood data to see what the supply-demand relationship really looks like.
-      </p>
+  <section class="timeline-container">
+    <header class="hero-header">
+      <div class="container">
+        <p class="section-eyebrow">Transit-Oriented Development & Affordability</p>
+        <h1>Boston is adding transit housing. <span class="highlight">But for whom?</span></h1>
+        <p class="hero-desc">
+          Transit-oriented developments (TODs) have the potential to put housing where people need it: near jobs, near transit, in the heart of the city. But do Boston's TODs actually add housing for the people already living near transit? Scroll through a decade of neighborhood data to see what the supply-demand relationship really looks like.
+        </p>
+      </div>
     </header>
 
-      <section class="research-context card">
+    <section class="research-summary container">
       <div class="context-grid">
-        <div class="question-block">
-          <h2>Research Question</h2>
+        <div class="info-card">
+          <span class="label">Research question</span>
           <p class="main-q">To what extent does the affordable share of current transit-oriented development (TOD) projects in Greater Boston align with nearby lower-income renter demand?</p>
-          <p>
+          <p class="sub-text">
             We provide planners and policymakers with a "mismatch score" that measures the gap between new supply and local demand. By analyzing data within a 0.5-mile radius of each station, we expose whether these projects serve the existing community or cater to higher-income residents.
           </p>
         </div>
-
-        <div class="importance-block">
-          <h2>Why is Affordability Important?</h2>
+        <div class="info-card secondary">
+          <span class="label">Why is Affordability Important?</span>
           <p>
             Housing affordability determines who can actually afford to live and work in the city. When housing costs exceed 30% of a household's income, families need to cut back on other necessities like healthcare and healthy food. In a city like Boston where so much depends on the T, a lack of affordable housing near transit stations makes it harder for lower-income workers to access reliable transportation. This can push the people who rely most on public transit further away from the city center and result in significantly longer commutes.
           </p>
@@ -214,407 +214,299 @@
     </section>
 
     <div class="scrolly-grid">
-
-      <div class="map-col">
-        <TimelineMap {timelineRows} step={steps[activeStep]} />
+      <div class="map-viewport">
+        <div class="map-inner">
+          <TimelineMap {timelineRows} step={steps[activeStep]} />
+        </div>
       </div>
 
-      <div class="text-col">
+      <div class="text-stream">
         {#each steps as step, i}
           {#if breaks.includes(i)}
-            <div class="part-header" aria-hidden="true">
-              <span class="part-pill">{step.part}</span>
-              <span class="part-title">{step.partTitle}</span>
+            <div class="part-marker">
+              <span class="pill">{step.part}</span>
+              <span class="label">{step.partTitle}</span>
             </div>
           {/if}
 
           <article
             class="step-card"
             class:active={i === activeStep}
-            class:has-focus={!!step.focusProject}
             bind:this={stepEls[i]}
             data-step={i}
           >
-            <p class="step-eyebrow">{step.eyebrow}</p>
-            <h3 class="step-title">{step.title}</h3>
-            <p class="step-body">{step.body}</p>
+            <div class="step-content">
+              <p class="step-eyebrow">
+                <span class="year-badge">{step.eyebrow.split(' · ')[0]}</span>
+                <span class="eyebrow-text">{step.eyebrow.split(' · ')[1]}</span>
+              </p>
 
-            {#if step.focusProject}
-              {@const focusRow = timelineRows.find(
-                (d) => d.project === step.focusProject && d.periodKey === step.periodKey
-              )}
+              <h3 class="step-title">{step.title}</h3>
+              <p class="step-body">{step.body}</p>
 
-              {#if step.photo}
-                <figure class="tod-photo">
-                  <img src={`${base}${step.photo}`} alt="Photo of {step.focusProject}" />
-                </figure>
-              {/if}
+              {#if step.focusProject}
+                {@const focusRow = timelineRows.find(
+                  (d) => d.project === step.focusProject && d.periodKey === step.periodKey
+                )}
 
-              {#if focusRow}
-                <div class="demo-chart">
-                  <p class="demo-chart-title">Neighborhood profile · {focusRow.period}</p>
-                  {#each chartMetrics as m}
-                    {@const val = focusRow[m.key]}
-                    {#if val != null && isFinite(val)}
-                      <div class="bar-row">
-                        <span class="bar-label">{m.label}</span>
-                        <div class="bar-track">
-                          <div
-                            class="bar-fill"
-                            style="width:{Math.round(val * 100)}%; background:{m.color}"
-                          ></div>
-                        </div>
-                        <span class="bar-value">{pct(val)}</span>
-                      </div>
-                    {/if}
-                  {/each}
+                <div class="focus-details">
+                  {#if step.photo}
+                    <figure class="tod-photo">
+                      <img src={`${base}${step.photo}`} alt={step.focusProject} />
+                    </figure>
+                  {/if}
+
+                  {#if focusRow}
+                    <div class="demo-chart">
+                      <p class="chart-header">Neighborhood Profile · {focusRow.period}</p>
+                      {#each chartMetrics as m}
+                        {@const val = focusRow[m.key]}
+                        {#if val != null && isFinite(val)}
+                          <div class="bar-row">
+                            <div class="bar-info">
+                              <span class="bar-label">{m.label}</span>
+                              <span class="bar-value">{pct(val)}</span>
+                            </div>
+                            <div class="bar-track">
+                              <div
+                                class="bar-fill"
+                                style="width:{val * 100}%; background:{m.color}"
+                              ></div>
+                            </div>
+                          </div>
+                        {/if}
+                      {/each}
+                    </div>
+                  {/if}
                 </div>
               {/if}
-            {/if}
 
-            {#if step.callout}
-              <p class="step-callout">{step.callout}</p>
-            {/if}
-
-            <div class="step-progress" aria-hidden="true">
-              {#each steps as _, j}
-                <span class="pip" class:filled={j === i} class:active={j === activeStep}></span>
-              {/each}
+              {#if step.callout}
+                <div class="step-callout">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  <span>{step.callout}</span>
+                </div>
+              {/if}
             </div>
           </article>
         {/each}
-
-        <div style="height: 30vh"></div>
+        <div class="spacer"></div>
       </div>
     </div>
   </section>
 {/if}
 
 <style>
+  :global(body) {
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .hero-header {
+    padding: 10px 0 60px;
+    text-align: center;
+  }
+
+  .section-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #b45309;
+    margin-bottom: 12px;
+  }
+
+  .hero-header h1 {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    letter-spacing: -0.04em;
+    color: #0f172a;
+  }
+
+  .highlight { color: #2563eb; }
+
+  .hero-desc {
+    font-size: 1.25rem;
+    color: #64748b;
+    max-width: 1100px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .research-summary { margin-bottom: 120px; }
+  .context-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; }
+
+  .info-card {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
+    border: 1px solid #e2e8f0;
+  }
+
+  .info-card.secondary { background: #1e293b; color: #f8fafc; }
+  .info-card .label { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px; opacity: 0.7; }
+  .main-q { font-size: 1.6rem; font-weight: 800; margin-bottom: 16px; line-height: 1.2; letter-spacing: -0.02em; }
+  .sub-text { color: #64748b; font-size: 1.05rem; }
+
+  .scrolly-grid { display: flex; position: relative; }
+
+  .map-viewport {
+    flex: 1.3;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    padding: 32px;
+    display: flex;
+    align-items: center;
+  }
+
+  .map-inner {
+    width: 100%;
+    height: 85vh;
+    background: #fff;
+    border-radius: 28px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+  }
+
+  .text-stream { flex: 0.7; padding: 0 40px 0 0; }
+
+  .step-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .year-badge {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    border: 1px solid #e2e8f0;
+    transition: all 0.4s ease;
+  }
+
+  .active .year-badge {
+    background: #fff7ed;
+    color: #b45309;
+    border-color: #ffedd5;
+  }
+
+  .eyebrow-text {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+  }
+
+  .part-marker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 120px 0 30px 20px;
+  }
+
+  .part-marker .pill { background: #2563eb; color: white; font-size: 0.65rem; font-weight: 900; padding: 4px 12px; border-radius: 99px; }
+  .part-marker .label { font-size: 0.8rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+
+  .step-card {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    opacity: 0.15;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(20px);
+  }
+
+  .step-card.active { opacity: 1; transform: translateY(0); }
+
+  .step-content {
+    background: white;
+    padding: 40px;
+    border-radius: 28px;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.8);
+  }
+
+  .step-title { font-size: 1.5rem; font-weight: 800; line-height: 1.25; margin: 0 0 16px; color: #0f172a; letter-spacing: -0.02em; }
+  .step-body { font-size: 1.05rem; line-height: 1.6; color: #475569; }
+
+  .focus-details { margin-top: 28px; border-top: 1px solid #f1f5f9; padding-top: 28px; }
+  .tod-photo { margin: 0 0 24px; border-radius: 18px; overflow: hidden; height: 200px; background: #e2e8f0; }
+  .tod-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+  .demo-chart { background: #f8fafc; padding: 20px; border-radius: 20px; border: 1px solid #f1f5f9; }
+  .chart-header { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; margin-bottom: 16px; }
+  .bar-row { margin-bottom: 14px; }
+  .bar-info { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .bar-label { font-size: 0.8rem; font-weight: 600; color: #475569; }
+  .bar-value { font-size: 0.8rem; font-weight: 800; color: #0f172a; }
+  .bar-track { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 10px; transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+  .step-callout {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #fffbeb;
+    border-radius: 14px;
+    color: #92400e;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    border: 1px solid #fef3c7;
+  }
+
+  .spacer { height: 50vh; }
+
   .loading-state {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    padding: 80px;
+    height: 100vh;
     color: #64748b;
-    font-size: 0.9rem;
   }
 
   .loading-pulse {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #2563eb;
     border-radius: 50%;
-    border: 3px solid #e2e8f0;
-    border-top-color: #1e3a5f;
-    animation: spin 0.9s linear infinite;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
   }
 
   @keyframes spin {
-    to { transform: rotate(360deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
-  .timeline-section {
-    margin-bottom: 80px;
+  @media (max-width: 900px) {
+    .scrolly-grid { flex-direction: column; }
+    .map-viewport { position: sticky; height: 50vh; z-index: 10; padding: 12px; top: 0; }
+    .map-inner { height: 100%; border-radius: 20px; }
+    .text-stream { padding: 0 20px; }
+    .step-card { min-height: auto; margin-bottom: 60px; opacity: 1; transform: none; }
+    .context-grid { grid-template-columns: 1fr; }
   }
-
-  .section-header {
-    max-width: 760px;
-    margin: 0 auto 52px;
-    text-align: center;
-    padding: 0 16px;
-  }
-
-  .section-eyebrow {
-    margin: 0 0 10px;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #b45309;
-    font-weight: 800;
-  }
-
-  .section-header h2 {
-    margin: 0 0 16px;
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    line-height: 1.12;
-    color: #0f172a;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-
-  .section-desc {
-    margin: 0;
-    color: #475569;
-    line-height: 1.65;
-    font-size: 1rem;
-  }
-
-  .scrolly-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.7fr);
-    gap: 40px;
-    align-items: start;
-  }
-
-  .map-col {
-    position: sticky;
-    top: 24px;
-    align-self: start;
-  }
-
-  .text-col {
-    padding-top: 16px;
-  }
-
-  .part-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 48px 0 4px;
-    padding: 0 0 0 18px;
-  }
-
-  .part-header:first-child {
-    margin-top: 0;
-  }
-
-  .part-pill {
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: white;
-    background: #1e3a5f;
-    border-radius: 100px;
-    padding: 3px 9px;
-    white-space: nowrap;
-  }
-
-  .part-title {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-  }
-
-  .step-card {
-    padding: 28px 20px 28px 22px;
-    border-left: 3px solid #e2e8f0;
-    margin-bottom: 0;
-    opacity: 0.38;
-    transition: opacity 0.3s ease, border-color 0.3s ease;
-    min-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0;
-  }
-
-  .step-card.active {
-    opacity: 1;
-    border-color: #b45309;
-  }
-
-  .step-eyebrow {
-    margin: 0 0 10px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    color: #64748b;
-  }
-
-  .step-card.active .step-eyebrow {
-    color: #b45309;
-  }
-
-  .step-title {
-    margin: 0 0 14px;
-    font-size: 1.05rem;
-    line-height: 1.35;
-    font-weight: 800;
-    color: #0f172a;
-    letter-spacing: -0.01em;
-  }
-
-  .step-body {
-    margin: 0;
-    color: #475569;
-    line-height: 1.68;
-    font-size: 0.93rem;
-    flex-grow: 1;
-  }
-
-  .step-card.has-focus .step-body {
-    flex-grow: 0;
-    margin-bottom: 16px;
-  }
-
-  .tod-photo {
-    margin: 0 0 14px;
-    border-radius: 10px;
-    overflow: hidden;
-    aspect-ratio: 16 / 9;
-    background: #e2e8f0;
-  }
-
-  .tod-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .demo-chart {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 14px;
-  }
-
-  .demo-chart-title {
-    margin: 0 0 10px;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #64748b;
-  }
-
-  .bar-row {
-    display: grid;
-    grid-template-columns: 130px 1fr 36px;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 7px;
-  }
-
-  .bar-row:last-child {
-    margin-bottom: 0;
-  }
-
-  .bar-label {
-    font-size: 0.72rem;
-    color: #475569;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .bar-track {
-    height: 8px;
-    background: #e2e8f0;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.4s ease;
-  }
-
-  .bar-value {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: #1e293b;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .step-callout {
-    margin: 14px 0 0;
-    padding: 10px 14px;
-    background: #fffbeb;
-    border-radius: 8px;
-    border-left: 3px solid #f59e0b;
-    font-size: 0.8rem;
-    color: #78350f;
-    line-height: 1.5;
-  }
-
-  .step-progress {
-    display: flex;
-    gap: 5px;
-    margin-top: 20px;
-  }
-
-  .pip {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #e2e8f0;
-    transition: background 0.2s ease, transform 0.2s ease;
-  }
-
-  .pip.filled {
-    background: #94a3b8;
-  }
-
-  .pip.active {
-    background: #b45309;
-    transform: scale(1.4);
-  }
-
-  @media (max-width: 1050px) {
-    .scrolly-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .map-col {
-      position: static;
-    }
-
-    .step-card {
-      min-height: auto;
-      opacity: 1;
-      border-color: #cbd5e1;
-      padding: 20px 0 20px 16px;
-    }
-
-    .step-card.active {
-      border-color: #b45309;
-    }
-  }
-
-    .research-context {
-    padding: 40px;
-    margin-bottom: 48px;
-    background: #ffffff;
-    border-left: 6px solid #3b82f6;
-  }
-
-  .context-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-  }
-
-  .research-context h2 {
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #3b82f6;
-    margin-bottom: 16px;
-  }
-
-  .main-q {
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.3;
-    color: #111827;
-    margin-bottom: 16px;
-  }
-
-  .research-context p {
-    margin: 0 0 16px 0;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: #4b5563;
-  }
-
 </style>
