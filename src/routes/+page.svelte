@@ -4,7 +4,6 @@
   import Map from "$lib/components/map.svelte";
   import TodDetailPanel from "$lib/components/toddetailpanel.svelte";
   import StorySteps from "$lib/components/standouts.svelte";
-  import Scrolly from "$lib/components/scrolly.svelte";
   import TimelineSection from "$lib/components/timelinesection.svelte";
 
   let baseTodData = [];
@@ -189,7 +188,7 @@
     background: #f4f6f8;
     color: #1f2937;
     font-family: Inter, system-ui, sans-serif;
-    
+
   }
 
   .page {
@@ -300,7 +299,6 @@
   }
 
   @media (max-width: 1150px) {
-    .intro-inner,
     .controls,
     .main-grid {
       grid-template-columns: 1fr;
