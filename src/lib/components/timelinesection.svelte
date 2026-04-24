@@ -2,6 +2,18 @@
   import { onMount, tick } from "svelte";
   import { loadTimelineData } from "$lib/data/timelinedata";
   import TimelineMap from "./timelinemap.svelte";
+  import { base } from "$app/paths";
+
+  const chartMetrics = [
+    { key: "renterShare",            label: "All renters",             color: "#3b82f6" },
+    { key: "lowIncomeRenterShare",   label: "Low-income renters",      color: "#f59e0b" },
+    { key: "lowIncomeHouseholdShare",label: "Low-income households",   color: "#22c55e" },
+    { key: "costBurdenedRenterShare",label: "Cost-burdened renters",   color: "#f43f5e" },
+  ];
+
+  function pct(v) {
+    return v != null && isFinite(v) ? `${Math.round(v * 100)}%` : "N/A";
+  }
 
   let timelineRows = [];
   let loading = true;
@@ -82,6 +94,7 @@
       body: "One Roxbury Crossing opened in 2017 near the Roxbury Crossing Orange Line stop. In 2010–2014, the surrounding neighborhood had among the highest low-income renter concentrations of any TOD site in our dataset with over 60% of households being low-income renters.",
       focusProject: "One Roxbury Crossing- Roxbury Crossing Station, Roxbury",
       focusZoom: 13.6,
+      photo: "/images/roxbury-crossing.jpg",
       callout: null,
     },
     {
@@ -94,6 +107,7 @@
       body: "By 2015–2019, the surrounding community was still predominantly low-income renters. Yet the majority of units One Roxbury Crossing added were market-rate with rents that exceeded what most nearby households could afford. This is the supply-demand mismatch at part of the core of Boston's affordability problem: new housing goes in, but not for the people who need it most.",
       focusProject: "One Roxbury Crossing- Roxbury Crossing Station, Roxbury",
       focusZoom: 13.6,
+      photo: "/images/roxbury-crossing.jpg",
       callout: null,
     },
     {
@@ -106,6 +120,7 @@
       body: "Hingham Intermodal Center also opened in 2017 on the South Shore commuter ferry line. But the surrounding context couldn't be more different. In 2010–2014, fewer than 10% of nearby households were low-income renters. The site serves a higher-income commuter population with convenient access to downtown Boston.",
       focusProject: "Hingham Intermodal Center, Hingham",
       focusZoom: 13.4,
+      photo: "/images/hingham-intermodal.jpg",
       callout: null,
     },
     {
@@ -118,6 +133,7 @@
       body: "By 2015–2019, Hingham remained a low-renter, high-income context, while Roxbury remained a neighborhood with a far larger concentration of low-income renters. The comparison makes clear that not all TOD sites begin with the same level of affordability need. Transit-oriented development may increase housing supply near transit, but it does not inherently produce affordable housing. The real equity question is whether the housing being added near transit matches the affordability pressures of the surrounding community.",
       focusProject: "Hingham Intermodal Center, Hingham",
       focusZoom: 13.4,
+      photo: "/images/hingham-intermodal.jpg",
       callout: "Both projects opened in 2017, making them ideal before/after comparison cases using the 2014 (pre) and 2019 (post) ACS windows.",
     },
   ];
@@ -199,12 +215,46 @@
           <article
             class="step-card"
             class:active={i === activeStep}
+            class:has-focus={!!step.focusProject}
             bind:this={stepEls[i]}
             data-step={i}
           >
             <p class="step-eyebrow">{step.eyebrow}</p>
             <h3 class="step-title">{step.title}</h3>
             <p class="step-body">{step.body}</p>
+
+            {#if step.focusProject}
+              {@const focusRow = timelineRows.find(
+                (d) => d.project === step.focusProject && d.periodKey === step.periodKey
+              )}
+
+              {#if step.photo}
+                <figure class="tod-photo">
+                  <img src={`${base}${step.photo}`} alt="Photo of {step.focusProject}" />
+                </figure>
+              {/if}
+
+              {#if focusRow}
+                <div class="demo-chart">
+                  <p class="demo-chart-title">Neighborhood profile · {focusRow.period}</p>
+                  {#each chartMetrics as m}
+                    {@const val = focusRow[m.key]}
+                    {#if val != null && isFinite(val)}
+                      <div class="bar-row">
+                        <span class="bar-label">{m.label}</span>
+                        <div class="bar-track">
+                          <div
+                            class="bar-fill"
+                            style="width:{Math.round(val * 100)}%; background:{m.color}"
+                          ></div>
+                        </div>
+                        <span class="bar-value">{pct(val)}</span>
+                      </div>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+            {/if}
 
             {#if step.callout}
               <p class="step-callout">{step.callout}</p>
@@ -380,6 +430,84 @@
     line-height: 1.68;
     font-size: 0.93rem;
     flex-grow: 1;
+  }
+
+  .step-card.has-focus .step-body {
+    flex-grow: 0;
+    margin-bottom: 16px;
+  }
+
+  .tod-photo {
+    margin: 0 0 14px;
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: #e2e8f0;
+  }
+
+  .tod-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .demo-chart {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+  }
+
+  .demo-chart-title {
+    margin: 0 0 10px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+  }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 36px;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 7px;
+  }
+
+  .bar-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .bar-label {
+    font-size: 0.72rem;
+    color: #475569;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bar-track {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .bar-value {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
   }
 
   .step-callout {
