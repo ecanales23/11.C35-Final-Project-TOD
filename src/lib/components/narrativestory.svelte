@@ -35,7 +35,7 @@
     {
       eyebrow: "Step 4 · The neighborhood context",
       title: "She's not alone — most nearby renters face the same gap",
-      body: "Within 0.5 miles of this station, 48% of renters earn under $50k. But only 10% of the new development's units are affordable. This gap — the mismatch score — is what the dashboard below measures across all Boston TODs.",
+      body: "Within 0.5 miles of this station, 48% of renters earn under $50k. But only 10% of the new development's units are affordable. This gap — the mismatch score — is what is measured across all Boston TODs.",
       stats: [
         { label: "Nearby renters under $50k", val: "48%" },
         { label: "Affordable share of TOD", val: "10%" },
@@ -45,7 +45,7 @@
     {
       eyebrow: "Step 5 · What this means",
       title: "TODs can exclude the transit-dependent residents they're meant to serve",
-      body: "Maya ends up commuting 45 minutes from Brockton because no affordable unit opened near her station. The dashboard below lets you explore mismatch scores across all Greater Boston TODs.",
+      body: "Maya ends up commuting 45 minutes from Brockton because no affordable unit opened near her station.",
       stats: [
         { label: "Maya's new commute", val: "45 min" },
         { label: "TODs with negative mismatch", val: "Most" },
