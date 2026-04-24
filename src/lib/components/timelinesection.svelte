@@ -3,6 +3,7 @@
   import { loadTimelineData } from "$lib/data/timelinedata";
   import TimelineMap from "./timelinemap.svelte";
   import { base } from "$app/paths";
+    import Narrativestory from "./narrativestory.svelte";
 
   const chartMetrics = [
     { key: "renterShare",            label: "All renters",             color: "#3b82f6" },
@@ -212,6 +213,8 @@
         </div>
       </div>
     </section>
+
+    <Narrativestory />
 
     <div class="scrolly-grid">
       <div class="map-viewport">

@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import * as d3 from "d3";
   import { base } from "$app/paths";
+  import narrativestory from "./narrativestory.svelte";
 
   export let timelineRows = [];
   export let step = null;

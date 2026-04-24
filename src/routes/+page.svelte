@@ -5,6 +5,7 @@
   import TodDetailPanel from "$lib/components/toddetailpanel.svelte";
   import StorySteps from "$lib/components/standouts.svelte";
   import TimelineSection from "$lib/components/timelinesection.svelte";
+  import ScrollStory from "$lib/components/narrativestory.svelte";
 
   let baseTodData = [];
   let todData = [];
@@ -198,7 +199,7 @@
 
   .hero {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 72px;
     display: flex;
     justify-content: center;
   }
