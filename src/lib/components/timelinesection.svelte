@@ -202,7 +202,7 @@
           <span class="label">Research question</span>
           <p class="main-q">To what extent does the affordable share of current transit-oriented development (TOD) projects in Greater Boston align with nearby lower-income renter demand?</p>
           <p class="sub-text">
-            We provide planners and policymakers with a "mismatch score" that measures the gap between new supply and local demand. By analyzing data within a 0.5-mile radius of each station, we expose whether these projects serve the existing community or cater to higher-income residents.
+            We provide planners and policymakers with a "mismatch score" that measures the gap between new supply and local demand. We analyze data within a 0.5-mile radius of each station to show whether these projects serve the existing community or cater to higher-income residents.
           </p>
         </div>
         <div class="info-card secondary">
@@ -296,6 +296,31 @@
         <div class="spacer"></div>
       </div>
     </div>
+    <section class="limitations-container container">
+      <div class="info-card">
+        <p class="main-q">Research Limitations</p>
+        <ul class="limitations-list">
+          <li>
+            Our affordability score is only a rough estimate. Even if affordability reaches "demand" levels, it does not mean the project is meeting those households’ needs in practice.
+          </li>
+          <li>
+            The metric treats all units as serving the same population, regardless of targeted AMI levels, sizes, or rules. Without detailed TOD breakdowns, the comparison was simplified.
+          </li>
+          <li>
+            Lower-income renter households are a proxy for demand, not a direct measure of who is actively seeking housing, who is cost-burdened, or who may be displaced.
+          </li>
+          <li>
+            Focusing on 0.5-mile radii may miss the regional nature of housing markets. TODs serve households beyond immediate tracts, so our comparison may not capture the full picture.
+          </li>
+          <li>
+            This visual highlights relative patterns and possible mismatches rather than definitively proving whether a project meets a specific demand.
+          </li>
+          <li>
+            Project-level data is sometimes incomplete or inconsistent. We used mbtarealty.com, but other sources note different unit counts; we aim to better represent this uncertainty in the future.
+          </li>
+        </ul>
+      </div>
+    </section>
   </section>
 {/if}
 
@@ -497,6 +522,38 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 16px;
+  }
+
+.limitations-container {
+    margin-top: 50px;
+    margin-bottom: 100px;
+  }
+
+  .limitations-container .info-card {
+    max-width: 100%;
+    border-left: 6px solid #94a3b8;
+  }
+
+  .limitations-list {
+    margin: 24px 0 0;
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  .limitations-list li {
+    margin-bottom: 16px;
+    line-height: 1.7;
+    color: #4b5563;
+    font-size: 1.05rem;
+    padding-left: 8px;
+  }
+
+  .limitations-list li::marker {
+    color: #94a3b8;
+  }
+
+  .limitations-list li:last-child {
+    margin-bottom: 0;
   }
 
   @keyframes spin {
