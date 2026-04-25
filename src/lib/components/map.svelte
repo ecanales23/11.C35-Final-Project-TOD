@@ -12,7 +12,7 @@
   let projects = [];
 
   let width = 900;
-  let height = 680;
+  let height = 480;
   let hoveredProject = null;
   let svgElement;
   let transform = d3.zoomIdentity;
@@ -257,61 +257,56 @@
     padding: 18px;
   }
 
-  .intro {
-    margin-bottom: 20px;
+.intro {
+    margin-bottom: 12px;
   }
 
   .intro-inner {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 10px;
+    gap: 12px;
+    margin-bottom: 8px;
   }
 
   .info-box.yellow {
     background: #fefce8;
     border: 1px solid #fef08a;
-    border-radius: 16px;
+    border-radius: 10px;
     overflow: hidden;
     height: fit-content;
   }
 
   .info-box summary {
-    padding: 10px;
+    padding: 6px 10px;
     cursor: pointer;
     list-style: none;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
   }
 
   .info-box summary::before {
     content: "▶";
-    font-size: 0.8rem;
-    margin-top: 17px;
-    margin-right: 12px;
+    font-size: 0.7rem;
+    margin-top: 0;
+    margin-right: 8px;
     color: #a16207;
     transition: transform 0.2s;
   }
 
-  .info-box[open] summary::before {
-    transform: rotate(90deg);
+  .summary-content h2 {
+    font-size: 0.85rem;
   }
 
-  .summary-content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .summary-content h2,
   .summary-content .eyebrow {
-    margin: 0;
+    font-size: 9px;
+    margin-bottom: 2px;
   }
 
   .details-content {
-    padding: 0 20px 20px 52px;
+    padding: 0 12px 12px 28px;
     color: #713f12;
-    line-height: 1.5;
-    font-size: 0.95rem;
+    line-height: 1.4;
+    font-size: 0.85rem;
   }
 
   .header {
@@ -434,7 +429,7 @@
   .symbol-legend {
     display: grid;
     gap: 8px;
-    font-size: 0.82rem;
+    font-size: 0.74rem;
     color: #475569;
   }
 

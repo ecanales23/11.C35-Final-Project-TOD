@@ -114,11 +114,11 @@
 
   .intro-box {
     margin-bottom: 14px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: #fefce8;
+    border: 1px solid #fef08a;
     border-radius: 12px;
     font-size: 0.84rem;
-    color: #334155;
+    color: #713f12;
     line-height: 1.45;
     overflow: hidden;
   }
@@ -149,41 +149,51 @@
 
   .stats {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
   }
 
   .stat-card {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 12px;
+    border-radius: 8px;
+    padding: 8px 4px;
+    text-align: center;
   }
 
   .stat-card span {
     display: block;
-    font-size: 11px;
+    font-size: 8.5px;
     color: #64748b;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .stat-card strong {
-    font-size: 1.05rem;
+    font-size: 0.9rem;
   }
 
   .sentence-box {
+    display: table;
     margin-bottom: 14px;
-    padding: 12px;
+    padding: 8px 12px;
     background: #fcfdff;
     border: 1px solid #e6ebf0;
-    border-radius: 12px;
-    font-size: 0.9rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
     color: #334155;
-    line-height: 1.5;
+    line-height: 1.4;
+  }
+
+  .sentence-box p {
+    margin: 0;
   }
 
   .chart-group {
+    display: table;
     margin-bottom: 14px;
     padding: 12px;
     background: #fcfdff;
@@ -199,16 +209,5 @@
     font-size: 0.84rem;
     color: #334155;
     line-height: 1.45;
-  }
-
-.intro-box {
-    margin-bottom: 14px;
-    background: #fefce8;
-    border: 1px solid #fef08a;
-    border-radius: 12px;
-    font-size: 0.84rem;
-    color: #713f12;
-    line-height: 1.45;
-    overflow: hidden;
   }
 </style>
