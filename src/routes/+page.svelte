@@ -34,35 +34,20 @@
 
   function updateDerived() {
     const enriched = enrichTodWithThreshold(baseTodData, demandThreshold);
-
     let filtered = enriched.filter(d => {
       if (showOnlyAffordable && d.affordableUnits <= 0) return false;
       if (showUnderServingOnly && d.mismatchScore >= 0) return false;
       if (d.totalUnits < minUnits) return false;
       return true;
     });
-
     todData = sortData(filtered);
-
     const selectedStillVisible = selectedTod && todData.find(d => d.id === selectedTod.id);
-
-    if (!selectedStillVisible) {
-      selectedTod = todData[0] ?? null;
-    } else {
-      selectedTod = selectedStillVisible;
-    }
+    selectedTod = selectedStillVisible || (todData[0] ?? null);
   }
 
   $: {
-    baseTodData;
-    demandThreshold;
-    showOnlyAffordable;
-    showUnderServingOnly;
-    minUnits;
-    sortBy;
-
     if (baseTodData.length) {
-      updateDerived();
+      updateDerived(demandThreshold, showOnlyAffordable, showUnderServingOnly, minUnits, sortBy);
     }
   }
 
@@ -101,13 +86,15 @@
 </script>
 
 {#if loading}
-  <p>Loading…</p>
+  <div class="loading-container">
+    <p>Loading…</p>
+  </div>
 {:else}
-  <main class="page">
+  <main class="page-wrapper">
     <TimelineSection />
 
-    <header class="hero">
-      <div>
+    <header class="hero-section">
+      <div class="header-content">
         <p class="eyebrow">Greater Boston TOD dashboard</p>
         <h1>Do current TOD projects match nearby lower-income housing demand?</h1>
         <p class="subtitle">
@@ -116,12 +103,12 @@
       </div>
     </header>
 
-    <section class="card">
+    <div class="narrative-container">
       <StorySteps onApplyStep={applyStoryStep} />
-    </section>
+    </div>
 
-    <section class="controls">
-      <div class="control-group">
+    <section class="controls-toolbar">
+      <div class="control-group flex-2">
         <label for="tod-select">Selected TOD</label>
         {#if selectedTod}
           <select id="tod-select" on:change={handleDropdown} bind:value={selectedTod.id}>
@@ -132,7 +119,7 @@
         {/if}
       </div>
 
-      <div class="control-group">
+      <div class="control-group flex-1">
         <label for="threshold">Demand threshold</label>
         <select id="threshold" bind:value={demandThreshold}>
           <option value="35k">Renters under $35k</option>
@@ -141,7 +128,7 @@
         </select>
       </div>
 
-      <div class="control-group">
+      <div class="control-group flex-1">
         <label for="sort">Sort projects by</label>
         <select id="sort" bind:value={sortBy}>
           <option value="name">Project name</option>
@@ -151,161 +138,207 @@
         </select>
       </div>
 
-      <div class="control-group">
-        <label for="min-units">Minimum project size: {minUnits} units</label>
-        <input id="min-units" type="range" min="0" max="400" step="10" bind:value={minUnits} />
+      <div class="control-group flex-1 slider-container">
+        <label for="min-units">Min project size</label>
+        <div class="slider-wrapper">
+          <input id="min-units" type="range" min="0" max="400" step="10" bind:value={minUnits} />
+        </div>
       </div>
 
-      <div class="control-group checkbox-group">
-        <label><input type="checkbox" bind:checked={showOnlyAffordable} /> Only projects with affordable units</label>
-        <label><input type="checkbox" bind:checked={showUnderServingOnly} /> Only under-serving projects</label>
+      <div class="control-group flex-1-5 check-stack">
+        <label class="custom-check">
+          <input type="checkbox" bind:checked={showOnlyAffordable} />
+          <span>Only projects with affordable units</span>
+        </label>
+        <label class="custom-check">
+          <input type="checkbox" bind:checked={showUnderServingOnly} />
+          <span>Only under-serving projects</span>
+        </label>
       </div>
     </section>
 
-    <section class="status-bar">
-      <p><strong>{todData.length}</strong> projects visible</p>
-      <p>Threshold: <strong>{demandThreshold}</strong></p>
-    </section>
+    <div class="status-bar">
+      <p><strong>{todData.length}</strong> projects visible • Threshold: <strong>{demandThreshold}</strong></p>
+    </div>
 
-    <section class="main-grid">
-      <div class="card large">
-        <Map
-          data={todData}
-          selectedId={selectedTod?.id}
-          onSelect={handleSelect}
-        />
+    <div class="visualization-layout">
+      <div class="map-container">
+        <Map data={todData} selectedId={selectedTod?.id} onSelect={handleSelect} />
       </div>
-
-      <div class="card side">
+      <aside class="detail-sidebar">
         <TodDetailPanel tod={selectedTod} />
-      </div>
-    </section>
+      </aside>
+    </div>
   </main>
 {/if}
 
 <style>
   :global(body) {
     margin: 0;
-    background: #f4f6f8;
-    color: #1f2937;
-    font-family: Inter, system-ui, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
-  .page {
-    max-width: 1400px;
+  .page-wrapper {
+    max-width: 1600px;
     margin: 0 auto;
-    padding: 24px;
+    padding: 40px;
   }
 
-  .hero {
-    text-align: center;
-    margin-bottom: 72px;
+  .loading-container {
+    height: 100vh;
     display: flex;
+    align-items: center;
     justify-content: center;
+    color: #64748b;
+  }
+
+  .hero-section {
+    margin-bottom: 48px;
   }
 
   .eyebrow {
-    margin: 0 0 8px 0;
     font-size: 12px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #5b6b7a;
-    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #3b82f6;
+    margin-bottom: 12px;
   }
 
   h1 {
-    margin: 0 0 8px 0;
-    font-size: 2rem;
-    line-height: 1.08;
-    color: #111827;
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px;
+    max-width: 900px;
   }
 
   .subtitle {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: #475569;
+    max-width: 850px;
     margin: 0;
-    max-width: 980px;
-    color: #5b6b7a;
-    line-height: 1.5;
   }
 
-  .card {
-    background: white;
-    border: 1px solid #d9e0e7;
+  .narrative-container {
+    margin-bottom: 32px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-    overflow: hidden;
-    margin-bottom: 80px;
+    padding: 4px;
   }
 
-  .controls {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(160px, 1fr));
-    gap: 16px;
-    margin: 0 0 12px;
+  .controls-toolbar {
+    display: flex;
+    align-items: stretch;
+    gap: 24px;
+    margin-bottom: 16px;
+    background: white;
+    padding: 24px 32px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
 
   .control-group {
-    background: white;
-    border: 1px solid #d9e0e7;
-    border-radius: 12px;
-    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
+
+  .flex-1 { flex: 1; }
+  .flex-1-5 { flex: 1.5; }
+  .flex-2 { flex: 2; }
 
   .control-group label {
     display: block;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
     margin-bottom: 8px;
-    color: #475569;
   }
 
-  .control-group select,
-  .control-group input[type="range"] {
+  select {
     width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+    background: #fff;
+    color: #1e293b;
   }
 
-  .checkbox-group label {
+  .slider-wrapper {
+    height: 42px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    font-size: 13px;
-    color: #374151;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .check-stack {
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .custom-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #475569;
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .status-bar {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-    color: #5b6b7a;
-    font-size: 0.9rem;
+    padding: 0 8px 16px;
+    font-size: 14px;
+    color: #64748b;
   }
 
-  .main-grid {
+  .visualization-layout {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(360px, 430px);
-    gap: 20px;
-    align-items: start;
-    margin-top: 20px;
+    grid-template-columns: 1fr 420px;
+    gap: 24px;
+    height: 750px;
   }
 
-  .large, .side {
-    min-height: 760px;
+  .map-container, .detail-sidebar {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
   }
 
-  @media (max-width: 1150px) {
-    .context-grid {
-      grid-template-columns: 1fr;
-      gap: 32px;
-    }
+  .detail-sidebar {
+    overflow-y: auto;
+  }
 
-    .controls,
-    .main-grid {
+  @media (max-width: 1280px) {
+    .controls-toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 20px;
+    }
+    .visualization-layout {
       grid-template-columns: 1fr;
+      height: auto;
     }
-
-    .large,
-    .side {
-      min-height: unset;
-    }
+    .map-container { height: 600px; }
   }
 </style>
