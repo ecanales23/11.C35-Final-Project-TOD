@@ -116,6 +116,10 @@
       </div>
     </header>
 
+    <section class="card">
+      <StorySteps onApplyStep={applyStoryStep} />
+    </section>
+
     <section class="controls">
       <div class="control-group">
         <label for="tod-select">Selected TOD</label>
@@ -161,10 +165,6 @@
     <section class="status-bar">
       <p><strong>{todData.length}</strong> projects visible</p>
       <p>Threshold: <strong>{demandThreshold}</strong></p>
-    </section>
-
-    <section class="card">
-      <StorySteps onApplyStep={applyStoryStep} />
     </section>
 
     <section class="main-grid">
@@ -233,6 +233,7 @@
     border-radius: 16px;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     overflow: hidden;
+    margin-bottom: 80px;
   }
 
   .controls {

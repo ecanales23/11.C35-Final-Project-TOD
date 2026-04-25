@@ -89,6 +89,22 @@
 <div class="map-wrapper">
   <section class="intro">
     <div class="intro-inner">
+
+      <details class="info-box yellow">
+        <summary>
+          <div class="summary-content">
+            <p class="eyebrow">What this visualization shows</p>
+            <h2>How to read the map</h2>
+          </div>
+        </summary>
+        <div class="details-content">
+          <p>
+            Each point on the map is a TOD project. The large dashed circle shows the buffer area used to summarize nearby census data around that project.
+            Color shows whether the project’s affordable share is below, near, or above the nearby lower-income renter share. Clicking a project updates the detail panel on the right.
+          </p>
+        </div>
+      </details>
+
       <details class="info-box yellow">
         <summary>
           <div class="summary-content">
@@ -104,32 +120,12 @@
         </div>
       </details>
 
-      <details class="info-box yellow">
-        <summary>
-          <div class="summary-content">
-            <p class="eyebrow">What this visualization shows</p>
-            <h2>How to read it</h2>
-          </div>
-        </summary>
-        <div class="details-content">
-          <p>
-            Each point on the map is a TOD project. The large dashed circle shows the buffer area used to summarize nearby census data around that project.
-            Color shows whether the project’s affordable share is below, near, or above the nearby lower-income renter share. Clicking a project updates the detail panel on the right.
-          </p>
-        </div>
-      </details>
     </div>
   </section>
 
   <div class="header">
     <div>
       <p class="eyebrow">Map view</p>
-      <h2>How to read the map</h2>
-      <p class="caption">
-        Each filled circle is a TOD project. The selected project is shown with a larger filled circle and darker outline.
-        The large dashed circle shows the surrounding buffer area used to summarize nearby census data.
-        Circle color shows whether the project’s affordable share is below, near, or above nearby lower-income renter demand.
-      </p>
     </div>
     <button class="reset" on:click={resetZoom}>Reset view</button>
   </div>
@@ -269,7 +265,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
 
   .info-box.yellow {
@@ -281,7 +277,7 @@
   }
 
   .info-box summary {
-    padding: 20px;
+    padding: 10px;
     cursor: pointer;
     list-style: none;
     display: flex;
@@ -291,7 +287,7 @@
   .info-box summary::before {
     content: "▶";
     font-size: 0.8rem;
-    margin-top: 24px;
+    margin-top: 17px;
     margin-right: 12px;
     color: #a16207;
     transition: transform 0.2s;
@@ -339,14 +335,6 @@
     margin: 0 0 4px 0;
     font-size: 1.1rem;
     line-height: 1.25;
-  }
-
-  .caption {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #5b6b7a;
-    max-width: 760px;
-    line-height: 1.5;
   }
 
   .reset {
@@ -429,11 +417,11 @@
     width: 320px;
   }
 
-.bar {
-    height: 10px;
-    border-radius: 8px;
-    background: linear-gradient(to right, #d80073, #f5f4ef, #2f7f5f);
-  }
+  .bar {
+      height: 10px;
+      border-radius: 8px;
+      background: linear-gradient(to right, #d80073, #f5f4ef, #2f7f5f);
+    }
 
   .labels {
     display: flex;
@@ -488,21 +476,21 @@
     transition: opacity 0.15s ease;
   }
 
-.insight-bar {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-top: 16px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    color: #475569;
+  .insight-bar {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #475569;
 
-    padding: 10px 14px;
-    border-radius: 10px;
-    width: fit-content;
-    max-width: 920px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
+      padding: 10px 14px;
+      border-radius: 10px;
+      width: fit-content;
+      max-width: 920px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
 
   .insight-icon {
     font-size: 14px;
