@@ -213,8 +213,8 @@
       <div class="bar"></div>
       <div class="labels">
         <span>Under-serving</span>
-        <span>Balanced</span>
-        <span>Exceeding</span>
+        <span>Meeting Needs</span>
+        <span>Serves Opportunity</span>
       </div>
     </div>
 
