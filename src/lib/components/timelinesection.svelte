@@ -189,7 +189,7 @@
         <div class="humanize-header">
           <span class="section-eyebrow">Who Maya represents</span>
           <h2 class="section-title">Maya is typical of lower-income renters across Boston</h2>
-          <p class="humanize-lead">At $52,000/year — roughly 50% of Boston's Area Median Income — Maya isn't an outlier. She's representative of thousands of renters across the city: people who work here, depend on the T, and are searching for housing they can actually afford near transit. Nearly half of all renters near MBTA stations earn under $50,000/year. Yet only about 35% of new TOD units are priced to serve them.</p>
+          <p class="humanize-lead">At $52,000/year, roughly 50% of Boston's Area Median Income, Maya isn't an outlier. She's representative of thousands of renters across the city: people who work here, depend on the T, and are searching for housing they can actually afford near transit. Nearly half of all renters near MBTA stations earn under $50,000/year. Yet only about 35% of new TOD units are priced to serve them.</p>
         </div>
 
         <div class="graphic-pair" class:waffle-visible={waffleVisible}>
@@ -256,7 +256,7 @@
         </div>
 
         <div class="gap-callout">
-          <strong>TOD is a vehicle, not a guarantee.</strong> When it includes affordable units, it can open access to neighborhoods with better transit, jobs, and services for renters like Maya. Without them, these developments largely remain out of reach — and can increase pressure on the communities they're built in.
+          <strong>TOD is a vehicle, not a guarantee.</strong> When it includes affordable units, it can open access to neighborhoods with better transit, jobs, and services for renters like Maya. Without them, these developments largely remain out of reach and can increase pressure on the communities they're built in.
         </div>
       </div>
     </section>

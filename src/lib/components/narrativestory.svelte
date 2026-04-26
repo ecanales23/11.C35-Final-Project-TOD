@@ -4,8 +4,8 @@
   const steps = [
     {
       eyebrow: "Step 1 · Meet Maya",
-      title: "Meet Maya — raising her daughter in Dorchester, searching for a home near the T",
-      body: "Maya is 31 years old. She works as an early childhood educator in Roxbury, earns about $52,000 a year, and is raising her 4-year-old daughter Lily on her own. On weekends, she helps care for her mother who lives nearby. She's not an outlier — she's representative of thousands of lower-income renters across Boston who work here, depend on the T, and are looking for housing they can actually afford near transit. Her maximum budget: $1,300/month for rent.",
+      title: "Meet Maya who is raising her daughter in Dorchester, searching for a home near the T",
+      body: "Maya is 31 years old. She works as a dental hygienist in Dorchester, earns about $52,000 a year, and is raising her 4-year-old daughter Lily on her own. On weekends, she helps care for her mother who lives nearby. She's one of thousands of lower-income renters across Boston who work here, depend on the T, and are looking for housing they can actually afford near transit. Her maximum budget: $1,300/month for rent.",
       stats: [
         { label: "Annual income", val: "$52k" },
         { label: "Max rent (30%)", val: "$1,300/mo" },
@@ -14,8 +14,8 @@
     },
     {
       eyebrow: "Step 2 · What's being built",
-      title: "A new TOD opens near her target station — but TOD doesn't automatically mean affordable",
-      body: "A developer just completed a 200-unit transit-oriented development half a mile from Forest Hills. In practice, most TOD projects include a mix of market-rate housing and a smaller share of income-restricted units. TOD is a vehicle — not a guarantee. For Maya, the key question isn't how much housing is built, but whether any of it is affordable to her.",
+      title: "A new TOD opens near her target station, but TOD doesn't automatically mean affordable",
+      body: "A developer recently completed a 200-unit transit-oriented development half a mile from Forest Hills. TOD is an important tool for creating new housing, typically combining market-rate units with a smaller share of income-restricted homes. But for Maya, the key question isn’t how much housing is built - it’s whether any of it is affordable to her.",
       stats: [
         { label: "Total units", val: "200" },
         { label: "Affordable units", val: "20 (10%)" },
@@ -24,8 +24,8 @@
     },
     {
       eyebrow: "Step 3 · The mismatch",
-      title: "She qualifies — but the odds are stacked against her",
-      body: "Maya earns about 50% AMI, so she qualifies for the affordable units. But those 20 units received over 400 applications in the lottery. The other 180 market-rate units start at $2,400/month — nearly double her entire budget.",
+      title: "She qualifies, but the odds are stacked against her",
+      body: "Maya earns about 50% AMI, so she qualifies for the affordable units. But those 20 units received over 400 applications in the lottery. The other 180 market-rate units start at $2,400/month which is nearly double her entire budget.",
       stats: [
         { label: "Lottery odds", val: "1 in 20" },
         { label: "Market-rate starting rent", val: "$2,400/mo" },
@@ -34,7 +34,7 @@
     },
     {
       eyebrow: "Step 4 · The neighborhood",
-      title: "She's not alone — most nearby renters face the same gap",
+      title: "She's not alone with most nearby renters facing the same gap",
       body: "Within 0.5 miles of this station, 48% of renters earn under $50k. But only 10% of the new development's units are affordable. This gap — the opportunity score — is what we measure across all Boston TODs.",
       stats: [
         { label: "Nearby renters under $50k", val: "48%" },
@@ -45,7 +45,7 @@
     {
       eyebrow: "Step 5 · What we can do",
       title: "Understanding the gap is the first step to closing it",
-      body: "Maya ends up commuting 45 minutes from Brockton because no affordable unit opened near her station. But her story doesn't have to be the norm. When TODs include more affordable units, they open doors for people like Maya — and help diversify neighborhoods that have historically been out of reach for lower-income renters. The dashboard below shows where Boston's TODs are providing opportunity, and where they're falling short.",
+      body: "Maya ends up commuting 45 minutes from Brockton because no affordable unit opened near her station. But her story doesn't have to be the norm. When TODs include more affordable units, they open doors for people like Maya and help diversify neighborhoods that have historically been out of reach for lower-income renters. The dashboard below shows where Boston's TODs are providing opportunity, and where they're falling short.",
       stats: [
         { label: "Maya's commute if priced out", val: "45 min" },
         { label: "TODs with more opportunity", val: "3 of 9" },
@@ -127,7 +127,7 @@
             </div>
 
           {:else if activeStep === 1}
-            <p class="vis-title">200 units — who are they for?</p>
+            <p class="vis-title">200 units: who are they for?</p>
             <div class="building-wrap">
               <div class="building">
                 {#each Array(20) as _, i}
@@ -172,7 +172,7 @@
               </div>
             </div>
             <div class="budget-callout">
-              At market rate, Maya would spend <strong>55% of her income</strong> on rent — well above the 30% affordability threshold, and that's before childcare
+              At market rate, Maya would spend <strong>55% of her income</strong> on rent, well above the 30% affordability threshold, and that's before childcare
             </div>
 
           {:else if activeStep === 3}
@@ -224,7 +224,7 @@
               </div>
             </div>
             <div class="budget-callout">
-              Moving to Brockton gets Maya under 30% — but she loses nearly <strong>90 minutes a day</strong> commuting, less time with Lily, and less time for her mother
+              Moving to Brockton gets Maya under 30%, but she loses nearly <strong>90 minutes a day</strong> commuting, less time with Lily, and less time for her mother
             </div>
           {/if}
 
