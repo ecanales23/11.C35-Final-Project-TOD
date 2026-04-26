@@ -139,7 +139,9 @@
       </div>
 
       <div class="control-group flex-1 slider-container">
-        <label for="min-units">Min project size</label>
+        <label for="min-units">
+          Min project size: <strong>{minUnits} units</strong>
+        </label>
         <div class="slider-wrapper">
           <input id="min-units" type="range" min="0" max="400" step="10" bind:value={minUnits} />
         </div>
@@ -194,8 +196,11 @@
     color: #64748b;
   }
 
-  .hero-section {
-    margin-bottom: 48px;
+.hero-section {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 0px;
   }
 
   .eyebrow {

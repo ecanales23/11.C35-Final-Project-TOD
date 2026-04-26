@@ -19,10 +19,10 @@
   let zoomBehavior;
 
   onMount(async () => {
-  const [geoRes, nhoodRes] = await Promise.all([
-    fetch(`${base}/data/TODLocations_4.4.26.geojson`),
-    fetch(`${base}/data/MAPC_census_tracts/mapc_census_tracts.geojson`)
-  ]);
+    const [geoRes, nhoodRes] = await Promise.all([
+      fetch(`${base}/data/TODLocations_4.4.26.geojson`),
+      fetch(`${base}/data/MAPC_census_tracts/mapc_census_tracts.geojson`)
+    ]);
 
     geojson = await geoRes.json();
     const nhoodData = await nhoodRes.json();
@@ -89,7 +89,6 @@
 <div class="map-wrapper">
   <section class="intro">
     <div class="intro-inner">
-
       <details class="info-box yellow">
         <summary>
           <div class="summary-content">
@@ -119,7 +118,6 @@
           </p>
         </div>
       </details>
-
     </div>
   </section>
 
@@ -255,10 +253,18 @@
 <style>
   .map-wrapper {
     padding: 18px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
   }
 
-.intro {
+  .intro {
     margin-bottom: 12px;
+    flex-shrink: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 8px;
   }
 
   .intro-inner {
@@ -287,14 +293,18 @@
   .info-box summary::before {
     content: "▶";
     font-size: 0.7rem;
-    margin-top: 0;
     margin-right: 8px;
     color: #a16207;
     transition: transform 0.2s;
   }
 
+  .info-box[open] summary::before {
+    transform: rotate(90deg);
+  }
+
   .summary-content h2 {
     font-size: 0.85rem;
+    margin: 0;
   }
 
   .summary-content .eyebrow {
@@ -315,6 +325,7 @@
     gap: 16px;
     align-items: flex-start;
     margin-bottom: 12px;
+    flex-shrink: 0;
   }
 
   .eyebrow {
@@ -326,18 +337,14 @@
     font-weight: 700;
   }
 
-  h2 {
-    margin: 0 0 4px 0;
-    font-size: 1.1rem;
-    line-height: 1.25;
-  }
-
   .reset {
     border: 1px solid #d0d7de;
     background: white;
     border-radius: 10px;
     padding: 8px 12px;
     cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
   }
 
   .map-container {
@@ -347,6 +354,8 @@
     border-radius: 14px;
     overflow: hidden;
     cursor: grab;
+    flex-grow: 1;
+    min-height: 350px;
   }
 
   .map-container:active {
@@ -406,6 +415,7 @@
     gap: 20px;
     margin-top: 12px;
     align-items: start;
+    flex-shrink: 0;
   }
 
   .legend {
@@ -413,10 +423,10 @@
   }
 
   .bar {
-      height: 10px;
-      border-radius: 8px;
-      background: linear-gradient(to right, #d80073, #f5f4ef, #2f7f5f);
-    }
+    height: 10px;
+    border-radius: 8px;
+    background: linear-gradient(to right, #d80073, #f5f4ef, #2f7f5f);
+  }
 
   .labels {
     display: flex;
@@ -448,20 +458,20 @@
   }
 
   .symbol.default {
-    background: #4f7cac;
-    border: 2px solid white;
+    background: #f5f4ef;
+    border: 1.5px solid #c6ced6;
   }
 
   .symbol.selected {
-      background: #d80073;
-      border: 3px solid #111827;
-      width: 22px;
-      height: 22px;
-    }
+    background: #f5f4ef;
+    border: 2.4px solid #111827;
+    width: 22px;
+    height: 22px;
+  }
 
   .symbol.dashed {
     background: rgba(31, 41, 55, 0.04);
-    border: 2px dashed #6b7280;
+    border: 1px dashed #6b7280;
     width: 26px;
     height: 26px;
   }
@@ -472,20 +482,19 @@
   }
 
   .insight-bar {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-top: 16px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      color: #475569;
-
-      padding: 10px 14px;
-      border-radius: 10px;
-      width: fit-content;
-      max-width: 920px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    padding: 10px 14px;
+    border-radius: 10px;
+    width: fit-content;
+    max-width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
 
   .insight-icon {
     font-size: 14px;
