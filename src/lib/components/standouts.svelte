@@ -5,22 +5,22 @@
     {
       id: "all",
       title: "All projects",
-      description: "Start with the full set of TOD projects."
+      description: "Start with the full set of TOD projects across Greater Boston."
     },
     {
       id: "largest-gaps",
-      title: "Largest local gaps",
-      description: "Highlight projects where affordable share falls furthest below nearby lower-income demand."
+      title: "Less opportunity than demand",
+      description: "Show projects where the affordable share falls the furthest below the local lower-income renter share — where current development is providing the least opportunity."
     },
     {
       id: "high-affordable",
-      title: "Mostly affordable projects",
-      description: "Show projects with high affordable shares."
+      title: "More opportunity than demand",
+      description: "Show projects that are providing more affordable housing than the local lower-income renter share would require — opening doors for renters like Maya."
     },
     {
       id: "large-projects",
       title: "Large projects only",
-      description: "Focus on high-unit developments that likely have larger neighborhood impact."
+      description: "Focus on high-unit developments with the largest neighborhood impact."
     }
   ];
 </script>

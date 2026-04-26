@@ -39,7 +39,7 @@
         <strong>{d3.format(".0%")(tod.affordableShare)}</strong>
       </div>
       <div class="stat-card">
-        <span>Gap score</span>
+        <span>Opportunity score</span>
         <strong>{d3.format("+.0%")(tod.mismatchScore)}</strong>
       </div>
     </div>
@@ -62,11 +62,13 @@
 
     <div class="note-box">
       <p>
-        <strong>Interpretation:</strong>
-        This project’s affordable unit share is
-        {tod.mismatchScore < 0 ? " below " : " above "}
-        the nearby lower-income renter share by:
-        <strong>{Math.abs(tod.mismatchScore * 100).toFixed(1)} percentage points</strong>.
+        {#if tod.mismatchScore < 0}
+          <strong>Providing less opportunity than local demand:</strong>
+          This project’s affordable share is <strong>{Math.abs(tod.mismatchScore * 100).toFixed(1)} percentage points below</strong> the nearby lower-income renter share. There are more lower-income renters in this neighborhood than the development is built to serve.
+        {:else}
+          <strong>Providing more opportunity than local demand:</strong>
+          This project’s affordable share is <strong>{Math.abs(tod.mismatchScore * 100).toFixed(1)} percentage points above</strong> the nearby lower-income renter share — opening doors for renters like Maya to access this neighborhood.
+        {/if}
       </p>
 
       <p>
@@ -75,8 +77,8 @@
       </p>
 
       <p>
-        <strong>Important note:</strong>
-        This comparison is a proxy for local fit, not a full measure of whether the project meets all housing demand.
+        <strong>Note:</strong>
+        This is a proxy for local fit, not a full measure of whether the project meets all housing demand.
       </p>
 
       {#if tod.note}

@@ -3,19 +3,19 @@
 
   const steps = [
     {
-      eyebrow: "Step 1 · Setting the scene",
-      title: "Meet Maya — searching for an apartment near the T",
-      body: "Maya earns $52,000 a year working as a dental hygienist in Dorchester. She wants to live within a 10-minute walk of an Orange Line station so she can get to work without a car. Her budget: around $1,300/month — the maximum she can spend without being cost-burdened.",
+      eyebrow: "Step 1 · Meet Maya",
+      title: "Meet Maya — raising her daughter in Dorchester, searching for a home near the T",
+      body: "Maya is 31 years old. She works as an early childhood educator in Roxbury, earns about $52,000 a year, and is raising her 4-year-old daughter Lily on her own. On weekends, she helps care for her mother who lives nearby. She's not an outlier — she's representative of thousands of lower-income renters across Boston who work here, depend on the T, and are looking for housing they can actually afford near transit. Her maximum budget: $1,300/month for rent.",
       stats: [
         { label: "Annual income", val: "$52k" },
         { label: "Max rent (30%)", val: "$1,300/mo" },
-        { label: "Area median income", val: "~74% AMI" },
+        { label: "Boston AMI", val: "~50% AMI" },
       ],
     },
     {
       eyebrow: "Step 2 · What's being built",
-      title: "A new TOD opens near her target station",
-      body: "A developer just completed a 200-unit transit-oriented development half a mile from Forest Hills. The building advertises itself as 'mixed-income' — but what does that actually mean for Maya?",
+      title: "A new TOD opens near her target station — but TOD doesn't automatically mean affordable",
+      body: "A developer just completed a 200-unit transit-oriented development half a mile from Forest Hills. In practice, most TOD projects include a mix of market-rate housing and a smaller share of income-restricted units. TOD is a vehicle — not a guarantee. For Maya, the key question isn't how much housing is built, but whether any of it is affordable to her.",
       stats: [
         { label: "Total units", val: "200" },
         { label: "Affordable units", val: "20 (10%)" },
@@ -24,8 +24,8 @@
     },
     {
       eyebrow: "Step 3 · The mismatch",
-      title: "Her income qualifies — but she's too late",
-      body: "Maya earns about 74% AMI, so she technically qualifies for the affordable units. But those 20 units received over 400 applications in the lottery. The other 180 market-rate units start at $2,400/month — nearly double her budget.",
+      title: "She qualifies — but the odds are stacked against her",
+      body: "Maya earns about 50% AMI, so she qualifies for the affordable units. But those 20 units received over 400 applications in the lottery. The other 180 market-rate units start at $2,400/month — nearly double her entire budget.",
       stats: [
         { label: "Lottery odds", val: "1 in 20" },
         { label: "Market-rate starting rent", val: "$2,400/mo" },
@@ -33,22 +33,23 @@
       ],
     },
     {
-      eyebrow: "Step 4 · The neighborhood context",
+      eyebrow: "Step 4 · The neighborhood",
       title: "She's not alone — most nearby renters face the same gap",
-      body: "Within 0.5 miles of this station, 48% of renters earn under $50k. But only 10% of the new development's units are affordable. This gap — the mismatch score — is what is measured across all Boston TODs.",
+      body: "Within 0.5 miles of this station, 48% of renters earn under $50k. But only 10% of the new development's units are affordable. This gap — the opportunity score — is what we measure across all Boston TODs.",
       stats: [
         { label: "Nearby renters under $50k", val: "48%" },
         { label: "Affordable share of TOD", val: "10%" },
-        { label: "Mismatch score", val: "−38 pts" },
+        { label: "Opportunity score", val: "−38 pts" },
       ],
     },
     {
-      eyebrow: "Step 5 · What this means",
-      title: "TODs can exclude the transit-dependent residents they're meant to serve",
-      body: "Maya ends up commuting 45 minutes from Brockton because no affordable unit opened near her station.",
+      eyebrow: "Step 5 · What we can do",
+      title: "Understanding the gap is the first step to closing it",
+      body: "Maya ends up commuting 45 minutes from Brockton because no affordable unit opened near her station. But her story doesn't have to be the norm. When TODs include more affordable units, they open doors for people like Maya — and help diversify neighborhoods that have historically been out of reach for lower-income renters. The dashboard below shows where Boston's TODs are providing opportunity, and where they're falling short.",
       stats: [
-        { label: "Maya's new commute", val: "45 min" },
-        { label: "TODs with negative mismatch", val: "Most" },
+        { label: "Maya's commute if priced out", val: "45 min" },
+        { label: "TODs with more opportunity", val: "3 of 9" },
+        { label: "TODs falling below demand", val: "6 of 9" },
       ],
     },
   ];
@@ -77,154 +78,158 @@
 
     <div class="sticky-panel">
       <div class="panel-inner">
-
-        <!-- VISUAL AREA — swaps per step -->
         <div class="visual-area">
 
           {#if activeStep === 0}
-            <!-- Income vs median bar chart -->
-            <p class="vis-title">Maya's income vs Boston renters</p>
-            <div class="bar-group">
-              <div class="bar-row-vis">
-                <span class="bar-name">Maya</span>
-                <div class="bar-track-vis">
-                  <div class="bar-fill-vis" style="width: 61%; background: #2563eb;"></div>
+            <p class="vis-title">Meet Maya</p>
+            <div class="profile-card">
+              <div class="avatar-row">
+                <div class="avatar">
+                  <svg viewBox="0 0 48 48" width="48" height="48">
+                    <circle cx="24" cy="18" r="10" fill="#fcd34d"/>
+                    <path d="M6 46c0-9.9 8.1-18 18-18s18 8.1 18 18" fill="#fcd34d"/>
+                  </svg>
                 </div>
-                <span class="bar-val">$52k</span>
-              </div>
-              <div class="bar-row-vis">
-                <span class="bar-name">Median Boston renter</span>
-                <div class="bar-track-vis">
-                  <div class="bar-fill-vis" style="width: 85%; background: #94a3b8;"></div>
+                <div class="avatar-info">
+                  <p class="avatar-name">Maya, 31</p>
+                  <p class="avatar-job">Early childhood educator · Roxbury</p>
                 </div>
-                <span class="bar-val">$70k</span>
               </div>
-              <div class="bar-row-vis">
-                <span class="bar-name">Boston AMI</span>
-                <div class="bar-track-vis">
-                  <div class="bar-fill-vis" style="width: 100%; background: #e2e8f0;"></div>
+              <div class="family-row">
+                <div class="family-item">
+                  <span class="family-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#f59e0b"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
+                  </span>
+                  <span>Raising <strong>Lily</strong>, age 4, on her own</span>
                 </div>
-                <span class="bar-val">$85k</span>
+                <div class="family-item">
+                  <span class="family-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#a3a3a3"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
+                  </span>
+                  <span>Helps care for her <strong>mother</strong> on weekends</span>
+                </div>
+                <div class="family-item">
+                  <span class="family-icon">🚇</span>
+                  <span>No car — depends on the Orange Line</span>
+                </div>
               </div>
-            </div>
-            <div class="budget-callout">
-              At 30% of income, Maya's max affordable rent is <strong>$1,300/mo</strong>
+              <div class="budget-card">
+                <div class="budget-row">
+                  <span class="budget-label">Annual income</span>
+                  <span class="budget-val">$52,000 <span class="budget-ami">~50% AMI</span></span>
+                </div>
+                <div class="budget-divider"></div>
+                <div class="budget-row">
+                  <span class="budget-label">Max affordable rent (30%)</span>
+                  <span class="budget-val highlight">$1,300/mo</span>
+                </div>
+              </div>
             </div>
 
           {:else if activeStep === 1}
-            <!-- Unit breakdown donut-style -->
             <p class="vis-title">200 units — who are they for?</p>
-            <div class="donut-wrap">
-              <svg viewBox="0 0 200 200" width="160" height="160">
-                <!-- market rate: 90% = 324deg, affordable: 10% = 36deg -->
-                <!-- full gray circle -->
-                <circle cx="100" cy="100" r="70" fill="none" stroke="#e2e8f0" stroke-width="28"/>
-                <!-- affordable slice (10%) in blue, starting from top (-90deg) -->
-                <circle cx="100" cy="100" r="70" fill="none" stroke="#2563eb" stroke-width="28"
-                  stroke-dasharray="43.98 395.84"
-                  stroke-dashoffset="0"
-                  transform="rotate(-90 100 100)"/>
-                <text x="100" y="95" text-anchor="middle" font-size="22" font-weight="800" fill="#0f172a">10%</text>
-                <text x="100" y="115" text-anchor="middle" font-size="11" fill="#64748b">affordable</text>
-              </svg>
-              <div class="donut-legend">
-                <div class="legend-item"><span class="dot" style="background:#2563eb"></span> 20 affordable units</div>
-                <div class="legend-item"><span class="dot" style="background:#e2e8f0"></span> 180 market-rate units</div>
+            <div class="building-wrap">
+              <div class="building">
+                {#each Array(20) as _, i}
+                  <div class="floor floor-market" class:floor-affordable={i < 2}></div>
+                {/each}
+              </div>
+              <div class="building-legend">
+                <div class="bleg-row">
+                  <span class="bleg-dot affordable"></span>
+                  <div>
+                    <strong>20 affordable units</strong>
+                    <p>Reserved for renters ≤80% AMI<br>like Maya — via lottery</p>
+                  </div>
+                </div>
+                <div class="bleg-row">
+                  <span class="bleg-dot market"></span>
+                  <div>
+                    <strong>180 market-rate units</strong>
+                    <p>Starting at $2,400/mo —<br>3× Maya's budget</p>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="budget-callout">
-              Market-rate units start at <strong>$2,400/mo</strong> — Maya's entire monthly budget is $1,300
+              Only <strong>1 in 10</strong> units in this "mixed-income" building is actually affordable
             </div>
 
           {:else if activeStep === 2}
-            <!-- Cost burden gauge -->
-            <p class="vis-title">How much of Maya's income goes to rent?</p>
-            <div class="gauge-wrap">
-              <svg viewBox="0 0 240 140" width="100%">
-                <!-- background arc -->
-                <path d="M 20 120 A 100 100 0 0 1 220 120" fill="none" stroke="#e2e8f0" stroke-width="20" stroke-linecap="round"/>
-                <!-- affordable threshold arc (30%) -->
-                <path d="M 20 120 A 100 100 0 0 1 220 120" fill="none" stroke="#bbf7d0" stroke-width="20" stroke-linecap="round"
-                  stroke-dasharray="94.2 314"
-                  stroke-dashoffset="0"/>
-                <!-- market rent burden arc (55%) — blue -->
-                <path d="M 20 120 A 100 100 0 0 1 220 120" fill="none" stroke="#2563eb" stroke-width="20" stroke-linecap="round"
-                  stroke-dasharray="172.7 314"
-                  stroke-dashoffset="0"/>
-                <!-- 30% threshold marker line -->
-                <line x1="120" y1="20" x2="120" y2="36" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3 2"/>
-                <text x="120" y="14" text-anchor="middle" font-size="9" fill="#64748b">30% threshold</text>
-                <!-- center label -->
-                <text x="120" y="105" text-anchor="middle" font-size="28" font-weight="800" fill="#2563eb">55%</text>
-                <text x="120" y="122" text-anchor="middle" font-size="10" fill="#475569">of income to market rent</text>
-              </svg>
-            </div>
-            <div class="gauge-labels">
-              <div class="gauge-label safe"><span class="dot" style="background:#bbf7d0; border: 1px solid #86efac;"></span> Affordable ≤30%</div>
-              <div class="gauge-label burden"><span class="dot" style="background:#2563eb"></span> Maya at market rate: 55%</div>
+            <p class="vis-title">Where does Maya's money go?</p>
+            <div class="budget-breakdown">
+              <p class="breakdown-label">Maya's monthly income: <strong>$4,333</strong></p>
+              <div class="breakdown-bar-wrap">
+                <div class="breakdown-segment rent" style="flex: 2400">
+                  <span class="seg-label">Rent<br><strong>$2,400</strong><br><span class="seg-pct">55%</span></span>
+                </div>
+                <div class="breakdown-segment left" style="flex: 1933">
+                  <span class="seg-label-small">$1,933<br>remaining</span>
+                </div>
+              </div>
+              <div class="breakdown-note">
+                <strong>$1,933 left for everything else</strong> — but in Boston, Lily's daycare alone can cost $2,000+/month. After childcare, food, healthcare, and transportation, there's almost nothing left.
+              </div>
             </div>
             <div class="budget-callout">
-              Spending 55% of income on rent means cutting back on healthcare, food, and savings
+              At market rate, Maya would spend <strong>55% of her income</strong> on rent — well above the 30% affordability threshold, and that's before childcare
             </div>
 
           {:else if activeStep === 3}
-            <!-- Supply vs demand gap bars -->
-            <p class="vis-title">Supply vs demand near this station</p>
-            <div class="gap-chart">
-              <div class="gap-row">
-                <span class="gap-label">Low-income renters nearby</span>
-                <div class="gap-track">
-                  <div class="gap-fill demand" style="width: 48%;"></div>
-                  <span class="gap-pct">48%</span>
+            <p class="vis-title">Supply vs. demand near this station</p>
+            <div class="gap-visual">
+              <div class="gap-col">
+                <p class="gap-col-label renters">Nearby lower-income renters</p>
+                <div class="gap-people">
+                  {#each Array(48) as _}
+                    <svg class="gap-person renters" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
+                  {/each}
                 </div>
+                <p class="gap-pct renters">48%</p>
               </div>
-              <div class="gap-row">
-                <span class="gap-label">Affordable units in TOD</span>
-                <div class="gap-track">
-                  <div class="gap-fill supply" style="width: 10%;"></div>
-                  <span class="gap-pct">10%</span>
+              <div class="gap-vs">vs</div>
+              <div class="gap-col">
+                <p class="gap-col-label supply">Affordable TOD units</p>
+                <div class="gap-houses">
+                  {#each Array(10) as _}
+                    <svg class="gap-house supply" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                  {/each}
                 </div>
-              </div>
-              <div class="mismatch-badge">
-                Mismatch score: <strong>−38 pts</strong>
+                <p class="gap-pct supply">10%</p>
               </div>
             </div>
-            <div class="budget-callout">
-              For every affordable unit, there are roughly 20 eligible households nearby
+            <div class="mismatch-badge">
+              Opportunity score: <strong>−38 points</strong>
             </div>
 
           {:else if activeStep === 4}
-            <!-- Commute tradeoff -->
-            <p class="vis-title">The cost of being priced out</p>
-            <div class="commute-compare">
-              <div class="commute-option">
-                <div class="commute-icon near">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
-                </div>
-                <p class="commute-place">Near TOD</p>
-                <p class="commute-stat unaffordable">$2,400/mo</p>
-                <p class="commute-sub">10 min commute</p>
-                <p class="commute-sub red">55% of income</p>
+            <p class="vis-title">Maya's options</p>
+            <div class="options-compare">
+              <div class="option cant">
+                <div class="option-icon">🏙️</div>
+                <p class="option-place">Near the TOD</p>
+                <p class="option-rent cant-rent">$2,400/mo</p>
+                <p class="option-note">10 min commute</p>
+                <p class="option-burden cant-burden">55% of income</p>
+                <div class="option-tag cant-tag">Out of reach</div>
               </div>
-              <div class="commute-vs">vs</div>
-              <div class="commute-option">
-                <div class="commute-icon far">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
-                </div>
-                <p class="commute-place">Brockton</p>
-                <p class="commute-stat affordable">$1,200/mo</p>
-                <p class="commute-sub">45 min commute</p>
-                <p class="commute-sub green">28% of income</p>
+              <div class="option-arrow">→</div>
+              <div class="option forced">
+                <div class="option-icon">🏘️</div>
+                <p class="option-place">Brockton</p>
+                <p class="option-rent ok-rent">$1,200/mo</p>
+                <p class="option-note">45 min commute</p>
+                <p class="option-burden ok-burden">45% of income</p>
+                <div class="option-tag forced-tag">Still cost-burdened</div>
               </div>
             </div>
             <div class="budget-callout">
-              Maya saves money but loses nearly 90 minutes of her day to commuting
+              Moving to Brockton gets Maya under 30% — but she loses nearly <strong>90 minutes a day</strong> commuting, less time with Lily, and less time for her mother
             </div>
           {/if}
 
         </div>
 
-        <!-- progress dots -->
         <div class="progress-track">
           {#each steps as _, i}
             <div class="progress-dot" class:active={i === activeStep} class:past={i < activeStep}></div>
@@ -268,7 +273,7 @@
 </section>
 
 <style>
-  .maya-container { background: #f8fafc; }
+  .maya-container { background: #faf7f0; }
 
   .scrolly-grid {
     display: flex;
@@ -291,107 +296,277 @@
   .panel-inner {
     background: white;
     border-radius: 28px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08);
-    padding: 36px;
+    border: 1px solid #e8e0d4;
+    box-shadow: 0 20px 40px -12px rgba(80,40,0,0.10);
+    padding: 32px;
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
   }
 
   .visual-area { width: 100%; }
 
   .vis-title {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #94a3b8;
-    margin: 0 0 16px;
+    color: #92846e;
+    margin: 0 0 14px;
   }
 
-  /* Step 1 — income bars */
-  .bar-group { display: flex; flex-direction: column; gap: 14px; margin-bottom: 16px; }
-  .bar-row-vis { display: flex; align-items: center; gap: 10px; }
-  .bar-name { font-size: 12px; color: #475569; width: 140px; flex-shrink: 0; }
-  .bar-track-vis { flex: 1; height: 10px; background: #f1f5f9; border-radius: 6px; overflow: hidden; }
-  .bar-fill-vis { height: 100%; border-radius: 6px; transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1); }
-  .bar-val { font-size: 12px; font-weight: 700; color: #0f172a; width: 36px; text-align: right; }
+  .profile-card { display: flex; flex-direction: column; gap: 14px; }
 
-  /* Step 2 — donut */
-  .donut-wrap { display: flex; align-items: center; gap: 20px; margin-bottom: 16px; }
-  .donut-legend { display: flex; flex-direction: column; gap: 10px; }
-  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #475569; }
-  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .avatar-row { display: flex; align-items: center; gap: 14px; }
+  .avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: #fff7ed;
+    border: 2px solid #fed7aa;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .avatar-name { font-family: 'Lora', Georgia, serif; font-size: 1.1rem; font-weight: 700; color: #1a0f00; margin: 0 0 2px; }
+  .avatar-job { font-size: 0.82rem; color: #92846e; margin: 0; }
 
-  /* Step 3 — gauge */
-  .gauge-wrap { margin-bottom: 8px; }
-  .gauge-labels { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-  .gauge-label { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #475569; }
+  .family-row { display: flex; flex-direction: column; gap: 8px; }
+  .family-item { display: flex; align-items: flex-start; gap: 10px; font-size: 0.88rem; color: #5a5040; line-height: 1.4; }
+  .family-icon { flex-shrink: 0; display: flex; align-items: center; margin-top: 1px; }
 
-  /* Step 4 — gap chart */
-  .gap-chart { display: flex; flex-direction: column; gap: 14px; margin-bottom: 16px; }
-  .gap-row { display: flex; flex-direction: column; gap: 6px; }
-  .gap-label { font-size: 12px; color: #475569; }
-  .gap-track { display: flex; align-items: center; gap: 8px; height: 14px; background: #f1f5f9; border-radius: 8px; overflow: visible; position: relative; }
-  .gap-fill { height: 100%; border-radius: 8px; transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1); }
-  .gap-fill.demand { background: #f59e0b; }
-  .gap-fill.supply { background: #2563eb; }
-  .gap-pct { font-size: 11px; font-weight: 800; color: #0f172a; margin-left: 4px; }
-  .mismatch-badge {
-    margin-top: 4px;
+  .budget-card {
+    background: #faf7f0;
+    border: 1px solid #e8e0d4;
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .budget-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+  .budget-label { font-size: 0.82rem; color: #5a5040; }
+  .budget-val { font-size: 0.9rem; font-weight: 800; color: #1a0f00; }
+  .budget-val.highlight { color: #2563eb; font-size: 1rem; }
+  .budget-ami {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #b45309;
     background: #fff7ed;
     border: 1px solid #ffedd5;
+    padding: 2px 6px;
+    border-radius: 5px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .budget-divider { height: 1px; background: #e8e0d4; margin: 6px 0; }
+
+  .building-wrap { display: flex; gap: 16px; align-items: flex-end; margin-bottom: 14px; }
+  .building {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+  .floor {
+    width: 40px;
+    height: 14px;
+    border-radius: 3px;
+    background: #e8e0d4;
+  }
+  .floor-affordable { background: #2563eb; }
+
+  .building-legend { display: flex; flex-direction: column; gap: 14px; }
+  .bleg-row { display: flex; gap: 10px; align-items: flex-start; }
+  .bleg-dot {
+    width: 12px; height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .bleg-dot.affordable { background: #2563eb; }
+  .bleg-dot.market { background: #e8e0d4; border: 1px solid #d6cfc3; }
+  .bleg-row strong { font-size: 0.88rem; color: #1a0f00; display: block; margin-bottom: 2px; }
+  .bleg-row p { margin: 0; font-size: 0.78rem; color: #92846e; line-height: 1.4; }
+
+  .budget-breakdown { margin-bottom: 12px; }
+  .breakdown-label { font-size: 0.82rem; color: #5a5040; margin: 0 0 10px; }
+
+  .breakdown-bar-wrap {
+    display: flex;
+    height: 64px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    gap: 2px;
+  }
+
+  .breakdown-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    padding: 6px;
+  }
+
+  .breakdown-segment.rent {
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+  }
+
+  .breakdown-segment.left {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    flex-shrink: 0;
+    min-width: 60px;
+  }
+
+  .seg-label {
+    font-size: 0.7rem;
+    line-height: 1.3;
+    color: #7f1d1d;
+    text-align: center;
+  }
+  .seg-label strong { font-size: 0.85rem; }
+  .seg-pct { font-size: 0.7rem; color: #b91c1c; }
+
+  .seg-label-small {
+    font-size: 0.7rem;
+    line-height: 1.3;
+    color: #14532d;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .breakdown-note {
+    background: #faf7f0;
+    border: 1px solid #e8e0d4;
     border-radius: 10px;
     padding: 10px 14px;
-    font-size: 13px;
+    font-size: 0.82rem;
+    color: #5a5040;
+    line-height: 1.5;
+  }
+
+  .gap-visual { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px; }
+
+  .gap-col { flex: 1; text-align: center; }
+  .gap-col-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .gap-col-label.renters { color: #b45309; }
+  .gap-col-label.supply { color: #15803d; }
+
+  .gap-people, .gap-houses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    justify-content: center;
+    margin-bottom: 6px;
+  }
+
+  .gap-person {
+    width: 14px; height: 14px;
+    fill: #f59e0b;
+  }
+  .gap-house {
+    width: 16px; height: 16px;
+    fill: #16a34a;
+  }
+
+  .gap-pct { font-size: 1.3rem; font-weight: 800; margin: 0; }
+  .gap-pct.renters { color: #b45309; }
+  .gap-pct.supply { color: #15803d; }
+
+  .gap-vs {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #d6cfc3;
+    padding-bottom: 24px;
+    flex-shrink: 0;
+  }
+
+  .mismatch-badge {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.88rem;
     color: #92400e;
+    text-align: center;
   }
   .mismatch-badge strong { color: #b45309; }
 
-  /* Step 5 — commute compare */
-  .commute-compare { display: flex; align-items: center; justify-content: space-around; margin-bottom: 16px; }
-  .commute-option { text-align: center; }
-  .commute-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
-  .commute-icon.near { background: #eff6ff; }
-  .commute-icon.far { background: #f8fafc; border: 1px solid #e2e8f0; }
-  .commute-place { font-size: 12px; font-weight: 700; color: #475569; margin: 0 0 4px; }
-  .commute-stat { font-size: 1.2rem; font-weight: 800; margin: 0 0 4px; }
-  .commute-stat.unaffordable { color: #ef4444; }
-  .commute-stat.affordable { color: #22c55e; }
-  .commute-sub { font-size: 11px; color: #64748b; margin: 2px 0; }
-  .commute-sub.red { color: #ef4444; font-weight: 700; }
-  .commute-sub.green { color: #16a34a; font-weight: 700; }
-  .commute-vs { font-size: 14px; font-weight: 800; color: #94a3b8; }
+  .options-compare {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
 
-  /* shared callout */
+  .option {
+    flex: 1;
+    text-align: center;
+    padding: 14px 10px;
+    border-radius: 16px;
+  }
+
+  .option.cant {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+
+  .option.forced {
+    background: #fafaf9;
+    border: 1px solid #e8e0d4;
+  }
+
+  .option-icon { font-size: 1.5rem; margin-bottom: 4px; }
+  .option-place { font-size: 0.75rem; font-weight: 700; color: #5a5040; margin: 0 0 4px; }
+  .option-rent { font-size: 1.1rem; font-weight: 800; margin: 0 0 2px; }
+  .cant-rent { color: #ef4444; }
+  .ok-rent { color: #16a34a; }
+  .option-note { font-size: 0.72rem; color: #92846e; margin: 2px 0; }
+  .option-burden { font-size: 0.72rem; font-weight: 700; margin: 2px 0; }
+  .cant-burden { color: #ef4444; }
+  .ok-burden { color: #b45309; }
+  .option-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-top: 6px;
+  }
+  .cant-tag { background: #fee2e2; color: #991b1b; }
+  .forced-tag { background: #fff7ed; color: #92400e; }
+
+  .option-arrow { font-size: 1.2rem; color: #d6cfc3; flex-shrink: 0; }
+
   .budget-callout {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: #475569;
+    background: #faf7f0;
+    border: 1px solid #e8e0d4;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: #5a5040;
     line-height: 1.5;
   }
-  .budget-callout strong { color: #0f172a; }
+  .budget-callout strong { color: #1a0f00; }
 
-  /* progress */
   .progress-track { display: flex; align-items: center; gap: 8px; }
-  .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: #e2e8f0; transition: background 0.4s ease, transform 0.3s ease; }
-  .progress-dot.past { background: #93c5fd; }
-  .progress-dot.active { background: #2563eb; transform: scale(1.4); }
-  .progress-label { font-size: 0.7rem; font-weight: 700; color: #94a3b8; margin: 0 0 0 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: #e8e0d4; transition: background 0.4s ease, transform 0.3s ease; }
+  .progress-dot.past { background: #fcd34d; }
+  .progress-dot.active { background: #b45309; transform: scale(1.4); }
+  .progress-label { font-size: 0.68rem; font-weight: 700; color: #92846e; margin: 0 0 0 8px; text-transform: uppercase; letter-spacing: 0.08em; }
 
-  /* right side cards */
   .text-stream { flex: 0.7; padding: 0 40px 0 0; }
 
   .step-card {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    opacity: 0.15;
+    opacity: 0.12;
     transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), transform 0.6s cubic-bezier(0.4,0,0.2,1);
     transform: translateY(20px);
   }
@@ -399,42 +574,61 @@
 
   .step-content {
     background: white;
-    padding: 40px;
-    border-radius: 28px;
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
-    border: 1px solid rgba(255,255,255,0.8);
+    padding: 36px;
+    border-radius: 24px;
+    box-shadow: 0 16px 24px -8px rgba(80,40,0,0.07);
+    border: 1px solid #e8e0d4;
     width: 100%;
   }
 
-  .step-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .step-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 
   .year-badge {
-    background: #f1f5f9;
-    color: #475569;
+    background: #faf7f0;
+    color: #7c5e38;
     padding: 4px 10px;
     border-radius: 6px;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 800;
     letter-spacing: 0.05em;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e8d5b8;
     transition: all 0.4s ease;
   }
   .active .year-badge { background: #fff7ed; color: #b45309; border-color: #ffedd5; }
 
-  .eyebrow-text { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; }
-  .step-title { font-size: 1.5rem; font-weight: 800; line-height: 1.25; margin: 0 0 16px; color: #0f172a; letter-spacing: -0.02em; }
-  .step-body { font-size: 1.05rem; line-height: 1.6; color: #475569; margin: 0; }
+  .eyebrow-text { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #92846e; }
 
-  .stat-row { display: flex; gap: 12px; margin-top: 1.5rem; flex-wrap: wrap; }
-  .stat-pill { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; font-size: 13px; color: #475569; }
-  .stat-pill strong { display: block; font-size: 1.3rem; font-weight: 800; color: #2563eb; margin-bottom: 2px; }
+  .step-title {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 14px;
+    color: #1a0f00;
+    letter-spacing: -0.01em;
+  }
+
+  .step-body { font-size: 1rem; line-height: 1.65; color: #5a5040; margin: 0; }
+
+  .stat-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .stat-pill {
+    background: #faf7f0;
+    border: 1px solid #e8e0d4;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    color: #5a5040;
+    flex: 1;
+    min-width: 80px;
+  }
+  .stat-pill strong { display: block; font-size: 1.15rem; font-weight: 800; color: #b45309; margin-bottom: 2px; }
 
   .spacer { height: 50vh; }
 
   @media (max-width: 900px) {
     .scrolly-grid { flex-direction: column; }
     .sticky-panel { position: sticky; height: auto; padding: 12px; top: 0; z-index: 10; }
-    .panel-inner { border-radius: 20px; padding: 24px; }
+    .panel-inner { border-radius: 20px; padding: 20px; }
     .text-stream { padding: 0 20px; }
     .step-card { min-height: auto; margin-bottom: 60px; opacity: 1; transform: none; }
   }

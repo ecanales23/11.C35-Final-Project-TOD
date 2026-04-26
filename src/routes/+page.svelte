@@ -5,7 +5,6 @@
   import TodDetailPanel from "$lib/components/toddetailpanel.svelte";
   import StorySteps from "$lib/components/standouts.svelte";
   import TimelineSection from "$lib/components/timelinesection.svelte";
-  import ScrollStory from "$lib/components/narrativestory.svelte";
 
   let baseTodData = [];
   let todData = [];
@@ -95,16 +94,24 @@
 
     <header class="hero-section">
       <div class="header-content">
-        <p class="eyebrow">Greater Boston TOD dashboard</p>
-        <h1>Do current TOD projects match nearby lower-income housing demand?</h1>
+        <p class="eyebrow">Greater Boston TOD Opportunity Dashboard</p>
+        <h1>Which TOD projects are opening doors for renters like Maya?</h1>
         <p class="subtitle">
-          This dashboard compares the affordable share of each transit-oriented development (TOD) with the share of nearby renter households under a selected income threshold. Our goal is to show where new housing supply appears more or less aligned with nearby lower-income demand.
+          For each transit-oriented development, we compare the affordable share of new housing with the proportion of nearby lower-income renters. Projects with a positive score are providing <strong>more housing opportunity</strong> than local demand suggests. Projects with a negative score are providing <strong>less</strong>.
         </p>
       </div>
     </header>
 
     <div class="narrative-container">
       <StorySteps onApplyStep={applyStoryStep} />
+    </div>
+
+    <div class="dashboard-context">
+      <p>
+        Use the controls below to explore how each TOD compares to the needs of its surrounding community.
+        A project exceeding local lower-income demand is <strong>providing more opportunity</strong> for renters like Maya — opening doors to neighborhoods they otherwise couldn't afford.
+        A project falling short is <strong>providing less opportunity</strong>, and in high-need areas, may be contributing to gentrification pressure as the current population can't afford to move into the new units.
+      </p>
     </div>
 
     <section class="controls-toolbar">
@@ -154,7 +161,7 @@
         </label>
         <label class="custom-check">
           <input type="checkbox" bind:checked={showUnderServingOnly} />
-          <span>Only under-serving projects</span>
+          <span>Only projects providing less opportunity than local demand</span>
         </label>
       </div>
     </section>
@@ -177,8 +184,8 @@
 <style>
   :global(body) {
     margin: 0;
-    background: #f8fafc;
-    color: #0f172a;
+    background: #faf7f0;
+    color: #1a0f00;
     font-family: 'Inter', system-ui, sans-serif;
   }
 
@@ -193,14 +200,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #64748b;
+    color: #92846e;
   }
 
-.hero-section {
+  .hero-section {
     display: flex;
     justify-content: center;
     text-align: center;
-    padding: 40px 0px;
+    padding: 60px 0 40px;
   }
 
   .eyebrow {
@@ -208,34 +215,49 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #3b82f6;
+    color: #b45309;
     margin-bottom: 12px;
   }
 
   h1 {
+    font-family: 'Lora', Georgia, serif;
     font-size: 2.75rem;
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
     margin: 0 0 16px;
     max-width: 900px;
+    color: #1a0f00;
   }
 
   .subtitle {
-    font-size: 1.15rem;
-    line-height: 1.6;
-    color: #475569;
-    max-width: 850px;
+    font-size: 1.1rem;
+    line-height: 1.65;
+    color: #5a5040;
+    max-width: 820px;
     margin: 0;
   }
 
   .narrative-container {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     background: #fff;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e8e0d4;
     border-radius: 16px;
     padding: 4px;
   }
+
+  .dashboard-context {
+    margin-bottom: 24px;
+    padding: 20px 28px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: #7c3a0a;
+  }
+
+  .dashboard-context strong { color: #1a0f00; }
 
   .controls-toolbar {
     display: flex;
@@ -245,8 +267,8 @@
     background: white;
     padding: 24px 32px;
     border-radius: 20px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #e8e0d4;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
 
   .control-group {
@@ -265,7 +287,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #94a3b8;
+    color: #92846e;
     margin-bottom: 8px;
   }
 
@@ -274,10 +296,10 @@
     height: 42px;
     padding: 0 12px;
     border-radius: 10px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid #d6cfc3;
     font-size: 14px;
-    background: #fff;
-    color: #1e293b;
+    background: #faf7f0;
+    color: #1a0f00;
   }
 
   .slider-wrapper {
@@ -302,7 +324,7 @@
     gap: 10px;
     cursor: pointer;
     font-size: 11px;
-    color: #475569;
+    color: #5a5040;
     font-weight: 700;
     line-height: 1.2;
     text-transform: uppercase;
@@ -312,7 +334,7 @@
   .status-bar {
     padding: 0 8px 16px;
     font-size: 14px;
-    color: #64748b;
+    color: #92846e;
   }
 
   .visualization-layout {
@@ -324,10 +346,10 @@
 
   .map-container, .detail-sidebar {
     background: white;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e8e0d4;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
   }
 
   .detail-sidebar {

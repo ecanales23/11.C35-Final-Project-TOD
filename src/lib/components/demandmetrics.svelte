@@ -18,15 +18,15 @@
 <div class="panel">
   <div class="header">
     <p class="eyebrow">Quick findings</p>
-    <h3>{mode === "underserved" ? "Top 5 projects with the largest local affordability gap" : "Top 5 projects exceeding nearby demand share"}</h3>
+    <h3>{mode === "underserved" ? "Top 5 projects providing the least opportunity relative to local demand" : "Top 5 projects providing the most opportunity for lower-income renters"}</h3>
   </div>
 
   <div class="toggle-row">
     <button class:active={mode === "underserved"} on:click={() => mode = "underserved"}>
-      Biggest gaps
+      Less opportunity
     </button>
     <button class:active={mode === "overprovided"} on:click={() => mode = "overprovided"}>
-      Strongest affordable share
+      More opportunity
     </button>
   </div>
 
@@ -37,7 +37,7 @@
         <div class="content">
           <p class="name">{d.project}</p>
           <p class="meta">
-            Gap: {d3.format("+.0%")(d.mismatchScore)} ·
+            Score: {d3.format("+.0%")(d.mismatchScore)} ·
             Affordable: {d3.format(".0%")(d.affordableShare)} ·
             Units: {d.totalUnits}
           </p>

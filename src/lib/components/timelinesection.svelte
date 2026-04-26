@@ -3,7 +3,7 @@
   import { loadTimelineData } from "$lib/data/timelinedata";
   import TimelineMap from "./timelinemap.svelte";
   import { base } from "$app/paths";
-    import Narrativestory from "./narrativestory.svelte";
+  import Narrativestory from "./narrativestory.svelte";
 
   const chartMetrics = [
     { key: "renterShare",            label: "All renters",             color: "#3b82f6" },
@@ -16,83 +16,65 @@
     return v != null && isFinite(v) ? `${Math.round(v * 100)}%` : "N/A";
   }
 
+  const todProjects = [
+    { name: "225 Centre Street", neighborhood: "Roxbury", station: "Jackson Square", totalUnits: 438, affordableUnits: 291, affordablePct: 66 },
+    { name: "Arborpoint at Woodland Station", neighborhood: "Newton", station: "Woodland Station", totalUnits: 180, affordableUnits: 45, affordablePct: 25 },
+    { name: "Avenir", neighborhood: "Downtown Boston", station: "North Station", totalUnits: 241, affordableUnits: 17, affordablePct: 7 },
+    { name: "Hingham Intermodal Center", neighborhood: "Hingham", station: "Hingham Ferry", totalUnits: 479, affordableUnits: 24, affordablePct: 5 },
+    { name: "New Balance Boston Landing", neighborhood: "Allston/Brighton", station: "Boston Landing", totalUnits: 275, affordableUnits: 38, affordablePct: 14 },
+    { name: "One Greenway (Parcel 24)", neighborhood: "Chinatown", station: "Tufts Medical Center", totalUnits: 362, affordableUnits: 95, affordablePct: 26 },
+    { name: "Bartlett Yard", neighborhood: "Roxbury", station: "Nubian Station", totalUnits: 313, affordableUnits: 241, affordablePct: 77 },
+    { name: "One Roxbury Crossing", neighborhood: "Roxbury", station: "Roxbury Crossing", totalUnits: 88, affordableUnits: 88, affordablePct: 100 },
+    { name: "Parcel U", neighborhood: "Jamaica Plain", station: "Forest Hills", totalUnits: 120, affordableUnits: 60, affordablePct: 50 },
+  ];
+
   let timelineRows = [];
   let loading = true;
   let activeStep = 0;
   let stepEls = [];
 
+  let waffleVisible = false;
+  let waffleEl;
 
   const steps = [
     {
       part: "Part 1",
-      partTitle: "Boston's affordability crisis",
+      partTitle: "The need before TODs",
       periodKey: "2014",
       metric: "lowIncomeRenterShare",
-      eyebrow: "2010–2014 · Early TOD Development",
-      title: "Boston's housing crisis was already acute in transit neighborhoods before most TOD projects were completed.",
-      body: "Each circle is a transit-oriented development site. Color shows the share of nearby households that were low-income renters, people earning under $50,000 a year, before some of these projects broke ground. The darkest sites sit in neighborhoods like Roxbury and Jamaica Plain, where more than half of all households were low-income renters. This is the demand backdrop that Boston's TOD pipeline entered.",
+      eyebrow: "2010–2014 · Before TODs Were Built",
+      title: "Before most TODs broke ground, lower-income renters were already the majority in transit neighborhoods.",
+      body: "Each circle is a transit-oriented development site. Color shows the share of nearby households that were lower-income renters — people earning under $50,000/year — before most projects were completed. In Roxbury and Jamaica Plain, more than half of all households were lower-income renters. This is the community that Boston's TOD pipeline was entering.",
       callout: null,
     },
     {
-      part: "Part 1",
-      partTitle: "Boston's affordability crisis",
+      part: "Part 2",
+      partTitle: "What changed after TODs opened",
       periodKey: "2019",
       metric: "lowIncomeRenterShare",
-      eyebrow: "2015–2019 · As TODs were built",
-      title: "New units opened. The neighborhoods' need for affordable housing stayed just as high.",
-      body: "By 2015–2019, many of these TODs had opened their doors adding hundreds of market-rate apartments near transit. But the low-income renter population surrounding them barely budged. In Roxbury and Jamaica Plain, over half of nearby households were still low-income renters. New supply was flowing in, but it wasn't priced for the people who were already there.",
-      callout: null,
-    },
-    {
-      part: "Part 1",
-      partTitle: "Boston's affordability crisis",
-      periodKey: "2024",
-      metric: "lowIncomeRenterShare",
-      eyebrow: "2020–2024 · A decade later",
-      title: "A decade of TOD construction, and low-income renters are still a dominant population at sites",
-      body: "Today, the same transit neighborhoods that were housing-stressed in 2014 remain housing-stressed. The TOD pipeline added thousands of units, but the communities around those stations didn't shift from being predominantly low-income. The affordability crisis didn't change; the supply that arrived just wasn't built for it.",
-      callout: null,
-    },
-
-    {
-      part: "Part 2",
-      partTitle: "Can TODs help?",
-      periodKey: "2024",
-      metric: "renterShare",
-      eyebrow: "2020–2024 · Who's most exposed",
-      title: "Some TOD neighborhoods are 80–90% renters: a population more vulnerable to Boston's rising housing costs",
-      body: "Homeowners build equity when neighborhoods appreciate. Renters face displacement. In neighborhoods like Roxbury and Jamaica Plain, where multiple TODs have opened in the past decade, renters make up the overwhelming majority of households. If TODs could be designed to serve this population, they'd be adding housing precisely where it's needed most. The question is whether they have been.",
+      eyebrow: "2015–2019 · After TODs Opened",
+      title: "New units arrived — but the community's need for affordable housing didn't go away.",
+      body: "By 2015–2019, many TODs had opened, adding hundreds of market-rate apartments near transit. But the lower-income renter population barely changed. In Roxbury and Jamaica Plain, over half of nearby households were still lower-income renters. New supply was flowing in, but it wasn't priced for the people who were already there.",
       callout: null,
     },
     {
       part: "Part 2",
-      partTitle: "Can TODs help?",
-      periodKey: "2014",
+      partTitle: "What changed after TODs opened",
+      periodKey: "2019",
       metric: "costBurdenedRenterShare",
-      eyebrow: "2010–2014 · Cost burden at baseline",
-      title: "Before most TODs were completed, more than half of nearby renters were already cost-burdened, spending 30%+ of income on rent",
-      body: "Cost burden, spending over 30% of household income on housing, is the federal threshold for unaffordability. In 2010–2014, cost burden was already severe near nearly every future TOD site. The communities these developments were entering were under acute financial pressure. That's exactly a context where affordable TOD supply could have made a real difference.",
+      eyebrow: "2015–2019 · Cost Burden After Construction",
+      title: "Cost burden barely improved — because the new supply wasn't priced for existing residents.",
+      body: "Cost burden means spending over 30% of income on rent. Before the TODs opened, it was already severe near nearly every site. After construction, cost burden at most sites was no better. New apartments went to higher-income tenants at rents that most existing residents couldn't afford.",
       callout: "Cost burden data is available for the 2014 and 2019 periods only.",
     },
     {
-      part: "Part 2",
-      partTitle: "Can TODs help?",
-      periodKey: "2019",
-      metric: "costBurdenedRenterShare",
-      eyebrow: "2015–2019 · After construction",
-      title: "After TODs many opened, cost burden didn't improve. The supply wasn't priced for the demand already there.",
-      body: "By 2015–2019, with many TODs open, cost burden at most sites was no better than before. New apartments went to higher-income tenants at rents that existing residents couldn't afford. TODs can, in theory, alleviate cost burden by adding supply near transit. But only if that supply is priced for the people who already live in those neighborhoods.",
-      callout: null,
-    },
-
-    {
       part: "Part 3",
-      partTitle: "The supply-demand gap",
-      periodKey: "2014",
+      partTitle: "Two TODs, two communities",
+      periodKey: "2019",
       metric: "lowIncomeRenterShare",
-      eyebrow: "Roxbury · Before",
-      title: "One Roxbury Crossing: before it opened, the surrounding community was overwhelmingly low-income and renter-dominated",
-      body: "One Roxbury Crossing opened in 2017 near the Roxbury Crossing Orange Line stop. In 2010–2014, the surrounding neighborhood had among the highest low-income renter concentrations of any TOD site in our dataset with over 60% of households being low-income renters.",
+      eyebrow: "Roxbury · 2015–2019",
+      title: "One Roxbury Crossing: built in a high-need community, yet most new units were market-rate.",
+      body: "One Roxbury Crossing opened in 2017 near Roxbury Crossing station. The surrounding neighborhood had one of the highest lower-income renter concentrations of any TOD site — over 60% of households. Yet the majority of units added were market-rate, with rents most nearby residents couldn't afford. This is the supply-demand gap at the heart of Boston's affordability problem.",
       focusProject: "One Roxbury Crossing- Roxbury Crossing Station, Roxbury",
       focusZoom: 13.6,
       photo: "/images/roxbury-crossing.jpg",
@@ -100,42 +82,16 @@
     },
     {
       part: "Part 3",
-      partTitle: "The supply-demand gap",
+      partTitle: "Two TODs, two communities",
       periodKey: "2019",
       metric: "lowIncomeRenterShare",
-      eyebrow: "Roxbury · After",
-      title: "The TOD was completed supplying new housing. Yet, the neighborhood's demand didn't change — the new units weren't built for it.",
-      body: "By 2015–2019, the surrounding community was still predominantly low-income renters. Yet the majority of units One Roxbury Crossing added were market-rate with rents that exceeded what most nearby households could afford. This is the supply-demand mismatch at part of the core of Boston's affordability problem: new housing goes in, but not for the people who need it most.",
-      focusProject: "One Roxbury Crossing- Roxbury Crossing Station, Roxbury",
-      focusZoom: 13.6,
-      photo: "/images/roxbury-crossing.jpg",
-      callout: null,
-    },
-    {
-      part: "Part 3",
-      partTitle: "The supply-demand gap",
-      periodKey: "2014",
-      metric: "lowIncomeRenterShare",
-      eyebrow: "Hingham · Before",
-      title: "For contrast: Hingham Intermodal Center was built into a wealthy suburb with far fewer low-income renters nearby",
-      body: "Hingham Intermodal Center also opened in 2017 on the South Shore commuter ferry line. But the surrounding context couldn't be more different. In 2010–2014, fewer than 10% of nearby households were low-income renters. The site serves a higher-income commuter population with convenient access to downtown Boston.",
+      eyebrow: "Hingham · 2015–2019",
+      title: "For contrast: Hingham Intermodal was built in a wealthy suburb with far fewer lower-income renters.",
+      body: "Hingham Intermodal Center also opened in 2017 — but fewer than 10% of nearby households were lower-income renters. Both are called TODs. Only one was built into a community facing an acute affordable housing crisis. Not all TOD sites begin with the same level of need. The real equity question is whether housing added near transit matches the people already living there.",
       focusProject: "Hingham Intermodal Center, Hingham",
       focusZoom: 13.4,
       photo: "/images/hingham-intermodal.jpg",
-      callout: null,
-    },
-    {
-      part: "Part 3",
-      partTitle: "The supply-demand gap",
-      periodKey: "2019",
-      metric: "lowIncomeRenterShare",
-      eyebrow: "Hingham · After",
-      title: "Both are called TODs. Only one was built into a community facing an acute affordable housing crisis.",
-      body: "By 2015–2019, Hingham remained a low-renter, high-income context, while Roxbury remained a neighborhood with a far larger concentration of low-income renters. The comparison makes clear that not all TOD sites begin with the same level of affordability need. Transit-oriented development may increase housing supply near transit, but it does not inherently produce affordable housing. The real equity question is whether the housing being added near transit matches the affordability pressures of the surrounding community.",
-      focusProject: "Hingham Intermodal Center, Hingham",
-      focusZoom: 13.4,
-      photo: "/images/hingham-intermodal.jpg",
-      callout: "Both projects opened in 2017, making them ideal before/after comparison cases using the 2014 (pre) and 2019 (post) ACS windows.",
+      callout: "Both projects opened in 2017, making them useful comparison cases.",
     },
   ];
 
@@ -145,24 +101,31 @@
 
     await tick();
 
-    const observer = new IntersectionObserver(
+    const mapObserver = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]) {
-          activeStep = Number(visible[0].target.dataset.step);
-        }
+        if (visible[0]) activeStep = Number(visible[0].target.dataset.step);
       },
-      {
-        root: null,
-        threshold: [0.15, 0.4, 0.65],
-        rootMargin: "0px 0px -30% 0px",
-      }
+      { root: null, threshold: [0.15, 0.4, 0.65], rootMargin: "0px 0px -30% 0px" }
     );
+    stepEls.forEach((el) => el && mapObserver.observe(el));
 
-    stepEls.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
+    if (waffleEl) {
+      const waffleObserver = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            waffleVisible = true;
+            waffleObserver.disconnect();
+          }
+        },
+        { threshold: 0.25 }
+      );
+      waffleObserver.observe(waffleEl);
+    }
+
+    return () => mapObserver.disconnect();
   });
 
   function partBreaks(steps) {
@@ -186,13 +149,18 @@
   </div>
 {:else}
   <section class="timeline-container">
+
     <header class="hero-header">
-      <div class="container">
-        <p class="section-eyebrow">Transit-Oriented Development & Affordability</p>
-        <h1>Boston is adding transit housing. <span class="highlight">But for whom?</span></h1>
+      <div class="container hero-inner">
+        <p class="section-eyebrow">Transit-Oriented Development & Affordability in Greater Boston</p>
+        <h1>Boston is adding transit housing.<br><span class="highlight">But for whom?</span></h1>
         <p class="hero-desc">
-          Transit-oriented developments (TODs) have the potential to put housing where people need it: near jobs, near transit, in the heart of the city. But do Boston's TODs actually add housing for the people already living near transit? Scroll through a decade of neighborhood data to see what the supply-demand relationship really looks like.
+          Transit-oriented developments (TODs) put housing near jobs, transit, and opportunity. But do Boston's TODs actually serve the people already living near transit? Follow Maya's story — then explore a decade of neighborhood data.
         </p>
+        <div class="hero-scroll-hint">
+          <span class="scroll-arrow">↓</span>
+          <span>Scroll to meet Maya</span>
+        </div>
       </div>
     </header>
 
@@ -200,21 +168,129 @@
       <div class="context-grid">
         <div class="info-card">
           <span class="label">Research question</span>
-          <p class="main-q">To what extent does the affordable share of current transit-oriented development (TOD) projects in Greater Boston align with nearby lower-income renter demand?</p>
+          <p class="main-q">To what extent does the affordable share of current TOD projects in Greater Boston align with nearby lower-income renter demand?</p>
           <p class="sub-text">
-            We provide planners and policymakers with a "mismatch score" that measures the gap between new supply and local demand. We analyze data within a 0.5-mile radius of each station to show whether these projects serve the existing community or cater to higher-income residents.
+            We provide planners and policymakers with an "opportunity score" measuring the gap between new supply and local demand, analyzing data within a 0.5-mile radius of each station.
           </p>
         </div>
         <div class="info-card secondary">
-          <span class="label">Why is Affordability Important?</span>
+          <span class="label">Why affordability near transit matters</span>
           <p>
-            Housing affordability determines who can actually afford to live and work in the city. When housing costs exceed 30% of a household's income, families need to cut back on other necessities like healthcare and healthy food. In a city like Boston where so much depends on the T, a lack of affordable housing near transit stations makes it harder for lower-income workers to access reliable transportation. This can push the people who rely most on public transit further away from the city center and result in significantly longer commutes.
+            When housing costs exceed 30% of income, families cut back on healthcare, food, and savings. A lack of affordable housing near transit pushes lower-income workers further from reliable transportation — and further from opportunity.
           </p>
         </div>
       </div>
     </section>
 
     <Narrativestory />
+
+    <section class="maya-humanize" bind:this={waffleEl}>
+      <div class="container humanize-inner">
+        <div class="humanize-header">
+          <span class="section-eyebrow">Who Maya represents</span>
+          <h2 class="section-title">Maya is typical of lower-income renters across Boston</h2>
+          <p class="humanize-lead">At $52,000/year — roughly 50% of Boston's Area Median Income — Maya isn't an outlier. She's representative of thousands of renters across the city: people who work here, depend on the T, and are searching for housing they can actually afford near transit. Nearly half of all renters near MBTA stations earn under $50,000/year. Yet only about 35% of new TOD units are priced to serve them.</p>
+        </div>
+
+        <div class="graphic-pair" class:waffle-visible={waffleVisible}>
+          <div class="graphic-card">
+            <p class="graphic-title">Who's renting near Boston's transit?</p>
+            <p class="graphic-subtitle">Each figure = 1 in 100 renters near MBTA stations</p>
+            <div class="icon-grid">
+              {#each Array(100) as _, i}
+                <svg
+                  class="person-icon"
+                  class:icon-highlighted={i < 45}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                  style="transition-delay: {waffleVisible ? i * 7 : 0}ms"
+                >
+                  <circle cx="12" cy="7" r="4"/>
+                  <path d="M4 21v-1a8 8 0 0 1 16 0v1"/>
+                </svg>
+              {/each}
+            </div>
+            <div class="graphic-legend">
+              <div class="legend-row">
+                <span class="legend-swatch swatch-people"></span>
+                <span><strong>~45%</strong> earn under $50k/year — renters like Maya</span>
+              </div>
+              <div class="legend-row">
+                <span class="legend-swatch swatch-other"></span>
+                <span>Other renters</span>
+              </div>
+            </div>
+            <p class="graphic-source">Source: ACS 5-Year Estimates, 2020–2024, transit station buffers</p>
+          </div>
+
+          <div class="graphic-card">
+            <p class="graphic-title">How much of new TOD housing is affordable?</p>
+            <p class="graphic-subtitle">Each figure = 1 in 100 new TOD units in Greater Boston</p>
+            <div class="icon-grid">
+              {#each Array(100) as _, i}
+                <svg
+                  class="house-icon"
+                  class:icon-highlighted={i < 35}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                  style="transition-delay: {waffleVisible ? i * 7 + 300 : 0}ms"
+                >
+                  <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+              {/each}
+            </div>
+            <div class="graphic-legend">
+              <div class="legend-row">
+                <span class="legend-swatch swatch-housing"></span>
+                <span><strong>~35%</strong> of new TOD units are deed-restricted affordable</span>
+              </div>
+              <div class="legend-row">
+                <span class="legend-swatch swatch-other"></span>
+                <span>Market-rate units</span>
+              </div>
+            </div>
+            <p class="graphic-source">Source: Our analysis of 9 Greater Boston TOD projects (2,400+ units)</p>
+          </div>
+        </div>
+
+        <div class="gap-callout">
+          <strong>TOD is a vehicle, not a guarantee.</strong> When it includes affordable units, it can open access to neighborhoods with better transit, jobs, and services for renters like Maya. Without them, these developments largely remain out of reach — and can increase pressure on the communities they're built in.
+        </div>
+      </div>
+    </section>
+
+    <section class="tod-list">
+      <div class="container tod-list-inner">
+        <div class="tod-list-header">
+          <span class="section-eyebrow">The 9 TOD projects we studied</span>
+          <h2 class="section-title">These are some transit-oriented developments built across Greater Boston</h2>
+          <p class="tod-list-desc">Each is within walking distance of an MBTA station, adding over 2,400 new units. The bar shows what share of each project is affordable for lower-income renters.</p>
+        </div>
+        <div class="tod-cards-grid">
+          {#each todProjects as p}
+            <div class="tod-project-card">
+              <div class="tod-card-top">
+                <span class="tod-neighborhood">{p.neighborhood}</span>
+                <span class="tod-station">{p.station}</span>
+              </div>
+              <h4 class="tod-name">{p.name}</h4>
+              <div class="tod-unit-bar" title="{p.affordablePct}% affordable">
+                <div class="tod-bar-affordable" style="width:{p.affordablePct}%"></div>
+                <div class="tod-bar-market" style="width:{100 - p.affordablePct}%"></div>
+              </div>
+              <div class="tod-unit-stats">
+                <span class="stat-affordable" class:stat-high={p.affordablePct >= 50} class:stat-low={p.affordablePct < 15}>
+                  {p.affordablePct}% affordable
+                </span>
+                <span class="stat-total">{p.totalUnits} units</span>
+              </div>
+            </div>
+          {/each}
+        </div>
+      </div>
+    </section>
 
     <div class="scrolly-grid">
       <div class="map-viewport">
@@ -296,28 +372,51 @@
         <div class="spacer"></div>
       </div>
     </div>
+
+    <section class="advocacy-bridge container">
+      <div class="bridge-inner">
+        <span class="section-eyebrow">What this means for Maya — and what we can do</span>
+        <h2 class="section-title">Affordable housing near transit determines who gets to stay in Boston</h2>
+        <div class="bridge-grid">
+          <div class="bridge-text">
+            <p>TODs are going to keep being built near Boston's transit stops. The question is whether they'll include housing that lower-income renters like Maya can actually afford.</p>
+            <p>When TODs include more affordable units, they open doors for residents who already live nearby, depend on the T, and would stay in their neighborhoods if they could. When TODs are mostly market-rate, they risk displacing the very communities they're built in.</p>
+            <p>Introducing affordable housing into new TOD developments <strong>diversifies neighborhoods</strong>, lets lower-income residents access areas they otherwise couldn't afford, and keeps long-standing communities intact as transit corridors develop.</p>
+          </div>
+          <div class="bridge-callouts">
+            <div class="bridge-callout positive">
+              <span class="callout-icon">+</span>
+              <div>
+                <strong>More affordable units = more opportunity</strong>
+                <p>TODs that go beyond the local lower-income renter share provide real housing opportunity for people like Maya — and help diversify neighborhoods that have historically been out of reach.</p>
+              </div>
+            </div>
+            <div class="bridge-callout negative">
+              <span class="callout-icon">−</span>
+              <div>
+                <strong>Mostly market-rate = more gentrification pressure</strong>
+                <p>When TODs in high-need neighborhoods are mostly market-rate, the current population can't afford to move in. Rising land values and new higher-income residents can push rents up for everyone nearby.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dashboard-cta">
+          <span class="cta-arrow">↓</span>
+          <span class="cta-text">Use the dashboard below to explore opportunity gaps across all 9 TOD projects</span>
+        </div>
+      </div>
+    </section>
+
     <section class="limitations-container container">
       <div class="info-card">
         <p class="main-q">Research Limitations</p>
         <ul class="limitations-list">
-          <li>
-            Our affordability score is only a rough estimate. Even if affordability reaches "demand" levels, it does not mean the project is meeting those households’ needs in practice.
-          </li>
-          <li>
-            The metric treats all units as serving the same population, regardless of targeted AMI levels, sizes, or rules. Without detailed TOD breakdowns, the comparison was simplified.
-          </li>
-          <li>
-            Lower-income renter households are a proxy for demand, not a direct measure of who is actively seeking housing, who is cost-burdened, or who may be displaced.
-          </li>
-          <li>
-            Focusing on 0.5-mile radii may miss the regional nature of housing markets. TODs serve households beyond immediate tracts, so our comparison may not capture the full picture.
-          </li>
-          <li>
-            This visual highlights relative patterns and possible mismatches rather than definitively proving whether a project meets a specific demand.
-          </li>
-          <li>
-            Project-level data is sometimes incomplete or inconsistent. We used mbtarealty.com, but other sources note different unit counts; we aim to better represent this uncertainty in the future.
-          </li>
+          <li>Our opportunity score is only a rough estimate. Even if a project's affordability reaches "demand" levels, it does not mean it is meeting those households' needs in practice.</li>
+          <li>The metric treats all units as serving the same population, regardless of targeted AMI levels, unit sizes, or eligibility rules.</li>
+          <li>Lower-income renter households are a proxy for demand, not a direct measure of who is actively seeking housing, who is cost-burdened, or who may be displaced.</li>
+          <li>Focusing on 0.5-mile radii may miss the regional nature of housing markets. TODs serve households beyond immediate tracts.</li>
+          <li>This visualization highlights relative patterns and possible mismatches rather than definitively proving whether a project meets a specific demand.</li>
+          <li>Project-level data is sometimes incomplete or inconsistent. We used mbtarealty.com, but other sources note different unit counts.</li>
         </ul>
       </div>
     </section>
@@ -326,9 +425,9 @@
 
 <style>
   :global(body) {
-    background-color: #f8fafc;
+    background-color: #faf7f0;
     color: #1e293b;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     margin: 0;
   }
 
@@ -339,53 +438,310 @@
   }
 
   .hero-header {
-    padding: 10px 0 60px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
     text-align: center;
+    background: linear-gradient(180deg, #faf7f0 60%, #faf7f0 100%);
+    border-bottom: 1px solid #e8e0d4;
+  }
+
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding-top: 60px;
+    padding-bottom: 60px;
   }
 
   .section-eyebrow {
-    font-size: 0.75rem;
+    display: block;
+    font-size: 0.72rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: #b45309;
-    margin-bottom: 12px;
+    margin-bottom: 0;
   }
 
   .hero-header h1 {
-    font-size: clamp(2.2rem, 5vw, 3.8rem);
-    font-weight: 900;
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+    font-weight: 700;
     line-height: 1.1;
-    margin-bottom: 24px;
-    letter-spacing: -0.04em;
-    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: #1a0f00;
+    max-width: 800px;
   }
 
   .highlight { color: #2563eb; }
 
   .hero-desc {
-    font-size: 1.25rem;
-    color: #64748b;
-    max-width: 1100px;
-    margin: 0 auto;
-    line-height: 1.5;
+    font-size: 1.2rem;
+    color: #5a5040;
+    max-width: 680px;
+    margin: 0;
+    line-height: 1.6;
   }
 
-  .research-summary { margin-bottom: 120px; }
+  .hero-scroll-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #b45309;
+    opacity: 0.8;
+  }
+
+  .scroll-arrow {
+    font-size: 1.2rem;
+    animation: bounce 1.8s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+
+  .research-summary { padding: 60px 24px; margin-bottom: 0; }
   .context-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; }
 
   .info-card {
     background: white;
-    padding: 40px;
-    border-radius: 24px;
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
-    border: 1px solid #e2e8f0;
+    padding: 36px;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    border: 1px solid #e8e0d4;
   }
 
-  .info-card.secondary { background: #1e293b; color: #f8fafc; }
-  .info-card .label { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px; opacity: 0.7; }
-  .main-q { font-size: 1.6rem; font-weight: 800; margin-bottom: 16px; line-height: 1.2; letter-spacing: -0.02em; }
-  .sub-text { color: #64748b; font-size: 1.05rem; }
+  .info-card.secondary { background: #1e1209; color: #f5ede0; }
+  .info-card .label { display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; opacity: 0.6; }
+  .main-q {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    line-height: 1.25;
+  }
+  .sub-text { color: #64748b; font-size: 0.95rem; line-height: 1.6; margin: 0; }
+
+  .maya-humanize {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-top: 1px solid #e8e0d4;
+    border-bottom: 1px solid #e8e0d4;
+    padding: 40px 0;
+  }
+
+  .humanize-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .humanize-header { text-align: center; }
+
+  .section-title {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: #1a0f00;
+    margin: 8px 0 12px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .humanize-lead {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #5a5040;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .graphic-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .graphic-card {
+    background: #faf7f0;
+    border: 1px solid #e8e0d4;
+    border-radius: 16px;
+    padding: 22px;
+  }
+
+  .graphic-title {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a0f00;
+    margin: 0 0 3px;
+  }
+
+  .graphic-subtitle {
+    font-size: 0.75rem;
+    color: #92846e;
+    margin: 0 0 14px;
+  }
+
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
+    margin-bottom: 14px;
+  }
+
+  .person-icon {
+    width: 100%;
+    aspect-ratio: 1;
+    fill: #e8e0d4;
+    opacity: 0;
+    transform: scale(0.4);
+    transition: fill 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .waffle-visible .person-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .waffle-visible .person-icon.icon-highlighted { fill: #2563eb; }
+  .waffle-visible .person-icon:not(.icon-highlighted) { fill: #e8e0d4; }
+
+  .house-icon {
+    width: 100%;
+    aspect-ratio: 1;
+    fill: #e8e0d4;
+    opacity: 0;
+    transform: scale(0.4);
+    transition: fill 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .waffle-visible .house-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .waffle-visible .house-icon.icon-highlighted { fill: #16a34a; }
+  .waffle-visible .house-icon:not(.icon-highlighted) { fill: #e8e0d4; }
+
+  .graphic-legend { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+  .legend-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #5a5040; }
+  .legend-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .swatch-people { background: #2563eb; }
+  .swatch-housing { background: #16a34a; }
+  .swatch-other { background: #e8e0d4; border: 1px solid #d6cfc3; }
+
+  .graphic-source { font-size: 0.7rem; color: #a09070; margin: 0; font-style: italic; }
+
+  .gap-callout {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 14px;
+    padding: 16px 24px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #7c2d12;
+    text-align: center;
+  }
+
+  .tod-list {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: #faf7f0;
+    border-bottom: 1px solid #e8e0d4;
+    padding: 40px 0;
+  }
+
+  .tod-list-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .tod-list-header { text-align: center; }
+  .tod-list-desc { font-size: 0.95rem; color: #5a5040; max-width: 580px; margin: 0 auto; line-height: 1.6; }
+
+  .tod-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .tod-project-card {
+    background: white;
+    border: 1px solid #e8e0d4;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+
+  .tod-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+    gap: 6px;
+  }
+
+  .tod-neighborhood {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+  }
+
+  .tod-station {
+    font-size: 0.65rem;
+    color: #92846e;
+    text-align: right;
+    line-height: 1.3;
+  }
+
+  .tod-name {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1a0f00;
+    margin: 0 0 10px;
+    line-height: 1.3;
+  }
+
+  .tod-unit-bar {
+    display: flex;
+    height: 7px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 6px;
+    background: #f1ebe0;
+  }
+
+  .tod-bar-affordable { background: #16a34a; }
+  .tod-bar-market { background: #e2d8c8; }
+
+  .tod-unit-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+  }
+
+  .stat-affordable { font-weight: 700; color: #15803d; }
+  .stat-affordable.stat-high { color: #15803d; }
+  .stat-affordable.stat-low { color: #b45309; }
+  .stat-total { color: #92846e; }
 
   .scrolly-grid { display: flex; position: relative; }
 
@@ -406,43 +762,27 @@
     border-radius: 28px;
     box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08);
     overflow: hidden;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e8e0d4;
   }
 
   .text-stream { flex: 0.7; padding: 0 40px 0 0; }
 
-  .step-eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
+  .step-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 
   .year-badge {
-    background: #f1f5f9;
-    color: #475569;
+    background: #f5ede0;
+    color: #7c5e38;
     padding: 4px 10px;
     border-radius: 6px;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 800;
     letter-spacing: 0.05em;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e8d5b8;
     transition: all 0.4s ease;
   }
+  .active .year-badge { background: #fff7ed; color: #b45309; border-color: #ffedd5; }
 
-  .active .year-badge {
-    background: #fff7ed;
-    color: #b45309;
-    border-color: #ffedd5;
-  }
-
-  .eyebrow-text {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #94a3b8;
-  }
+  .eyebrow-text { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; }
 
   .part-marker {
     display: flex;
@@ -452,15 +792,14 @@
   }
 
   .part-marker .pill { background: #2563eb; color: white; font-size: 0.65rem; font-weight: 900; padding: 4px 12px; border-radius: 99px; }
-  .part-marker .label { font-size: 0.8rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+  .part-marker .label { font-size: 0.78rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
 
   .step-card {
     min-height: 100vh;
     display: flex;
     align-items: center;
     opacity: 0.15;
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateY(20px);
   }
 
@@ -468,92 +807,137 @@
 
   .step-content {
     background: white;
-    padding: 40px;
-    border-radius: 28px;
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
-    border: 1px solid rgba(255,255,255,0.8);
+    padding: 36px;
+    border-radius: 24px;
+    box-shadow: 0 16px 24px -8px rgba(80,40,0,0.07);
+    border: 1px solid #e8e0d4;
   }
 
-  .step-title { font-size: 1.5rem; font-weight: 800; line-height: 1.25; margin: 0 0 16px; color: #0f172a; letter-spacing: -0.02em; }
-  .step-body { font-size: 1.05rem; line-height: 1.6; color: #475569; }
+  .step-title {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 14px;
+    color: #1a0f00;
+  }
 
-  .focus-details { margin-top: 28px; border-top: 1px solid #f1f5f9; padding-top: 28px; }
-  .tod-photo { margin: 0 0 24px; border-radius: 18px; overflow: hidden; height: 200px; background: #e2e8f0; }
+  .step-body { font-size: 1rem; line-height: 1.65; color: #5a5040; }
+
+  .focus-details { margin-top: 24px; border-top: 1px solid #f1ebe0; padding-top: 24px; }
+  .tod-photo { margin: 0 0 20px; border-radius: 14px; overflow: hidden; height: 180px; background: #e8e0d4; }
   .tod-photo img { width: 100%; height: 100%; object-fit: cover; }
 
-  .demo-chart { background: #f8fafc; padding: 20px; border-radius: 20px; border: 1px solid #f1f5f9; }
-  .chart-header { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; margin-bottom: 16px; }
-  .bar-row { margin-bottom: 14px; }
-  .bar-info { display: flex; justify-content: space-between; margin-bottom: 6px; }
-  .bar-label { font-size: 0.8rem; font-weight: 600; color: #475569; }
-  .bar-value { font-size: 0.8rem; font-weight: 800; color: #0f172a; }
-  .bar-track { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 10px; transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .demo-chart { background: #faf7f0; padding: 18px; border-radius: 16px; border: 1px solid #f1ebe0; }
+  .chart-header { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; margin-bottom: 14px; }
+  .bar-row { margin-bottom: 12px; }
+  .bar-info { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .bar-label { font-size: 0.78rem; font-weight: 600; color: #5a5040; }
+  .bar-value { font-size: 0.78rem; font-weight: 800; color: #1a0f00; }
+  .bar-track { height: 7px; background: #e8e0d4; border-radius: 8px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 8px; transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
   .step-callout {
-    margin-top: 24px;
+    margin-top: 20px;
     display: flex;
-    gap: 12px;
-    padding: 16px 20px;
+    gap: 10px;
+    padding: 14px 18px;
     background: #fffbeb;
-    border-radius: 14px;
+    border-radius: 12px;
     color: #92400e;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     line-height: 1.5;
     border: 1px solid #fef3c7;
   }
 
   .spacer { height: 50vh; }
 
-  .loading-state {
+  /* ── ADVOCACY WRAP-UP ── */
+  .advocacy-bridge {
+    margin: 60px auto;
+    background: white;
+    border-radius: 28px;
+    border: 1px solid #e8e0d4;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+
+  .bridge-inner { padding: 56px; }
+
+  .bridge-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin: 28px 0 36px;
+    align-items: start;
+  }
+
+  .bridge-text p { font-size: 1rem; line-height: 1.7; color: #5a5040; margin: 0 0 14px; }
+  .bridge-text p:last-child { margin-bottom: 0; }
+
+  .bridge-callouts { display: flex; flex-direction: column; gap: 16px; }
+
+  .bridge-callout {
     display: flex;
-    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 14px;
+    align-items: flex-start;
+  }
+
+  .bridge-callout.positive { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .bridge-callout.negative { background: #fff7ed; border: 1px solid #fed7aa; }
+
+  .callout-icon {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 900;
+    flex-shrink: 0; line-height: 1;
+  }
+
+  .bridge-callout.positive .callout-icon { background: #16a34a; color: white; }
+  .bridge-callout.negative .callout-icon { background: #ea580c; color: white; }
+
+  .bridge-callout strong { display: block; font-size: 0.88rem; margin-bottom: 5px; color: #1a0f00; }
+  .bridge-callout p { margin: 0; font-size: 0.84rem; line-height: 1.55; color: #5a5040; }
+
+  .dashboard-cta {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    color: #64748b;
+    gap: 14px;
+    padding-top: 28px;
+    border-top: 1px solid #e8e0d4;
+  }
+
+  .cta-arrow {
+    font-size: 1.4rem;
+    color: #2563eb;
+    animation: bounce 1.5s ease-in-out infinite;
+  }
+
+  .cta-text { font-size: 0.95rem; font-weight: 700; color: #2563eb; }
+
+  .limitations-container { margin: 0 auto 80px; }
+
+  .limitations-container .info-card { border-left: 5px solid #d6cfc3; }
+
+  .limitations-list { margin: 20px 0 0; padding-left: 20px; list-style-type: disc; }
+  .limitations-list li { margin-bottom: 14px; line-height: 1.7; color: #5a5040; font-size: 0.95rem; padding-left: 6px; }
+  .limitations-list li::marker { color: #a09070; }
+  .limitations-list li:last-child { margin-bottom: 0; }
+
+  .loading-state {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; height: 100vh; color: #92846e;
   }
 
   .loading-pulse {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #e2e8f0;
-    border-top: 4px solid #2563eb;
+    width: 40px; height: 40px;
+    border: 4px solid #e8e0d4;
+    border-top: 4px solid #b45309;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 16px;
-  }
-
-.limitations-container {
-    margin-top: 50px;
-    margin-bottom: 100px;
-  }
-
-  .limitations-container .info-card {
-    max-width: 100%;
-    border-left: 6px solid #94a3b8;
-  }
-
-  .limitations-list {
-    margin: 24px 0 0;
-    padding-left: 20px;
-    list-style-type: disc;
-  }
-
-  .limitations-list li {
-    margin-bottom: 16px;
-    line-height: 1.7;
-    color: #4b5563;
-    font-size: 1.05rem;
-    padding-left: 8px;
-  }
-
-  .limitations-list li::marker {
-    color: #94a3b8;
-  }
-
-  .limitations-list li:last-child {
-    margin-bottom: 0;
   }
 
   @keyframes spin {
@@ -568,5 +952,15 @@
     .text-stream { padding: 0 20px; }
     .step-card { min-height: auto; margin-bottom: 60px; opacity: 1; transform: none; }
     .context-grid { grid-template-columns: 1fr; }
+    .graphic-pair { grid-template-columns: 1fr; }
+    .tod-cards-grid { grid-template-columns: 1fr 1fr; }
+    .bridge-grid { grid-template-columns: 1fr; }
+    .bridge-inner { padding: 28px 20px; }
+    .maya-humanize { padding: 32px 0; min-height: unset; }
+    .tod-list { padding: 32px 0; min-height: unset; }
+  }
+
+  @media (max-width: 600px) {
+    .tod-cards-grid { grid-template-columns: 1fr; }
   }
 </style>
