@@ -276,11 +276,13 @@
     </div>
     <div class="legend-divider"></div>
     <div class="legend-row">
-      <svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="#64748b"/></svg>
+      <svg width="12" height="12"><circle cx="6" cy="6" r="5" stroke="#000" stroke-width="2" fill="none"/></svg>
       <p class="legend-sub">TOD project (buffer average)</p>
     </div>
     <div class="legend-row">
-      <span class="swatch-block" style="background:#f59e0b; width:12px; height:12px; border-radius:2px; display:inline-block;"></span>
+      <svg width="14" height="14" style="flex-shrink:0">
+        <rect x="1" y="1" width="12" height="12" fill="#f0f2f4" stroke="#d1d9e0" stroke-width="1.5" rx="1"/>
+      </svg>
       <p class="legend-sub">Census tract (background)</p>
     </div>
   </div>

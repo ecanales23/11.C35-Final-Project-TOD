@@ -1,407 +1,152 @@
-import * as d3 from "d3";
-
-function num(v) {
-  const n = +v;
-  return Number.isFinite(n) ? n : 0;
-}
-
-function cleanProjectName(name = "") {
-  return String(name).trim();
-}
-
-function normalizeProjectName(name = "") {
-  return cleanProjectName(name)
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/['".,()/:-]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function totalsForThreshold(ownerBins, renterBins, threshold = "50k") {
-  let ownerLower = 0;
-  let renterLower = 0;
-
-  if (threshold === "35k") {
-    ownerLower = ownerBins.zeroNeg + ownerBins.lt20 + ownerBins.x20_35;
-    renterLower = renterBins.zeroNeg + renterBins.lt20 + renterBins.x20_35;
-  } else if (threshold === "75k") {
-    ownerLower =
-      ownerBins.zeroNeg +
-      ownerBins.lt20 +
-      ownerBins.x20_35 +
-      ownerBins.x35_50 +
-      ownerBins.x50_75;
-    renterLower =
-      renterBins.zeroNeg +
-      renterBins.lt20 +
-      renterBins.x20_35 +
-      renterBins.x35_50 +
-      renterBins.x50_75;
-  } else {
-    ownerLower =
-      ownerBins.zeroNeg + ownerBins.lt20 + ownerBins.x20_35 + ownerBins.x35_50;
-    renterLower =
-      renterBins.zeroNeg +
-      renterBins.lt20 +
-      renterBins.x20_35 +
-      renterBins.x35_50;
-  }
-
-  return { ownerLower, renterLower };
-}
-
-function computeCostBurdenedRenters(burdenBins) {
-  return (
-    (burdenBins.lt20_30plus || 0) +
-    (burdenBins.x20_35_30plus || 0) +
-    (burdenBins.x35_50_30plus || 0) +
-    (burdenBins.x50_75_30plus || 0) +
-    (burdenBins.x75plus_30plus || 0)
-  );
-}
-
-function makeMetrics(
-  project,
-  period,
-  periodKey,
-  ownerBins,
-  renterBins,
-  renterBurdenBins, 
-  geometry,
-  threshold = "50k"
-) {
-  const totalOwner = d3.sum(Object.values(ownerBins));
-  const totalRenter = d3.sum(Object.values(renterBins));
-  const occupiedTotal = totalOwner + totalRenter;
-
-  const { ownerLower, renterLower } = totalsForThreshold(
-    ownerBins,
-    renterBins,
-    threshold
-  );
-
-  const costBurdenedRenters = renterBurdenBins
-    ? computeCostBurdenedRenters(renterBurdenBins)
-    : null;
-
-  return {
-    project,
-    normalizedProject: normalizeProjectName(project),
-    period,
-    periodKey,
-    geometry,
-    totalOwner,
-    totalRenter,
-    occupiedTotal,
-    ownerLower,
-    renterLower,
-
-    renterShare: occupiedTotal > 0 ? totalRenter / occupiedTotal : 0,
-    lowIncomeHouseholdShare:
-      occupiedTotal > 0 ? (ownerLower + renterLower) / occupiedTotal : 0,
-    lowIncomeRenterShare:
-      occupiedTotal > 0 ? renterLower / occupiedTotal : 0,
-
-    costBurdenedRenterShare:
-      renterBurdenBins && totalRenter > 0
-        ? costBurdenedRenters / totalRenter
-        : null,
-
-    lowIncomeCostBurdenedShare:
-      renterBurdenBins && occupiedTotal > 0
-        ? ((renterBurdenBins.lt20_30plus || 0) +
-            (renterBurdenBins.x20_35_30plus || 0) +
-            (renterBurdenBins.x35_50_30plus || 0)) /
-          occupiedTotal
-        : null,
-  };
-}
+import { base } from "$app/paths";
 
 export async function loadTimelineData(threshold = "50k") {
-  const [histRows, currentRows, geojson] = await Promise.all([
-    d3.csv("/data/TOD_14_19_WeightedDemographics.csv"),
-    d3.csv("/data/TODLocation+BufferDemoAvgs.csv"),
-    d3.json("/data/TODLocations_4.4.26.geojson"),
+  const [p14, p19, p24] = await Promise.all([
+    fetch(`${base}/data/TOD_2014_WeightedDemographics.geojson`).then(r => r.json()),
+    fetch(`${base}/data/TOD_2019_WeightedDemographics.geojson`).then(r => r.json()),
+    fetch(`${base}/data/TOD_2024_WeightedDemographics.geojson`).then(r => r.json()),
   ]);
-
-  const geometryByNormalizedName = new Map(
-    geojson.features.map((f) => [
-      normalizeProjectName(f.properties.j_Project),
-      f.geometry,
-    ])
-  );
 
   const rows = [];
 
-  for (const row of histRows) {
-    const project = cleanProjectName(row["Project"]);
-    const geometry =
-      geometryByNormalizedName.get(normalizeProjectName(project)) ?? null;
+  function extractMetrics(props, periodKey, threshold) {
+    let ownerLower, renterLower, totalOwner, totalRenter,
+        costBurdenedRenters = null;
 
-    const ownerBins14 = {
-      lt20: num(
-        row[
-          "wtd_14_Total:Owner-occupied housing units:Less than $20,000"
-        ]
-      ),
-      x20_35: num(
-        row[
-          "wtd_14_Total:Owner-occupied housing units:$20,000 to $34,999"
-        ]
-      ),
-      x35_50: num(
-        row[
-          "wtd_14_Total:Owner-occupied housing units:$35,000 to $49,999"
-        ]
-      ),
-      x50_75: num(
-        row[
-          "wtd_14_Total:Owner-occupied housing units:$50,000 to $74,999"
-        ]
-      ),
-      x75plus: num(
-        row["wtd_14_Total:Owner-occupied housing units:$75,000 or more"]
-      ),
-      zeroNeg: num(
-        row[
-          "wtd_14_Total:Owner-occupied housing units:Zero or negative income"
-        ]
-      ),
+    if (periodKey === "2014") {
+      const total = props["j_wtd_C_Total"] ?? 0;
+      totalOwner  = props["j_wtd_C_Total:Owner-occupied housing units"] ?? 0;
+      totalRenter = props["j_wtd_C_Total:Renter-occupied housing units"] ?? 0;
+
+      const rLt20  = props["j_wtd_C_Total:Renter-occupied housing units:Less than $20,000"] ?? 0;
+      const r20_35 = props["j_wtd_C_Total:Renter-occupied housing units:$20,000 to $34,999"] ?? 0;
+      const r35_50 = props["j_wtd_C_Total:Renter-occupied housing units:$35,000 to $49,999"] ?? 0;
+      const r50_75 = props["j_wtd_C_Total:Renter-occupied housing units:$50,000 to $74,999"] ?? 0;
+
+      const oLt20  = props["j_wtd_C_Total:Owner-occupied housing units:Less than $20,000"] ?? 0;
+      const o20_35 = props["j_wtd_C_Total:Owner-occupied housing units:$20,000 to $34,999"] ?? 0;
+      const o35_50 = props["j_wtd_C_Total:Owner-occupied housing units:$35,000 to $49,999"] ?? 0;
+      const o50_75 = props["j_wtd_C_Total:Owner-occupied housing units:$50,000 to $74,999"] ?? 0;
+
+      if (threshold === "35k") {
+        renterLower = rLt20 + r20_35;
+        ownerLower  = oLt20 + o20_35;
+      } else if (threshold === "75k") {
+        renterLower = rLt20 + r20_35 + r35_50 + r50_75;
+        ownerLower  = oLt20 + o20_35 + o35_50 + o50_75;
+      } else { // 50k default
+        renterLower = rLt20 + r20_35 + r35_50;
+        ownerLower  = oLt20 + o20_35 + o35_50;
+      }
+
+      costBurdenedRenters =
+        (props["j_wtd_C_Total:Renter-occupied housing units:Less than $20,000:30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total:Renter-occupied housing units:$20,000 to $34,999:30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total:Renter-occupied housing units:$35,000 to $49,999:30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total:Renter-occupied housing units:$50,000 to $74,999:30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total:Renter-occupied housing units:$75,000 or more:30 percent or more"] ?? 0);
+
+    } else if (periodKey === "2019") {
+      totalOwner  = props["j_wtd_C_Total: Owner-occupied housing units:"] ?? 0;
+      totalRenter = props["j_wtd_C_Total: Renter-occupied housing units:"] ?? 0;
+
+      const rLt20  = props["j_wtd_C_Total: Renter-occupied housing units: Less than $20,000:"] ?? 0;
+      const r20_35 = props["j_wtd_C_Total: Renter-occupied housing units: $20,000 to $34,999:"] ?? 0;
+      const r35_50 = props["j_wtd_C_Total: Renter-occupied housing units: $35,000 to $49,999:"] ?? 0;
+      const r50_75 = props["j_wtd_C_Total: Renter-occupied housing units: $50,000 to $74,999:"] ?? 0;
+
+      const oLt20  = props["j_wtd_C_Total: Owner-occupied housing units: Less than $20,000:"] ?? 0;
+      const o20_35 = props["j_wtd_C_Total: Owner-occupied housing units: $20,000 to $34,999:"] ?? 0;
+      const o35_50 = props["j_wtd_C_Total: Owner-occupied housing units: $35,000 to $49,999:"] ?? 0;
+      const o50_75 = props["j_wtd_C_Total: Owner-occupied housing units: $50,000 to $74,999:"] ?? 0;
+
+      if (threshold === "35k") {
+        renterLower = rLt20 + r20_35;
+        ownerLower  = oLt20 + o20_35;
+      } else if (threshold === "75k") {
+        renterLower = rLt20 + r20_35 + r35_50 + r50_75;
+        ownerLower  = oLt20 + o20_35 + o35_50 + o50_75;
+      } else {
+        renterLower = rLt20 + r20_35 + r35_50;
+        ownerLower  = oLt20 + o20_35 + o35_50;
+      }
+
+      costBurdenedRenters =
+        (props["j_wtd_C_Total: Renter-occupied housing units: Less than $20,000: 30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total: Renter-occupied housing units: $20,000 to $34,999: 30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total: Renter-occupied housing units: $35,000 to $49,999: 30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total: Renter-occupied housing units: $50,000 to $74,999: 30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total: Renter-occupied housing units: $75,000 or more: 30 percent or more"] ?? 0);
+
+    } else {
+      // 2024
+      totalOwner  = props["Owner-Occupied Housing Units"] ?? 0;
+      totalRenter = props["Renter-Occupied Housing Units"] ?? 0;
+
+      const rLt20  = props["Renter-Occupied Housing Units: Less Than $20,000"] ?? 0;
+      const r20_35 = props["Renter-Occupied Housing Units: $20,000 To $34,999"] ?? 0;
+      const r35_50 = props["Renter-Occupied Housing Units: $35,000 To $49,999"] ?? 0;
+      const r50_75 = props["Renter-Occupied Housing Units: $50,000 To $74,999"] ?? 0;
+
+      const oLt20  = props["Owner-Occupied Housing Units: Less Than $20,000"] ?? 0;
+      const o20_35 = props["Owner-Occupied Housing Units: $20,000 To $34,999"] ?? 0;
+      const o35_50 = props["Owner-Occupied Housing Units: $35,000 To $49,999"] ?? 0;
+      const o50_75 = props["Owner-Occupied Housing Units: $50,000 To $74,999"] ?? 0;
+
+      if (threshold === "35k") {
+        renterLower = rLt20 + r20_35;
+        ownerLower  = oLt20 + o20_35;
+      } else if (threshold === "75k") {
+        renterLower = rLt20 + r20_35 + r35_50 + r50_75;
+        ownerLower  = oLt20 + o20_35 + o35_50 + o50_75;
+      } else {
+        renterLower = rLt20 + r20_35 + r35_50;
+        ownerLower  = oLt20 + o20_35 + o35_50;
+      }
+      // no cost burden data for 2024
+      costBurdenedRenters = null;
+    }
+
+    const occupiedTotal = totalOwner + totalRenter;
+
+    return {
+      totalOwner,
+      totalRenter,
+      occupiedTotal,
+      ownerLower,
+      renterLower,
+      renterShare:            occupiedTotal > 0 ? totalRenter / occupiedTotal : 0,
+      lowIncomeHouseholdShare: occupiedTotal > 0 ? (ownerLower + renterLower) / occupiedTotal : 0,
+      lowIncomeRenterShare:   occupiedTotal > 0 ? renterLower / occupiedTotal : 0,
+      costBurdenedRenterShare: costBurdenedRenters !== null && totalRenter > 0
+        ? costBurdenedRenters / totalRenter
+        : null,
     };
-
-    const renterBins14 = {
-      lt20: num(
-        row[
-          "wtd_14_Total:Renter-occupied housing units:Less than $20,000"
-        ]
-      ),
-      x20_35: num(
-        row[
-          "wtd_14_Total:Renter-occupied housing units:$20,000 to $34,999"
-        ]
-      ),
-      x35_50: num(
-        row[
-          "wtd_14_Total:Renter-occupied housing units:$35,000 to $49,999"
-        ]
-      ),
-      x50_75: num(
-        row[
-          "wtd_14_Total:Renter-occupied housing units:$50,000 to $74,999"
-        ]
-      ),
-      x75plus: num(
-        row["wtd_14_Total:Renter-occupied housing units:$75,000 or more"]
-      ),
-      zeroNeg: num(
-        row[
-          "wtd_14_Total:Renter-occupied housing units:Zero or negative income"
-        ]
-      ),
-    };
-
-    const renterBurdenBins14 = {
-      lt20_30plus: num(
-        row[
-          "wtd_14_Total:Renter-occupied housing units:Less than $20,000:30 percent or more"
-        ]
-      ),
-      x20_35_30plus: num(
-        row[
-          "wtd_14_Total:Renter-occupied housing units:$20,000 to $34,999:30 percent or more"
-        ]
-      ),
-      x35_50_30plus: num(
-        row[
-          "wtd_14_Total:Renter-occupied housing units:$35,000 to $49,999:30 percent or more"
-        ]
-      ),
-      x50_75_30plus: num(
-        row[
-          "wtd_14_Total:Renter-occupied housing units:$50,000 to $74,999:30 percent or more"
-        ]
-      ),
-      x75plus_30plus: num(
-        row[
-          "wtd_14_Total:Renter-occupied housing units:$75,000 or more:30 percent or more"
-        ]
-      ),
-    };
-
-    rows.push(
-      makeMetrics(
-        project,
-        "2010–2014",
-        "2014",
-        ownerBins14,
-        renterBins14,
-        renterBurdenBins14,
-        geometry,
-        threshold
-      )
-    );
-
-    const ownerBins19 = {
-      lt20: num(
-        row[
-          "wtd_19_Total: Owner-occupied housing units: Less than $20,000:"
-        ]
-      ),
-      x20_35: num(
-        row[
-          "wtd_19_Total: Owner-occupied housing units: $20,000 to $34,999:"
-        ]
-      ),
-      x35_50: num(
-        row[
-          "wtd_19_Total: Owner-occupied housing units: $35,000 to $49,999:"
-        ]
-      ),
-      x50_75: num(
-        row[
-          "wtd_19_Total: Owner-occupied housing units: $50,000 to $74,999:"
-        ]
-      ),
-      x75plus: num(
-        row[
-          "wtd_19_Total: Owner-occupied housing units: $75,000 or more:"
-        ]
-      ),
-      zeroNeg: num(
-        row[
-          "wtd_19_Total: Owner-occupied housing units: Zero or negative income"
-        ]
-      ),
-    };
-
-    const renterBins19 = {
-      lt20: num(
-        row[
-          "wtd_19_Total: Renter-occupied housing units: Less than $20,000:"
-        ]
-      ),
-      x20_35: num(
-        row[
-          "wtd_19_Total: Renter-occupied housing units: $20,000 to $34,999:"
-        ]
-      ),
-      x35_50: num(
-        row[
-          "wtd_19_Total: Renter-occupied housing units: $35,000 to $49,999:"
-        ]
-      ),
-      x50_75: num(
-        row[
-          "wtd_19_Total: Renter-occupied housing units: $50,000 to $74,999:"
-        ]
-      ),
-      x75plus: num(
-        row[
-          "wtd_19_Total: Renter-occupied housing units: $75,000 or more:"
-        ]
-      ),
-      zeroNeg: num(
-        row[
-          "wtd_19_Total: Renter-occupied housing units: Zero or negative income"
-        ]
-      ),
-    };
-
-    const renterBurdenBins19 = {
-      lt20_30plus: num(
-        row[
-          "wtd_19_Total: Renter-occupied housing units: Less than $20,000: 30 percent or more"
-        ]
-      ),
-      x20_35_30plus: num(
-        row[
-          "wtd_19_Total: Renter-occupied housing units: $20,000 to $34,999: 30 percent or more"
-        ]
-      ),
-      x35_50_30plus: num(
-        row[
-          "wtd_19_Total: Renter-occupied housing units: $35,000 to $49,999: 30 percent or more"
-        ]
-      ),
-      x50_75_30plus: num(
-        row[
-          "wtd_19_Total: Renter-occupied housing units: $50,000 to $74,999: 30 percent or more"
-        ]
-      ),
-      x75plus_30plus: num(
-        row[
-          "wtd_19_Total: Renter-occupied housing units: $75,000 or more: 30 percent or more"
-        ]
-      ),
-    };
-
-    rows.push(
-      makeMetrics(
-        project,
-        "2015–2019",
-        "2019",
-        ownerBins19,
-        renterBins19,
-        renterBurdenBins19,
-        geometry,
-        threshold
-      )
-    );
   }
 
-  for (const row of currentRows) {
-    const project = cleanProjectName(row["j_Project"]);
-    const geometry =
-      geometryByNormalizedName.get(normalizeProjectName(project)) ?? null;
+  const periodMap = [
+    { gj: p14, periodKey: "2014", period: "2010–2014" },
+    { gj: p19, periodKey: "2019", period: "2015–2019" },
+    { gj: p24, periodKey: "2024", period: "2020–2024" },
+  ];
 
-    const ownerBins24 = {
-      lt20: num(row["D_Owner-Occupied Housing Units: Less Than $20,000"]),
-      x20_35: num(
-        row["D_Owner-Occupied Housing Units: $20,000 To $34,999"]
-      ),
-      x35_50: num(
-        row["D_Owner-Occupied Housing Units: $35,000 To $49,999"]
-      ),
-      x50_75: num(
-        row["D_Owner-Occupied Housing Units: $50,000 To $74,999"]
-      ),
-      x75plus: num(row["D_Owner-Occupied Housing Units: $75,000 Or More"]),
-      zeroNeg: num(
-        row["D_Owner-Occupied Housing Units: Zero Or Negative Income"]
-      ),
-    };
+  for (const { gj, periodKey, period } of periodMap) {
+    for (const feature of gj.features) {
+      const props = feature.properties;
+      const project = String(props.Project ?? "").trim();
+      if (!project) continue;
 
-    const renterBins24 = {
-      lt20: num(row["D_Renter-Occupied Housing Units: Less Than $20,000"]),
-      x20_35: num(
-        row["D_Renter-Occupied Housing Units: $20,000 To $34,999"]
-      ),
-      x35_50: num(
-        row["D_Renter-Occupied Housing Units: $35,000 To $49,999"]
-      ),
-      x50_75: num(
-        row["D_Renter-Occupied Housing Units: $50,000 To $74,999"]
-      ),
-      x75plus: num(row["D_Renter-Occupied Housing Units: $75,000 Or More"]),
-      zeroNeg: num(
-        row["D_Renter-Occupied Housing Units: Zero Or Negative Income"]
-      ),
-    };
+      const metrics = extractMetrics(props, periodKey, threshold);
 
-    rows.push(
-      makeMetrics(
+      rows.push({
         project,
-        "2020–2024",
-        "2024",
-        ownerBins24,
-        renterBins24,
-        null,
-        geometry,
-        threshold
-      )
-    );
+        period,
+        periodKey,
+        geometry: feature.geometry,
+        ...metrics,
+      });
+    }
   }
 
-  return rows.filter((d) => d.geometry);
+  return rows;
 }
