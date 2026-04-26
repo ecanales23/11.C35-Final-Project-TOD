@@ -92,92 +92,111 @@
   <main class="page-wrapper">
     <TimelineSection />
 
-    <header class="hero-section">
-      <div class="header-content">
-        <p class="eyebrow">Greater Boston TOD Opportunity Dashboard</p>
-        <h1>Which TOD projects are opening doors for renters like Maya?</h1>
-        <p class="subtitle">
-          For each transit-oriented development, we compare the affordable share of new housing with the proportion of nearby lower-income renters. Projects with a positive score are providing <strong>more housing opportunity</strong> than local demand suggests. Projects with a negative score are providing <strong>less</strong>.
-        </p>
-      </div>
-    </header>
+    <div class="dashboard-shell" id="dashboard">
 
-    <div class="narrative-container">
-      <StorySteps onApplyStep={applyStoryStep} />
-    </div>
+      <!-- LEFT: scrollable controls + story steps -->
+      <div class="controls-col">
 
-    <div class="dashboard-context">
-      <p>
-        Use the controls below to explore how each TOD compares to the needs of its surrounding community.
-        A project exceeding local lower-income demand is <strong>providing more opportunity</strong> for renters like Maya — opening doors to neighborhoods they otherwise couldn't afford.
-        A project falling short is <strong>providing less opportunity</strong>, and in high-need areas, may be contributing to gentrification pressure as the current population can't afford to move into the new units.
-      </p>
-    </div>
-
-    <section class="controls-toolbar">
-      <div class="control-group flex-2">
-        <label for="tod-select">Selected TOD</label>
-        {#if selectedTod}
-          <select id="tod-select" on:change={handleDropdown} bind:value={selectedTod.id}>
-            {#each todData as d}
-              <option value={d.id}>{d.project}</option>
-            {/each}
-          </select>
-        {/if}
-      </div>
-
-      <div class="control-group flex-1">
-        <label for="threshold">Demand threshold</label>
-        <select id="threshold" bind:value={demandThreshold}>
-          <option value="35k">Renters under $35k</option>
-          <option value="50k">Renters under $50k</option>
-          <option value="75k">Renters under $75k</option>
-        </select>
-      </div>
-
-      <div class="control-group flex-1">
-        <label for="sort">Sort projects by</label>
-        <select id="sort" bind:value={sortBy}>
-          <option value="name">Project name</option>
-          <option value="gap">Largest gap</option>
-          <option value="affordable">Affordable share</option>
-          <option value="units">Total units</option>
-        </select>
-      </div>
-
-      <div class="control-group flex-1 slider-container">
-        <label for="min-units">
-          Min project size: <strong>{minUnits} units</strong>
-        </label>
-        <div class="slider-wrapper">
-          <input id="min-units" type="range" min="0" max="400" step="10" bind:value={minUnits} />
+        <div class="story-block">
+          <p class="section-label">Guided views</p>
+          <StorySteps onApplyStep={applyStoryStep} />
         </div>
-      </div>
 
-      <div class="control-group flex-1-5 check-stack">
-        <label class="custom-check">
-          <input type="checkbox" bind:checked={showOnlyAffordable} />
-          <span>Only projects with affordable units</span>
-        </label>
-        <label class="custom-check">
-          <input type="checkbox" bind:checked={showUnderServingOnly} />
-          <span>Only projects providing less opportunity than local demand</span>
-        </label>
-      </div>
-    </section>
+        <details class="info-box">
+          <summary>
+            <div class="summary-content">
+              <p class="eyebrow">How to use this dashboard</p>
+              <h2>Dashboard Controls</h2>
+            </div>
+          </summary>
+          <div class="details-content">
+            <p>
+              Use the controls below to explore how each TOD compares to the needs of its surrounding community.
+              Projects exceeding local lower-income demand are <strong>opening doors</strong> for renters like Maya.
+              Projects falling short may be contributing to <strong>gentrification pressure</strong>.
+            </p>
+          </div>
+        </details>
 
-    <div class="status-bar">
-      <p><strong>{todData.length}</strong> projects visible • Threshold: <strong>{demandThreshold}</strong></p>
-    </div>
+        <div class="controls-block">
+          <div class="control-group">
+            <label for="tod-select">Selected TOD</label>
+            {#if selectedTod}
+              <select id="tod-select" on:change={handleDropdown} bind:value={selectedTod.id}>
+                {#each todData as d}
+                  <option value={d.id}>{d.project}</option>
+                {/each}
+              </select>
+            {/if}
+          </div>
 
-    <div class="visualization-layout">
-      <div class="map-container">
-        <Map data={todData} selectedId={selectedTod?.id} onSelect={handleSelect} />
-      </div>
-      <aside class="detail-sidebar">
-        <TodDetailPanel tod={selectedTod} />
-      </aside>
-    </div>
+          <div class="control-row">
+            <div class="control-group">
+              <label for="threshold">Demand threshold</label>
+              <select id="threshold" bind:value={demandThreshold}>
+                <option value="35k">Renters under $35k</option>
+                <option value="50k">Renters under $50k</option>
+                <option value="75k">Renters under $75k</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label for="sort">Sort by</label>
+              <select id="sort" bind:value={sortBy}>
+                <option value="name">Project name</option>
+                <option value="gap">Largest gap</option>
+                <option value="affordable">Affordable share</option>
+                <option value="units">Total units</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label for="min-units">Min project size: <strong>{minUnits} units</strong></label>
+            <input id="min-units" type="range" min="0" max="400" step="10" bind:value={minUnits} />
+          </div>
+
+          <div class="check-stack">
+            <label class="custom-check">
+              <input type="checkbox" bind:checked={showOnlyAffordable} />
+              <span>Only projects with affordable units</span>
+            </label>
+            <label class="custom-check">
+              <input type="checkbox" bind:checked={showUnderServingOnly} />
+              <span>Only projects providing less opportunity than local demand</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="status-bar">
+          <strong>{todData.length}</strong> projects visible &nbsp;·&nbsp; Threshold: <strong>{demandThreshold}</strong>
+        </div>
+
+      </div>  <!-- ← controls-col closes here -->
+
+      <!-- RIGHT: map + detail panel -->
+      <div class="map-col">
+        <header class="map-header">
+          <p class="eyebrow">Greater Boston TOD Opportunity Dashboard</p>
+          <h1>Which TOD projects are opening doors for renters like Maya?</h1>
+          <p class="subtitle">
+            Compare each TOD's affordable share against nearby lower-income renter demand.
+            A <strong>positive score</strong> means more opportunity than local demand suggests.
+            A <strong>negative score</strong> means less.
+          </p>
+        </header>
+
+        <div class="map-and-panel">
+          <div class="map-container">
+            <Map data={todData} selectedId={selectedTod?.id} onSelect={handleSelect} />
+          </div>
+          <aside class="detail-sidebar">
+            <TodDetailPanel tod={selectedTod} />
+          </aside>
+        </div>
+      </div>  <!-- ← map-col closes here -->
+
+    </div>  <!-- ← dashboard-shell closes here -->
   </main>
 {/if}
 
@@ -192,7 +211,6 @@
   .page-wrapper {
     max-width: 1600px;
     margin: 0 auto;
-    padding: 40px;
   }
 
   .loading-container {
@@ -203,109 +221,160 @@
     color: #92846e;
   }
 
-  .hero-section {
+  /* ── Dashboard shell ───────────────────────────────────────────────── */
+  .dashboard-shell {
+    display: grid;
+    grid-template-columns: 380px 1fr;  /* ← was 1fr 380px */
+    gap: 24px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+
+  /* ── Left column ───────────────────────────────────────────────────── */
+  .map-col {
     display: flex;
-    justify-content: center;
-    text-align: center;
-    padding: 60px 0 40px;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+  }
+
+  .map-header {
+    flex-shrink: 0;
   }
 
   .eyebrow {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #b45309;
-    margin-bottom: 12px;
+    margin: 0 0 8px;
   }
 
   h1 {
     font-family: 'Lora', Georgia, serif;
-    font-size: 2.75rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    line-height: 1.15;
+    line-height: 1.2;
     letter-spacing: -0.02em;
-    margin: 0 0 16px;
-    max-width: 900px;
+    margin: 0 0 8px;
     color: #1a0f00;
   }
 
   .subtitle {
-    font-size: 1.1rem;
-    line-height: 1.65;
+    font-size: 0.9rem;
+    line-height: 1.6;
     color: #5a5040;
-    max-width: 820px;
     margin: 0;
   }
 
-  .narrative-container {
-    margin-bottom: 24px;
-    background: #fff;
-    border: 1px solid #e8e0d4;
-    border-radius: 16px;
-    padding: 4px;
+  .map-and-panel {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
   }
 
-  .dashboard-context {
-    margin-bottom: 24px;
-    padding: 20px 28px;
+  .map-container {
+    background: white;
+    border: 1px solid #e8e0d4;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+    min-height: 0;
+  }
+
+  .detail-sidebar {
+    background: white;
+    border: 1px solid #e8e0d4;
+    border-radius: 20px;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+  }
+
+  /* ── Right column ──────────────────────────────────────────────────── */
+  .controls-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #92846e;
+    margin: 0 0 10px;
+  }
+
+  .story-block {
+    background: white;
+    border: 1px solid #e8e0d4;
+    border-radius: 16px;
+    padding: 20px;
+    flex-shrink: 0;
+  }
+
+  .context-block {
+    padding: 16px 20px;
     background: #fff7ed;
     border: 1px solid #fed7aa;
     border-radius: 14px;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     line-height: 1.65;
     color: #7c3a0a;
+    flex-shrink: 0;
   }
 
-  .dashboard-context strong { color: #1a0f00; }
+  .context-block strong { color: #1a0f00; }
 
-  .controls-toolbar {
-    display: flex;
-    align-items: stretch;
-    gap: 24px;
-    margin-bottom: 16px;
+  .controls-block {
     background: white;
-    padding: 24px 32px;
-    border-radius: 20px;
     border: 1px solid #e8e0d4;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .control-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
   }
 
   .control-group {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 6px;
   }
 
-  .flex-1 { flex: 1; }
-  .flex-1-5 { flex: 1.5; }
-  .flex-2 { flex: 2; }
-
   .control-group label {
-    display: block;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #92846e;
-    margin-bottom: 8px;
   }
 
   select {
     width: 100%;
-    height: 42px;
-    padding: 0 12px;
+    height: 38px;
+    padding: 0 10px;
     border-radius: 10px;
     border: 1px solid #d6cfc3;
-    font-size: 14px;
+    font-size: 13px;
     background: #faf7f0;
     color: #1a0f00;
-  }
-
-  .slider-wrapper {
-    height: 42px;
-    display: flex;
-    align-items: center;
   }
 
   input[type="range"] {
@@ -314,58 +383,42 @@
   }
 
   .check-stack {
-    justify-content: center;
-    gap: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .custom-check {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: flex-start;
+    gap: 8px;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 12px;
     color: #5a5040;
-    font-weight: 700;
-    line-height: 1.2;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    line-height: 1.4;
   }
+
+  .custom-check input { margin-top: 2px; flex-shrink: 0; }
 
   .status-bar {
-    padding: 0 8px 16px;
-    font-size: 14px;
+    font-size: 13px;
     color: #92846e;
+    padding: 4px 0;
+    flex-shrink: 0;
   }
 
-  .visualization-layout {
-    display: grid;
-    grid-template-columns: 1fr 420px;
-    gap: 24px;
-    height: 750px;
-  }
-
-  .map-container, .detail-sidebar {
-    background: white;
-    border: 1px solid #e8e0d4;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
-  }
-
-  .detail-sidebar {
-    overflow-y: auto;
-  }
-
-  @media (max-width: 1280px) {
-    .controls-toolbar {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      padding: 20px;
-    }
-    .visualization-layout {
+  @media (max-width: 1100px) {
+    .dashboard-shell {
       grid-template-columns: 1fr;
       height: auto;
+      position: static;
     }
-    .map-container { height: 600px; }
+    .map-and-panel {
+      grid-template-columns: 1fr;
+      height: 600px;
+    }
+    .detail-sidebar { display: none; }
   }
+
+  
 </style>

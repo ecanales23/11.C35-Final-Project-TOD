@@ -53,13 +53,13 @@
     </div>
 
     <div class="chart-group">
-      <DemandFitChart {tod} width={360} />
+      <DemandFitChart {tod} />
     </div>
 
     <div class="chart-group">
-      <DemandByIncomeChart {tod} width={360} />
+      <DemandByIncomeChart {tod} />
     </div>
-
+    
     <div class="note-box">
       <p>
         {#if tod.mismatchScore < 0}
@@ -151,7 +151,7 @@
 
   .stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 6px;
     margin-bottom: 10px;
   }
@@ -190,17 +190,30 @@
     line-height: 1.4;
   }
 
-  .sentence-box p {
-    margin: 0;
+  .sentence-box {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 14px;
+    padding: 8px 12px;
+    background: #fcfdff;
+    border: 1px solid #e6ebf0;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    color: #334155;
+    line-height: 1.4;
   }
 
   .chart-group {
-    display: table;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     margin-bottom: 14px;
     padding: 12px;
     background: #fcfdff;
     border: 1px solid #e6ebf0;
     border-radius: 12px;
+    overflow-x: hidden;
   }
 
   .note-box {
