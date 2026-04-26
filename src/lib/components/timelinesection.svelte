@@ -407,19 +407,52 @@
       </div>
     </section>
 
-    <section class="limitations-container container">
-      <div class="info-card">
-        <p class="main-q">Research Limitations</p>
-        <ul class="limitations-list">
-          <li>Our opportunity score is only a rough estimate. Even if a project's affordability reaches "demand" levels, it does not mean it is meeting those households' needs in practice.</li>
-          <li>The metric treats all units as serving the same population, regardless of targeted AMI levels, unit sizes, or eligibility rules.</li>
-          <li>Lower-income renter households are a proxy for demand, not a direct measure of who is actively seeking housing, who is cost-burdened, or who may be displaced.</li>
-          <li>Focusing on 0.5-mile radii may miss the regional nature of housing markets. TODs serve households beyond immediate tracts.</li>
-          <li>This visualization highlights relative patterns and possible mismatches rather than definitively proving whether a project meets a specific demand.</li>
-          <li>Project-level data is sometimes incomplete or inconsistent. We used mbtarealty.com, but other sources note different unit counts.</li>
-        </ul>
+  <section class="limitations-container container">
+    <div class="limitations-card">
+      <div class="limitations-header">
+        <div class="header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="limitations-title">Research Limitations</h2>
+        </div>
       </div>
-    </section>
+
+      <div class="limitations-grid">
+        <div class="limitation-item">
+          <span class="limitation-tag">Metrics</span>
+          <p>Our opportunity score is only a rough estimate. Even if a project's affordability reaches "demand" levels, it does not mean it is meeting those households' needs in practice.</p>
+        </div>
+
+        <div class="limitation-item">
+          <span class="limitation-tag">Household Proxy</span>
+          <p>Lower-income renter households are a proxy for demand, not a direct measure of who is actively seeking housing, who is cost-burdened, or who may be displaced.</p>
+        </div>
+
+        <div class="limitation-item">
+          <span class="limitation-tag">Unit Specifics</span>
+          <p>The metric treats all units as serving the same population, regardless of targeted AMI levels, unit sizes, or eligibility rules.</p>
+        </div>
+
+        <div class="limitation-item">
+          <span class="limitation-tag">Geographic Scope</span>
+          <p>A 0.5-mile radius focus provides local context but may overlook the regional nature of housing markets where TODs serve households across wider areas.</p>
+        </div>
+
+        <div class="limitation-item">
+          <span class="limitation-tag">Data Consistency</span>
+          <p>Project-level data is sometimes incomplete or inconsistent.  We used <strong>mbtarealty.com</strong>, but other sources note different unit counts.</p>
+        </div>
+
+        <div class="limitation-item">
+          <span class="limitation-tag">Interpretive</span>
+          <p>Our visualization highlights relative patterns and possible mismatches instead of than definitively proving whether a project meets a specific demand.</p>
+        </div>
+      </div>
+    </div>
+  </section>
   </section>
 {/if}
 
@@ -917,14 +950,81 @@
 
   .cta-text { font-size: 0.95rem; font-weight: 700; color: #2563eb; }
 
-  .limitations-container { margin: 0 auto 80px; }
+  .limitations-container {
+      margin: 80px auto 120px;
+    }
 
-  .limitations-container .info-card { border-left: 5px solid #d6cfc3; }
+  .limitations-card {
+    background: #ffffff;
+    border: 1px solid #e8e0d4;
+    border-radius: 24px;
+    padding: 48px;
+    box-shadow: 0 4px 24px rgba(26, 15, 0, 0.04);
+  }
 
-  .limitations-list { margin: 20px 0 0; padding-left: 20px; list-style-type: disc; }
-  .limitations-list li { margin-bottom: 14px; line-height: 1.7; color: #5a5040; font-size: 0.95rem; padding-left: 6px; }
-  .limitations-list li::marker { color: #a09070; }
-  .limitations-list li:last-child { margin-bottom: 0; }
+  .limitations-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #f1ebe0;
+  }
+
+  .header-icon {
+    width: 48px;
+    height: 48px;
+    background: #fff7ed;
+    color: #c2410c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .header-icon svg { width: 24px; height: 24px; }
+
+  .limitations-title {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a0f00;
+    margin: 0 0 4px;
+  }
+
+  .limitations-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px 48px;
+  }
+
+  .limitation-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .limitation-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+  }
+
+  .limitation-item p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: #5a5040;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .limitations-grid { grid-template-columns: 1fr; gap: 24px; }
+    .limitations-card { padding: 32px 24px; }
+    .limitations-header { flex-direction: column; text-align: center; }
+  }
 
   .loading-state {
     display: flex; flex-direction: column; align-items: center;

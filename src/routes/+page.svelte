@@ -171,7 +171,7 @@
           <StorySteps onApplyStep={applyStoryStep} />
         </div>
       </div>  <!-- ← controls-col closes here -->
-            
+
       <!-- RIGHT: map + detail panel -->
       <div class="map-col">
         <header class="map-header">
@@ -320,19 +320,6 @@
     flex-shrink: 0;
   }
 
-  .context-block {
-    padding: 16px 20px;
-    background: #fff7ed;
-    border: 1px solid #fed7aa;
-    border-radius: 14px;
-    font-size: 0.88rem;
-    line-height: 1.65;
-    color: #7c3a0a;
-    flex-shrink: 0;
-  }
-
-  .context-block strong { color: #1a0f00; }
-
   .controls-block {
     background: white;
     border: 1px solid #e8e0d4;
@@ -418,5 +405,5 @@
     .detail-sidebar { display: none; }
   }
 
-  
+
 </style>
