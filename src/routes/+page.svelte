@@ -97,11 +97,6 @@
       <!-- LEFT: scrollable controls + story steps -->
       <div class="controls-col">
 
-        <div class="story-block">
-          <p class="section-label">Guided views</p>
-          <StorySteps onApplyStep={applyStoryStep} />
-        </div>
-
         <details class="info-box">
           <summary>
             <div class="summary-content">
@@ -171,9 +166,12 @@
         <div class="status-bar">
           <strong>{todData.length}</strong> projects visible &nbsp;·&nbsp; Threshold: <strong>{demandThreshold}</strong>
         </div>
-
+        <div class="story-block">
+          <p class="section-label">Guided views</p>
+          <StorySteps onApplyStep={applyStoryStep} />
+        </div>
       </div>  <!-- ← controls-col closes here -->
-
+            
       <!-- RIGHT: map + detail panel -->
       <div class="map-col">
         <header class="map-header">
