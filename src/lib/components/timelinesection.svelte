@@ -44,7 +44,7 @@
       metric: "lowIncomeRenterShare",
       eyebrow: "2010–2014 · Before TODs Were Built",
       title: "Before most TODs broke ground, lower-income renters were already the majority in transit neighborhoods.",
-      body: "Each circle is a transit-oriented development site. Color shows the share of nearby households that were lower-income renters — people earning under $50,000/year — before most projects were completed. In Roxbury and Jamaica Plain, more than half of all households were lower-income renters. This is the community that Boston's TOD pipeline was entering.",
+      body: "Each dot marks a transit-oriented development site. The dashed ring around it is the 0.5-mile buffer we used to measure its surrounding neighborhood ~ roughly a 10-minute walk. The dot's color reflects the share of nearby households that were lower-income renters (earning under $50,000/year) before most projects were completed. In Roxbury and Jamaica Plain, more than half of all households were lower-income renters. This is the community that Boston's TOD pipeline was entering.",
       callout: null,
     },
     {
@@ -53,7 +53,7 @@
       periodKey: "2019",
       metric: "lowIncomeRenterShare",
       eyebrow: "2015–2019 · After TODs Opened",
-      title: "New units arrived — but the community's need for affordable housing didn't go away.",
+      title: "New housing was built but the community's need for affordable housing didn't go away.",
       body: "By 2015–2019, many TODs had opened, adding hundreds of market-rate apartments near transit. But the lower-income renter population barely changed. In Roxbury and Jamaica Plain, over half of nearby households were still lower-income renters. New supply was flowing in, but it wasn't priced for the people who were already there.",
       callout: null,
     },
@@ -63,9 +63,9 @@
       periodKey: "2019",
       metric: "costBurdenedRenterShare",
       eyebrow: "2015–2019 · Cost Burden After Construction",
-      title: "Cost burden barely improved — because the new supply wasn't priced for existing residents.",
+      title: "Cost burden barely improved because the new supply wasn't priced for existing residents.",
       body: "Cost burden means spending over 30% of income on rent. Before the TODs opened, it was already severe near nearly every site. After construction, cost burden at most sites was no better. New apartments went to higher-income tenants at rents that most existing residents couldn't afford.",
-      callout: "Cost burden data is available for the 2014 and 2019 periods only.",
+      callout: null,
     },
     {
       part: "Part 3",
@@ -74,7 +74,7 @@
       metric: "lowIncomeRenterShare",
       eyebrow: "Roxbury · 2015–2019",
       title: "One Roxbury Crossing: built in a high-need community, yet most new units were market-rate.",
-      body: "One Roxbury Crossing opened in 2017 near Roxbury Crossing station. The surrounding neighborhood had one of the highest lower-income renter concentrations of any TOD site — over 60% of households. Yet the majority of units added were market-rate, with rents most nearby residents couldn't afford. This is the supply-demand gap at the heart of Boston's affordability problem.",
+      body: "One Roxbury Crossing opened in 2017 near Roxbury Crossing station. The surrounding neighborhood had one of the highest lower-income renter concentrations of any TOD site, over 60% of households. Yet the majority of units added were market-rate, with rents most nearby residents couldn't afford. This is the supply-demand gap at the heart of Boston's affordability problem.",
       focusProject: "One Roxbury Crossing- Roxbury Crossing Station, Roxbury",
       focusZoom: 13.6,
       photo: "/images/roxbury-crossing.jpg",
@@ -87,7 +87,7 @@
       metric: "lowIncomeRenterShare",
       eyebrow: "Hingham · 2015–2019",
       title: "For contrast: Hingham Intermodal was built in a wealthy suburb with far fewer lower-income renters.",
-      body: "Hingham Intermodal Center also opened in 2017 — but fewer than 10% of nearby households were lower-income renters. Both are called TODs. Only one was built into a community facing an acute affordable housing crisis. Not all TOD sites begin with the same level of need. The real equity question is whether housing added near transit matches the people already living there.",
+      body: "Hingham Intermodal Center also opened in 2017, but fewer than 10% of nearby households were lower-income renters. Both are called TODs. Only one was built into a community facing an acute affordable housing crisis. Not all TOD sites begin with the same level of need. The real equity question is whether housing added near transit matches the people already living there.",
       focusProject: "Hingham Intermodal Center, Hingham",
       focusZoom: 13.4,
       photo: "/images/hingham-intermodal.jpg",
@@ -375,7 +375,7 @@
 
     <section class="advocacy-bridge container">
       <div class="bridge-inner">
-        <span class="section-eyebrow">What this means for Maya — and what we can do</span>
+        <span class="section-eyebrow">What this means for Maya and what we can do</span>
         <h2 class="section-title">Affordable housing near transit determines who gets to stay in Boston</h2>
         <div class="bridge-grid">
           <div class="bridge-text">
@@ -885,7 +885,6 @@
 
   .spacer { height: 50vh; }
 
-  /* ── ADVOCACY WRAP-UP ── */
   .advocacy-bridge {
     margin: 60px auto;
     background: white;

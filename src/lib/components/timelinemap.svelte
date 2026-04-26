@@ -5,7 +5,6 @@
 
   export let step = null;
 
-  // All six GeoJSONs loaded on mount
   let tractData = { "2014": null, "2019": null, "2024": null };
   let todData   = { "2014": null, "2019": null, "2024": null };
 
@@ -19,10 +18,8 @@
   let lastStepKey = "";
   let basemap = null;
 
-  // ── Choropleth color ramp ─────────────────────────────────────────────────
   const choroColors = ["#ffefb0", "#fad643", "#f59e0b", "#d97706", "#92400e"];
 
-  // ── Extract low-income renter share (<$50k / total) from properties ───────
   function getLowIncomeRenterShare(props, periodKey) {
     let rentersUnder50k, total;
     if (periodKey === "2014") {
@@ -48,7 +45,36 @@
     return total > 0 ? rentersUnder50k / total : null;
   }
 
-  // ── Get total households from properties (for tooltip) ────────────────────
+  function getCostBurdenShare(props, periodKey) {
+    let burdened, totalRenter;
+    if (periodKey === "2014") {
+      burdened =
+        (props["j_wtd_C_Total:Renter-occupied housing units:Less than $20,000:30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total:Renter-occupied housing units:$20,000 to $34,999:30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total:Renter-occupied housing units:$35,000 to $49,999:30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total:Renter-occupied housing units:$50,000 to $74,999:30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total:Renter-occupied housing units:$75,000 or more:30 percent or more"] ?? 0);
+      totalRenter = props["j_wtd_C_Total:Renter-occupied housing units"] ?? 0;
+    } else if (periodKey === "2019") {
+      burdened =
+        (props["j_wtd_C_Total: Renter-occupied housing units: Less than $20,000: 30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total: Renter-occupied housing units: $20,000 to $34,999: 30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total: Renter-occupied housing units: $35,000 to $49,999: 30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total: Renter-occupied housing units: $50,000 to $74,999: 30 percent or more"] ?? 0) +
+        (props["j_wtd_C_Total: Renter-occupied housing units: $75,000 or more: 30 percent or more"] ?? 0);
+      totalRenter = props["j_wtd_C_Total: Renter-occupied housing units:"] ?? 0;
+    } else {
+      return null; 
+    }
+    return totalRenter > 0 ? burdened / totalRenter : null;
+  }
+
+  function getMetricValue(props, periodKey, metricKey) {
+    return metricKey === "costBurdenedRenterShare"
+      ? getCostBurdenShare(props, periodKey)
+      : getLowIncomeRenterShare(props, periodKey);
+  }
+
   function getTotalHouseholds(props, periodKey) {
     if (periodKey === "2024") return props["TotalUnits"] ?? null;
     return props["j_wtd_C_Total"] ?? null;
@@ -77,12 +103,11 @@
     d3.select(svgEl).call(zoomBehavior);
   });
 
-  // ── Current period ────────────────────────────────────────────────────────
   $: periodKey = step?.periodKey ?? "2014";
+  $: metric    = step?.metric    ?? "lowIncomeRenterShare";
   $: currentTracts = tractData[periodKey]?.features ?? [];
   $: currentTods   = todData[periodKey]?.features ?? [];
 
-  // ── Projection: fit to 2014 TOD buffers (consistent across all periods) ───
   $: combinedForFit = todData["2014"]
     ? { type: "FeatureCollection", features: todData["2014"].features }
     : null;
@@ -94,10 +119,9 @@
 
   $: pathGenerator = projection ? d3.geoPath().projection(projection) : null;
 
-  // ── Color scales built across all periods for consistency ────────────────
   $: allTractValues = Object.entries(tractData)
     .flatMap(([pk, gj]) =>
-      gj ? gj.features.map(f => getLowIncomeRenterShare(f.properties, pk)) : []
+      gj ? gj.features.map(f => getMetricValue(f.properties, pk, metric)) : []
     )
     .filter(v => v !== null && isFinite(v));
 
@@ -107,27 +131,23 @@
 
   $: allTodValues = Object.entries(todData)
     .flatMap(([pk, gj]) =>
-      gj ? gj.features.map(f => getLowIncomeRenterShare(f.properties, pk)) : []
+      gj ? gj.features.map(f => getMetricValue(f.properties, pk, metric)) : []
     )
     .filter(v => v !== null && isFinite(v));
 
-  // TOD buffers use a slightly different (darker) ramp so they read on top of tracts
   const todColors = ["#bfdbfe", "#60a5fa", "#2563eb", "#1d4ed8", "#1e3a8a"];
   $: todScale = allTodValues.length
     ? d3.scaleQuantile().domain(allTodValues).range(todColors)
     : null;
 
-  // ── Legend thresholds ─────────────────────────────────────────────────────
   $: choroThresholds = choroScale ? [0, ...choroScale.quantiles()] : [];
   $: todThresholds   = todScale   ? [0, ...todScale.quantiles()]   : [];
 
-  // ── Auto-zoom on focusProject ─────────────────────────────────────────────
   $: if (projection && step && zoomBehavior && svgEl) {
     const stepKey = `${step.periodKey}-${step.focusProject ?? ""}`;
     if (stepKey !== lastStepKey) {
       lastStepKey = stepKey;
       if (step.focusProject) {
-        // Search across all period TOD files for the project name
         const allTodFeatures = Object.values(todData).flatMap(gj => gj?.features ?? []);
         const feat = allTodFeatures.find(f => f.properties.Project === step.focusProject);
         if (feat && pathGenerator) {
@@ -159,7 +179,6 @@
 <div class="map-wrap" bind:clientWidth={width}>
   <svg bind:this={svgEl} {width} {height}>
     <g transform={`translate(${transform.x},${transform.y}) scale(${transform.k})`}>
-      <!-- Layer 0: Boston basemap -->
       {#if pathGenerator && basemap}
         {#each basemap.features as feature}
           <path
@@ -170,10 +189,9 @@
           />
         {/each}
       {/if}
-      <!-- Layer 1: choropleth census tracts -->
       {#if pathGenerator && choroScale}
         {#each currentTracts as feature}
-          {@const val = getLowIncomeRenterShare(feature.properties, periodKey)}
+          {@const val = getMetricValue(feature.properties, periodKey, metric)}
           {@const isHovered = hoveredTract === feature}
           <path
             d={pathGenerator(feature)}
@@ -188,16 +206,14 @@
         {/each}
       {/if}
 
-      <!-- Layer 2: TOD buffer polygons -->
       {#if pathGenerator && choroScale}
         {#each currentTods as feature}
-          {@const val = getLowIncomeRenterShare(feature.properties, periodKey)}
+          {@const val = getMetricValue(feature.properties, periodKey, metric)}
           {@const isFocused = step?.focusProject === feature.properties.Project}
           {@const isUnfocused = !!step?.focusProject && !isFocused}
           {@const isHovered = hoveredTod === feature}
           {@const [cx, cy] = pathGenerator.centroid(feature)}
       
-        <!-- Buffer outline -->
           <path
             d={pathGenerator(feature)}
             fill="none"
@@ -206,7 +222,6 @@
             stroke-dasharray={`${4 / transform.k} ${3 / transform.k}`}
             opacity={isUnfocused ? 0.5 : 1}
           />
-    <!-- Centroid dot --> 
           <circle
             cx={cx}
             cy={cy}
@@ -227,19 +242,18 @@
     </g>
   </svg>
 
-  <!-- TOD buffer tooltip -->
   {#if hoveredTod}
     {@const props = hoveredTod.properties}
-    {@const val = getLowIncomeRenterShare(props, periodKey)}
+    {@const val = getMetricValue(props, periodKey, metric)}
     {@const total = getTotalHouseholds(props, periodKey)}
     {@const [tx, ty] = centroidScreen(hoveredTod)}
     <div class="tooltip" style="left:{Math.min(tx + 16, width - 250)}px; top:{Math.max(ty - 60, 8)}px;">
       <p class="tt-name">{props.Project}</p>
       <p class="tt-period">{periodKey} period</p>
       <div class="tt-grid">
-        <span class="tt-label">Low-income renters (&lt;$50k)</span>
+        <span class="tt-label">{metric === "costBurdenedRenterShare" ? "Cost-burdened renters (>30% on rent)" : "Lower-income renters (<$50k/yr)"}</span>
         <span class="tt-val">{val !== null ? d3.format(".0%")(val) : "N/A"}</span>
-        <span class="tt-label">Total households</span>
+        <span class="tt-label">Total households in buffer</span>
         <span class="tt-val">{total !== null ? Math.round(total).toLocaleString() : "N/A"}</span>
         <span class="tt-label">Census tracts</span>
         <span class="tt-val">{props["Tract Count"] ?? "—"}</span>
@@ -247,23 +261,20 @@
     </div>
   {/if}
 
-  <!-- Tract tooltip (shows when hovering tracts outside TOD buffers) -->
   {#if hoveredTract && !hoveredTod}
     {@const props = hoveredTract.properties}
-    {@const val = getLowIncomeRenterShare(props, periodKey)}
+    {@const val = getMetricValue(props, periodKey, metric)}
     <div class="tooltip tract-tooltip">
       <p class="tt-name">{props.NAMELSAD ?? props.NAME}</p>
       <div class="tt-grid">
-        <span class="tt-label">Low-income renters (&lt;$50k)</span>
+        <span class="tt-label">{metric === "costBurdenedRenterShare" ? "Cost-burdened renters (>30%)" : "Lower-income renters (<$50k/yr)"}</span>
         <span class="tt-val">{val !== null ? d3.format(".0%")(val) : "N/A"}</span>
       </div>
     </div>
   {/if}
 
-  <!-- Legend -->
-  <!-- simplified legend -->
   <div class="legend">
-    <p class="legend-title">Low-income renters &lt;$50k</p>
+    <p class="legend-title">{metric === "costBurdenedRenterShare" ? "Cost-burdened renters (>30% on rent)" : "Lower-income renters (<$50k/yr)"}</p>
     <div class="legend-swatches">
       {#each choroColors as color}
         <span class="swatch" style="background:{color}"></span>
@@ -274,16 +285,28 @@
         <span>{d3.format(".0%")(tick)}</span>
       {/each}
     </div>
+    <div class="legend-labels">
+      <span>Lower</span>
+      <span>Higher</span>
+    </div>
     <div class="legend-divider"></div>
     <div class="legend-row">
-      <svg width="12" height="12"><circle cx="6" cy="6" r="5" stroke="#000" stroke-width="2" fill="none"/></svg>
-      <p class="legend-sub">TOD project (buffer average)</p>
+      <svg width="14" height="14" style="flex-shrink:0">
+        <circle cx="7" cy="7" r="5" fill="#60a5fa" stroke="#1e293b" stroke-width="1.5"/>
+      </svg>
+      <p class="legend-sub">TOD site (dot = buffer avg.)</p>
+    </div>
+    <div class="legend-row">
+      <svg width="14" height="14" style="flex-shrink:0">
+        <circle cx="7" cy="7" r="5" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="2.5 2"/>
+      </svg>
+      <p class="legend-sub">0.5-mile station buffer</p>
     </div>
     <div class="legend-row">
       <svg width="14" height="14" style="flex-shrink:0">
         <rect x="1" y="1" width="12" height="12" fill="#f0f2f4" stroke="#d1d9e0" stroke-width="1.5" rx="1"/>
       </svg>
-      <p class="legend-sub">Census tract (background)</p>
+      <p class="legend-sub">Census tract</p>
     </div>
   </div>
 </div>
@@ -371,6 +394,13 @@
     color: #1e293b;
   }
 
+  .legend-sub {
+    margin: 0;
+    font-size: 0.68rem;
+    color: #475569;
+    line-height: 1.3;
+  }
+
   .legend-sub-label {
     margin: 0 0 5px;
     font-size: 0.65rem;
@@ -382,7 +412,8 @@
     margin: 10px 0;
   }
 
-  .legend-swatches { display: flex; gap: 2px; margin-bottom: 4px; }
+  .legend-swatches { display: flex; gap: 2px; margin-bottom: 2px; }
+  .legend-labels { display: flex; justify-content: space-between; font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px; }
   .legend-row {
     display: flex;
     align-items: center;
