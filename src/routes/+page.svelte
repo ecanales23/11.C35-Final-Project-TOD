@@ -14,6 +14,7 @@
   let demandThreshold = "50k";
   let showOnlyAffordable = false;
   let showUnderServingOnly = false;
+  let showOverServingOnly = false;
   let minUnits = 0;
   let sortBy = "name";
 
@@ -36,6 +37,7 @@
     let filtered = enriched.filter(d => {
       if (showOnlyAffordable && d.affordableUnits <= 0) return false;
       if (showUnderServingOnly && d.mismatchScore >= 0) return false;
+      if (showOverServingOnly && d.mismatchScore <= 0) return false;
       if (d.totalUnits < minUnits) return false;
       return true;
     });
@@ -63,21 +65,25 @@
     if (step === "all") {
       showOnlyAffordable = false;
       showUnderServingOnly = false;
+      showOverServingOnly = false;
       minUnits = 0;
       sortBy = "name";
     } else if (step === "largest-gaps") {
       showUnderServingOnly = true;
+      showOverServingOnly = false;
       showOnlyAffordable = false;
       minUnits = 0;
       sortBy = "gap";
     } else if (step === "high-affordable") {
-      showOnlyAffordable = true;
+      showOverServingOnly = true;
       showUnderServingOnly = false;
+      showOnlyAffordable = false;
       minUnits = 0;
       sortBy = "affordable";
     } else if (step === "large-projects") {
       showOnlyAffordable = false;
       showUnderServingOnly = false;
+      showOverServingOnly = false;
       minUnits = 150;
       sortBy = "units";
     }
@@ -94,7 +100,6 @@
 
     <div class="dashboard-shell" id="dashboard">
 
-      <!-- LEFT: scrollable controls + story steps -->
       <div class="controls-col">
 
         <details class="info-box">
@@ -170,9 +175,8 @@
           <p class="section-label">Guided views</p>
           <StorySteps onApplyStep={applyStoryStep} />
         </div>
-      </div>  <!-- ← controls-col closes here -->
+      </div> 
 
-      <!-- RIGHT: map + detail panel -->
       <div class="map-col">
         <header class="map-header">
           <p class="eyebrow">Greater Boston TOD Opportunity Dashboard</p>
@@ -192,9 +196,9 @@
             <TodDetailPanel tod={selectedTod} />
           </aside>
         </div>
-      </div>  <!-- ← map-col closes here -->
+      </div>  
 
-    </div>  <!-- ← dashboard-shell closes here -->
+    </div> 
   </main>
 {/if}
 
@@ -219,10 +223,9 @@
     color: #92846e;
   }
 
-  /* ── Dashboard shell ───────────────────────────────────────────────── */
   .dashboard-shell {
     display: grid;
-    grid-template-columns: 380px 1fr;  /* ← was 1fr 380px */
+    grid-template-columns: 380px 1fr;  
     gap: 24px;
     height: 100vh;
     position: sticky;
@@ -231,7 +234,6 @@
     box-sizing: border-box;
   }
 
-  /* ── Left column ───────────────────────────────────────────────────── */
   .map-col {
     display: flex;
     flex-direction: column;
@@ -294,7 +296,6 @@
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
   }
 
-  /* ── Right column ──────────────────────────────────────────────────── */
   .controls-col {
     display: flex;
     flex-direction: column;
