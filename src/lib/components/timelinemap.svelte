@@ -35,6 +35,7 @@
       rentersUnder50k = lt20 + to35 + to50;
       total = props["j_wtd_C_Total"] ?? 0;
     } else {
+      // 2024
       const lt20 = props["Renter-Occupied Housing Units: Less Than $20,000"] ?? 0;
       const to35 = props["Renter-Occupied Housing Units: $20,000 To $34,999"] ?? 0;
       const to50 = props["Renter-Occupied Housing Units: $35,000 To $49,999"] ?? 0;
@@ -134,11 +135,13 @@
     )
     .filter(v => v !== null && isFinite(v));
 
+  const todColors = ["#bfdbfe", "#60a5fa", "#2563eb", "#1d4ed8", "#1e3a8a"];
   $: todScale = allTodValues.length
-    ? d3.scaleQuantile().domain(allTodValues).range(choroColors)
+    ? d3.scaleQuantile().domain(allTodValues).range(todColors)
     : null;
 
   $: choroThresholds = choroScale ? [0, ...choroScale.quantiles()] : [];
+  $: todThresholds   = todScale   ? [0, ...todScale.quantiles()]   : [];
 
   $: if (projection && step && zoomBehavior && svgEl) {
     const stepKey = `${step.periodKey}-${step.focusProject ?? ""}`;
@@ -208,6 +211,7 @@
           {@const val = getMetricValue(feature.properties, periodKey, metric)}
           {@const isFocused = step?.focusProject === feature.properties.Project}
           {@const isUnfocused = !!step?.focusProject && !isFocused}
+          {@const isHovered = hoveredTod === feature}
           {@const [cx, cy] = pathGenerator.centroid(feature)}
 
           <path
@@ -234,6 +238,7 @@
           </circle>
         {/each}
       {/if}
+
     </g>
   </svg>
 
@@ -250,6 +255,8 @@
         <span class="tt-val">{val !== null ? d3.format(".0%")(val) : "N/A"}</span>
         <span class="tt-label">Total households in buffer</span>
         <span class="tt-val">{total !== null ? Math.round(total).toLocaleString() : "N/A"}</span>
+        <span class="tt-label">Census tracts</span>
+        <span class="tt-val">{props["Tract Count"] ?? "—"}</span>
       </div>
     </div>
   {/if}
@@ -258,7 +265,7 @@
     {@const props = hoveredTract.properties}
     {@const val = getMetricValue(props, periodKey, metric)}
     <div class="tooltip tract-tooltip">
-      <p class="tt-name">Neighborhood Snapshot</p>
+      <p class="tt-name">{props.NAMELSAD ?? props.NAME}</p>
       <div class="tt-grid">
         <span class="tt-label">{metric === "costBurdenedRenterShare" ? "Cost-burdened renters (>30%)" : "Lower-income renters (<$50k/yr)"}</span>
         <span class="tt-val">{val !== null ? d3.format(".0%")(val) : "N/A"}</span>

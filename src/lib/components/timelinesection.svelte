@@ -356,6 +356,13 @@
                         {/if}
                       {/each}
                     </div>
+
+                    <div class="data-clarification-box">
+                      <div class="clarification-content">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        <p><strong>Note:</strong> "Low-income households" includes both renters and homeowners, while "Low-income renters" are a subset who do not own their home.</p>
+                      </div>
+                    </div>
                   {/if}
                 </div>
               {/if}
@@ -862,6 +869,37 @@
   .tod-photo { margin: 0 0 20px; border-radius: 14px; overflow: hidden; height: 180px; background: #e8e0d4; }
   .tod-photo img { width: 100%; height: 100%; object-fit: cover; }
 
+  .data-clarification-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-top: 16px;
+  }
+
+  .clarification-content {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .clarification-content svg {
+    color: #64748b;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .clarification-content p {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: #475569;
+    margin: 0;
+  }
+
+  .clarification-content strong {
+    color: #1e293b;
+  }
+
   .demo-chart { background: #faf7f0; padding: 18px; border-radius: 16px; border: 1px solid #f1ebe0; }
   .chart-header { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; margin-bottom: 14px; }
   .bar-row { margin-bottom: 12px; }
@@ -1061,6 +1099,10 @@
   }
   .limitations-summary {
     padding: 20px;
+  }
+  .definition-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
   }
 }
 
