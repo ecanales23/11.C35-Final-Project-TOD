@@ -10,6 +10,7 @@
   let todData = [];
   let selectedTod = null;
   let loading = true;
+  let activeSection = "timeline";
 
   let demandThreshold = "50k";
   let showOnlyAffordable = false;
@@ -21,7 +22,49 @@
   onMount(async () => {
     baseTodData = await loadTodData();
     loading = false;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          activeSection = entry.target.id;
+        }
+      });
+    }, {
+      threshold: 0.2,
+      rootMargin: "-80px 0px -20% 0px"
+    });
+
+    setTimeout(() => {
+      const targets = [
+        document.getElementById('timeline'),
+        document.getElementById('maya-story'),
+        document.getElementById('timeline-details'),
+        document.getElementById('dashboard')
+      ].filter(Boolean);
+
+      targets.forEach(t => observer.observe(t));
+    }, 600);
   });
+
+  function scrollToSection(id, storyStep = null) {
+    const el = document.getElementById(id);
+    if (el) {
+      activeSection = id;
+      const offset = 80;
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = el.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+    if (storyStep) {
+      applyStoryStep(storyStep);
+    }
+  }
 
   function sortData(data) {
     const copy = [...data];
@@ -46,10 +89,8 @@
     selectedTod = selectedStillVisible || (todData[0] ?? null);
   }
 
-  $: {
-    if (baseTodData.length) {
-      updateDerived(demandThreshold, showOnlyAffordable, showUnderServingOnly, minUnits, sortBy);
-    }
+  $: if (baseTodData.length) {
+    updateDerived(demandThreshold, showOnlyAffordable, showUnderServingOnly, minUnits, sortBy);
   }
 
   function handleDropdown(event) {
@@ -95,13 +136,41 @@
     <p>Loading…</p>
   </div>
 {:else}
+  <nav class="sticky-nav">
+    <div class="nav-inner">
+      <button
+        class:active={activeSection === 'timeline'}
+        on:click={() => scrollToSection('timeline')}>
+        1. Start
+      </button>
+      <button
+        class:active={activeSection === 'maya-story'}
+        on:click={() => scrollToSection('maya-story')}>
+        2. Maya's Story
+      </button>
+      <button
+        class:active={activeSection === 'timeline-details'}
+        on:click={() => scrollToSection('timeline-details')}>
+        3. Timeline
+      </button>
+      <button
+        class:active={activeSection === 'dashboard'}
+        on:click={() => scrollToSection('dashboard', 'all')}>
+        4. Dashboard
+      </button>
+    </div>
+    <div class="progress-container">
+      <div class="progress-bar"></div>
+    </div>
+  </nav>
+
   <main class="page-wrapper">
-    <TimelineSection />
+    <section id="timeline">
+      <TimelineSection />
+    </section>
 
     <div class="dashboard-shell" id="dashboard">
-
       <div class="controls-col">
-
         <details class="info-box">
           <summary>
             <div class="summary-content">
@@ -112,8 +181,6 @@
           <div class="details-content">
             <p>
               Use the controls below to explore how each TOD compares to the needs of its surrounding community.
-              Projects exceeding local lower-income demand are <strong>opening doors</strong> for renters like Maya.
-              Projects falling short may be contributing to <strong>gentrification pressure</strong>.
             </p>
           </div>
         </details>
@@ -175,7 +242,7 @@
           <p class="section-label">Guided views</p>
           <StorySteps onApplyStep={applyStoryStep} />
         </div>
-      </div> 
+      </div>
 
       <div class="map-col">
         <header class="map-header">
@@ -183,8 +250,6 @@
           <h1>Which TOD projects are opening doors for renters like Maya?</h1>
           <p class="subtitle">
             Compare each TOD's affordable share against nearby lower-income renter demand.
-            A <strong>positive score</strong> means more opportunity than local demand suggests.
-            A <strong>negative score</strong> means less.
           </p>
         </header>
 
@@ -196,9 +261,8 @@
             <TodDetailPanel tod={selectedTod} />
           </aside>
         </div>
-      </div>  
-
-    </div> 
+      </div>
+    </div>
   </main>
 {/if}
 
@@ -208,6 +272,60 @@
     background: #faf7f0;
     color: #1a0f00;
     font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .sticky-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: white;
+    border-bottom: 1px solid #e8e0d4;
+  }
+
+  .nav-inner {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 24px;
+  }
+
+  .nav-inner button {
+    background: none;
+    border: none;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #92846e;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 8px 0;
+    border-bottom: 2px solid transparent;
+  }
+
+  .nav-inner button.active {
+    color: #b45309;
+    border-bottom: 2px solid #b45309;
+  }
+
+  .progress-container {
+    width: 100%;
+    height: 3px;
+    background: #f0ede8;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: #b45309;
+    width: 0%;
+    animation: scroll-progress linear;
+    animation-timeline: scroll();
+  }
+
+  @keyframes scroll-progress {
+    from { width: 0%; }
+    to { width: 100%; }
   }
 
   .page-wrapper {
@@ -225,13 +343,12 @@
 
   .dashboard-shell {
     display: grid;
-    grid-template-columns: 380px 1fr;  
+    grid-template-columns: 380px 1fr;
     gap: 24px;
     height: 100vh;
-    position: sticky;
-    top: 0;
     padding: 24px;
     box-sizing: border-box;
+    min-height: 800px;
   }
 
   .map-col {
@@ -241,9 +358,7 @@
     min-height: 0;
   }
 
-  .map-header {
-    flex-shrink: 0;
-  }
+  .map-header { flex-shrink: 0; }
 
   .eyebrow {
     font-size: 11px;
@@ -258,10 +373,7 @@
     font-family: 'Lora', Georgia, serif;
     font-size: 1.6rem;
     font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
     margin: 0 0 8px;
-    color: #1a0f00;
   }
 
   .subtitle {
@@ -285,7 +397,6 @@
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
-    min-height: 0;
   }
 
   .detail-sidebar {
@@ -293,43 +404,28 @@
     border: 1px solid #e8e0d4;
     border-radius: 20px;
     overflow-y: auto;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
   }
 
   .controls-col {
     display: flex;
     flex-direction: column;
-    gap: 0px;
+    gap: 12px;
     overflow-y: auto;
-    padding-right: 4px;
   }
 
   .section-label {
     font-size: 11px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
     color: #92846e;
     margin: 0 0 10px;
   }
 
-  .story-block {
+  .story-block, .controls-block {
     background: white;
     border: 1px solid #e8e0d4;
     border-radius: 16px;
     padding: 20px;
-    flex-shrink: 0;
-  }
-
-  .controls-block {
-    background: white;
-    border: 1px solid #e8e0d4;
-    border-radius: 16px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex-shrink: 0;
   }
 
   .control-row {
@@ -347,9 +443,8 @@
   .control-group label {
     font-size: 11px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
     color: #92846e;
+    text-transform: uppercase;
   }
 
   select {
@@ -360,13 +455,9 @@
     border: 1px solid #d6cfc3;
     font-size: 13px;
     background: #faf7f0;
-    color: #1a0f00;
   }
 
-  input[type="range"] {
-    width: 100%;
-    cursor: pointer;
-  }
+  input[type="range"] { width: 100%; cursor: pointer; }
 
   .check-stack {
     display: flex;
@@ -378,26 +469,19 @@
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    cursor: pointer;
     font-size: 12px;
     color: #5a5040;
-    line-height: 1.4;
   }
-
-  .custom-check input { margin-top: 2px; flex-shrink: 0; }
 
   .status-bar {
     font-size: 13px;
     color: #92846e;
-    padding: 4px 0;
-    flex-shrink: 0;
   }
 
   @media (max-width: 1100px) {
     .dashboard-shell {
       grid-template-columns: 1fr;
       height: auto;
-      position: static;
     }
     .map-and-panel {
       grid-template-columns: 1fr;
@@ -405,6 +489,4 @@
     }
     .detail-sidebar { display: none; }
   }
-
-
 </style>
