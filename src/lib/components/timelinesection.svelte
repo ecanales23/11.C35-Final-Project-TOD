@@ -408,17 +408,18 @@
     </section>
 
   <section class="limitations-container container">
-    <div class="limitations-card">
-      <div class="limitations-header">
-        <div class="header-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
+    <details class="limitations-accordion">
+      <summary class="limitations-summary">
+        <div class="summary-content">
+          <div class="header-icon-small">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <h2 class="limitations-title-small">Research Limitations</h2>
         </div>
-        <div>
-          <h2 class="limitations-title">Research Limitations</h2>
-        </div>
-      </div>
+        <span class="expand-icon">View details</span>
+      </summary>
 
       <div class="limitations-grid">
         <div class="limitation-item">
@@ -443,7 +444,7 @@
 
         <div class="limitation-item">
           <span class="limitation-tag">Data Consistency</span>
-          <p>Project-level data is sometimes incomplete or inconsistent.  We used <strong>mbtarealty.com</strong>, but other sources note different unit counts.</p>
+          <p>Project-level data is sometimes incomplete or inconsistent. We used <strong>mbtarealty.com</strong>, but other sources note different unit counts.</p>
         </div>
 
         <div class="limitation-item">
@@ -451,7 +452,7 @@
           <p>Our visualization highlights relative patterns and possible mismatches instead of than definitively proving whether a project meets a specific demand.</p>
         </div>
       </div>
-    </div>
+    </details>
   </section>
   </section>
 {/if}
@@ -953,77 +954,115 @@
       margin: 80px auto 120px;
     }
 
-  .limitations-card {
-    background: #ffffff;
-    border: 1px solid #e8e0d4;
-    border-radius: 24px;
-    padding: 48px;
-    box-shadow: 0 4px 24px rgba(26, 15, 0, 0.04);
-  }
+.limitations-container {
+  margin: 40px auto 80px;
+}
 
-  .limitations-header {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 40px;
-    padding-bottom: 32px;
-    border-bottom: 1px solid #f1ebe0;
-  }
+.limitations-accordion {
+  background: #ffffff;
+  border: 1px solid #e8e0d4;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
 
-  .header-icon {
-    width: 48px;
-    height: 48px;
-    background: #fff7ed;
-    color: #c2410c;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    flex-shrink: 0;
-  }
+.limitations-accordion[open] {
+  box-shadow: 0 4px 20px rgba(26, 15, 0, 0.04);
+}
 
-  .header-icon svg { width: 24px; height: 24px; }
+.limitations-summary {
+  list-style: none;
+  padding: 24px 32px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
 
-  .limitations-title {
-    font-family: 'Lora', Georgia, serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1a0f00;
-    margin: 0 0 4px;
-  }
+.limitations-summary::-webkit-details-marker {
+  display: none;
+}
 
+.summary-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon-small {
+  width: 32px;
+  height: 32px;
+  background: #fff7ed;
+  color: #c2410c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.header-icon-small svg {
+  width: 18px;
+  height: 18px;
+}
+
+.limitations-title-small {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a0f00;
+  margin: 0;
+}
+
+.expand-icon {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #b45309;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.limitations-accordion[open] .expand-icon {
+  content: "Close";
+}
+
+.limitations-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px 40px;
+  padding: 0 32px 32px;
+}
+
+.limitation-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.limitation-tag {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #b45309;
+}
+
+.limitation-item p {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #5a5040;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
   .limitations-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 32px 48px;
+    grid-template-columns: 1fr;
+    padding: 0 24px 24px;
   }
-
-  .limitation-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  .limitations-summary {
+    padding: 20px;
   }
-
-  .limitation-tag {
-    font-size: 0.65rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #b45309;
-  }
-
-  .limitation-item p {
-    font-size: 0.92rem;
-    line-height: 1.6;
-    color: #5a5040;
-    margin: 0;
-  }
-
-  @media (max-width: 768px) {
-    .limitations-grid { grid-template-columns: 1fr; gap: 24px; }
-    .limitations-card { padding: 32px 24px; }
-    .limitations-header { flex-direction: column; text-align: center; }
-  }
+}
 
   .loading-state {
     display: flex; flex-direction: column; align-items: center;
