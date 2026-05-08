@@ -73,12 +73,36 @@ function demandForThreshold(bins, threshold = "50k") {
 }
 
 export async function loadTodData() {
-  const rows = await d3.csv(`${base}/data/TODLocation+BufferDemoAvgs.csv`);
+  const [rows, geoRes] = await Promise.all([
+    d3.csv(`${base}/data/TODLocation+BufferDemoAvgs.csv`),
+    fetch(`${base}/data/TOD_2024_WeightedDemographics.geojson`).then(r => r.json())
+  ]);
+
+  // Build cost-burden lookup by project name from GeoJSON
+  const geoLookup = {};
+  for (const feat of geoRes.features) {
+    geoLookup[feat.properties.Project] = feat.properties;
+  }
 
   return rows.map((row, i) => {
     const { total, affordable, marketRate, affordableShare } = cleanUnits(row);
     const bins = renterBins(row);
     const totalRenters = num(row["D_Renter-Occupied Housing Units"]);
+    const totalUnitsInBuffer = num(row["D_TotalUnits"]);
+    const renterShare = totalUnitsInBuffer > 0 ? totalRenters / totalUnitsInBuffer : 0;
+
+    const geo = geoLookup[row["j_Project"]];
+    let costBurdenShare = 0;
+    if (geo) {
+      let costBurdened = 0;
+      for (const key of Object.keys(geo)) {
+        if (key.includes("Renter") && key.includes("30 Percent Or More") && !key.includes("No Cash")) {
+          costBurdened += geo[key] || 0;
+        }
+      }
+      const geoRenters = geo["Renter-Occupied Housing Units"] || 0;
+      costBurdenShare = geoRenters > 0 ? costBurdened / geoRenters : 0;
+    }
 
     return {
       id: `${i}-${row["j_Project"]}`,
@@ -91,6 +115,8 @@ export async function loadTodData() {
       marketRateUnits: marketRate,
       affordableShare,
       totalRenters,
+      renterShare,
+      costBurdenShare,
       renterBins: bins,
       raw: row
     };

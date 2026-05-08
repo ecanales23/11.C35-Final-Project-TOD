@@ -10,6 +10,7 @@
   let geojson = null;
   let neighborhoods = [];
   let projects = [];
+  let transitLines = [];
 
   let width = 900;
   let height = 480;
@@ -17,16 +18,20 @@
   let svgElement;
   let transform = d3.zoomIdentity;
   let zoomBehavior;
+  let homeTransform = d3.zoomIdentity;
 
   onMount(async () => {
-    const [geoRes, nhoodRes] = await Promise.all([
+    const [geoRes, nhoodRes, transitRes] = await Promise.all([
       fetch(`${base}/data/TODLocations_4.4.26.geojson`),
-      fetch(`${base}/data/MAPC_census_tracts/mapc_census_tracts.geojson`)
+      fetch(`${base}/data/MAPC_census_tracts/mapc_census_tracts.geojson`),
+      fetch(`${base}/data/mbta_transit_lines.geojson`)
     ]);
 
     geojson = await geoRes.json();
     const nhoodData = await nhoodRes.json();
     neighborhoods = nhoodData.features;
+    const transitData = await transitRes.json();
+    transitLines = transitData.features;
 
     zoomBehavior = d3.zoom()
       .scaleExtent([0.7, 18])
@@ -34,7 +39,15 @@
         transform = event.transform;
       });
 
+    // 3.3× zoom, shifted up and slightly left to center on the project cluster
+    const k = 3.3;
+    homeTransform = d3.zoomIdentity
+      .translate(width * (1 - k) / 2 - 45, height * (1 - k) / 2 - 80)
+      .scale(k);
+
+    transform = homeTransform;
     d3.select(svgElement).call(zoomBehavior);
+    d3.select(svgElement).call(zoomBehavior.transform, homeTransform);
   });
 
   $: if (geojson && data.length) {
@@ -82,59 +95,11 @@
     d3.select(svgElement)
       .transition()
       .duration(500)
-      .call(zoomBehavior.transform, d3.zoomIdentity);
+      .call(zoomBehavior.transform, homeTransform);
   }
 </script>
 
 <div class="map-wrapper">
-  <section class="intro">
-    <div class="intro-inner">
-      <details class="info-box yellow">
-        <summary>
-          <div class="summary-content">
-            <p class="eyebrow">What this visualization shows</p>
-            <h2>How to read the map</h2>
-          </div>
-        </summary>
-        <div class="details-content">
-          <p>
-            Each point on the map is a TOD project. The large dashed circle shows the buffer area used to summarize nearby census data around that project.
-            Color shows whether the project’s affordable share is below, near, or above the nearby lower-income renter share. Clicking a project updates the detail panel on the right.
-          </p>
-        </div>
-      </details>
-
-      <details class="info-box yellow">
-        <summary>
-          <div class="summary-content">
-            <p class="eyebrow">Why this matters</p>
-            <h2>Why planners and policymakers should care</h2>
-          </div>
-        </summary>
-        <div class="details-content">
-          <p>
-            TOD projects are often evaluated by how many total units they add, but that does not show whether they are creating housing that matches the needs of nearby residents.
-            This visualization helps planners and policymakers compare where projects appear to under-serve or better match nearby lower-income renter demand.
-          </p>
-        </div>
-      </details>
-
-      <details class="info-box yellow">
-        <summary>
-          <div class="summary-content">
-            <p class="eyebrow">Data selection</p>
-            <h2>Why we chose these projects</h2>
-          </div>
-        </summary>
-        <div class="details-content">
-          <p>
-            We utilized the 15 "Completed TOD Projects" available via MBTA Realty. Projects where project-level affordability data was incomplete were excluded from the analysis, resulting in the final 9 projects shown here.
-          </p>
-        </div>
-      </details>
-    </div>
-  </section>
-
   <div class="header">
     <div>
       <p class="eyebrow">Map view</p>
@@ -154,6 +119,23 @@
                 stroke="#cfd8df"
                 stroke-width={0.6 / transform.k}
                 style="vector-effect: non-scaling-stroke;"
+              />
+            {/if}
+          {/each}
+        </g>
+
+        <g class="transit-lines">
+          {#each transitLines as line}
+            {#if pathGenerator}
+              <path
+                d={pathGenerator(line)}
+                fill="none"
+                stroke={line.properties.color}
+                stroke-width={3 / transform.k}
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                opacity="0.7"
+                style="pointer-events:none;"
               />
             {/if}
           {/each}
@@ -188,10 +170,50 @@
               on:mouseleave={() => hoveredProject = null}
               on:click={() => onSelect(project)}
             />
+
+            <text
+              x={x + 10 / transform.k}
+              y={y - 4 / transform.k}
+              font-size={isSelected ? 11 / transform.k : 9 / transform.k}
+              font-weight={isSelected ? "700" : "500"}
+              fill={isSelected ? "#1a0f00" : "#374151"}
+              opacity={isSelected ? 1 : 0.8}
+              style="paint-order: stroke fill; stroke: white; stroke-width: {3 / transform.k}; stroke-linejoin: round; pointer-events: none;"
+            >
+              {project.project}
+            </text>
           {/if}
         {/each}
       </g>
     </svg>
+
+    <div class="legend-overlay">
+      <div class="legend-gradient-bar"></div>
+      <div class="legend-bar-labels">
+        <span>Less opportunity</span>
+        <span>Meeting needs</span>
+        <span>More opportunity</span>
+      </div>
+      <div class="legend-symbols">
+        <div class="sym-item">
+          <span class="sym dashed-sym"></span>
+          <span>0.5 mi buffer</span>
+        </div>
+        <div class="sym-item">
+          <span class="sym dot-sym"></span>
+          <span>TOD project (click to select)</span>
+        </div>
+        <div class="sym-item">
+          <span class="transit-multi-sym">
+            <span style="background:#DA291C;"></span>
+            <span style="background:#ED8B00;"></span>
+            <span style="background:#00843D;"></span>
+            <span style="background:#7C878E;"></span>
+          </span>
+          <span>MBTA lines</span>
+        </div>
+      </div>
+    </div>
 
     {#if hoveredProject}
       {@const [tx, ty] = getProjectedCoords(hoveredProject.geometry)}
@@ -222,31 +244,6 @@
     {/if}
   </div>
 
-  <div class="legend-section">
-    <div class="legend">
-      <div class="bar"></div>
-      <div class="labels">
-        <span>Under-serving</span>
-        <span>Meeting Needs</span>
-        <span>Serves Opportunity</span>
-      </div>
-    </div>
-
-    <div class="symbol-legend">
-      <div class="symbol-item">
-        <span class="symbol dashed"></span>
-        <span>0.5 mile-radius analysis buffer around each TOD</span>
-      </div>
-      <div class="symbol-item">
-        <span class="symbol selected"></span>
-        <span>Selected TOD project</span>
-      </div>
-      <div class="symbol-item">
-        <span class="symbol default"></span>
-        <span>Other TOD projects</span>
-      </div>
-    </div>
-  </div>
 </div>
 
 {#if data.length}
@@ -271,66 +268,6 @@
     flex-direction: column;
     height: 100%;
     box-sizing: border-box;
-  }
-
-  .intro {
-    margin-bottom: 12px;
-    flex-shrink: 0;
-    max-height: 200px;
-    overflow-y: auto;
-    padding-right: 8px;
-  }
-
-  .intro-inner {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 8px;
-  }
-
-  .info-box.yellow {
-    background: #fefce8;
-    border: 1px solid #fef08a;
-    border-radius: 10px;
-    overflow: hidden;
-    height: fit-content;
-  }
-
-  .info-box summary {
-    padding: 6px 10px;
-    cursor: pointer;
-    list-style: none;
-    display: flex;
-    align-items: center;
-  }
-
-  .info-box summary::before {
-    content: "▶";
-    font-size: 0.7rem;
-    margin-right: 8px;
-    color: #a16207;
-    transition: transform 0.2s;
-  }
-
-  .info-box[open] summary::before {
-    transform: rotate(90deg);
-  }
-
-  .summary-content h2 {
-    font-size: 0.85rem;
-    margin: 0;
-  }
-
-  .summary-content .eyebrow {
-    font-size: 9px;
-    margin-bottom: 2px;
-  }
-
-  .details-content {
-    padding: 0 12px 12px 28px;
-    color: #713f12;
-    line-height: 1.4;
-    font-size: 0.85rem;
   }
 
   .header {
@@ -423,71 +360,84 @@
     margin: 4px 0 0 0;
   }
 
-  .legend-section {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 20px;
-    margin-top: 12px;
-    align-items: start;
-    flex-shrink: 0;
+  .legend-overlay {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(255, 255, 255, 0.93);
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 10px 12px;
+    width: 200px;
+    z-index: 5;
+    pointer-events: none;
   }
 
-  .legend {
-    width: 320px;
-  }
-
-  .bar {
-    height: 10px;
-    border-radius: 8px;
+  .legend-gradient-bar {
+    height: 8px;
+    border-radius: 4px;
     background: linear-gradient(to right, #d80073, #f5f4ef, #2f7f5f);
   }
 
-  .labels {
+  .legend-bar-labels {
     display: flex;
     justify-content: space-between;
-    color: #64748b;
-    font-size: 0.74rem;
-    margin-top: 6px;
+    font-size: 0.65rem;
+    color: #475569;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    line-height: 1.3;
   }
 
-  .symbol-legend {
-    display: grid;
-    gap: 8px;
-    font-size: 0.74rem;
+  .legend-symbols {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 7px;
+  }
+
+  .sym-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.67rem;
     color: #475569;
   }
 
-  .symbol-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .sym {
+    display: inline-block;
+    flex-shrink: 0;
   }
 
-  .symbol {
-    display: inline-block;
+  .dashed-sym {
     width: 18px;
     height: 18px;
-    border-radius: 999px;
-    flex: 0 0 auto;
-  }
-
-  .symbol.default {
-    background: #f5f4ef;
-    border: 1.5px solid #c6ced6;
-  }
-
-  .symbol.selected {
-    background: #f5f4ef;
-    border: 2.4px solid #111827;
-    width: 22px;
-    height: 22px;
-  }
-
-  .symbol.dashed {
+    border-radius: 50%;
+    border: 1.5px dashed #6b7280;
     background: rgba(31, 41, 55, 0.04);
-    border: 1px dashed #6b7280;
-    width: 26px;
-    height: 26px;
+  }
+
+  .dot-sym {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #f5f4ef;
+    border: 1.5px solid #6b7280;
+  }
+
+  .transit-multi-sym {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  .transit-multi-sym span {
+    width: 7px;
+    height: 4px;
+    border-radius: 1px;
+    display: block;
   }
 
   .project-node {
@@ -545,15 +495,9 @@
     font-weight: 700;
   }
 
-  @media (max-width: 1150px) {
-    .intro-inner {
-      grid-template-columns: 1fr;
-    }
-  }
-
   @media (max-width: 900px) {
-    .legend-section {
-      grid-template-columns: 1fr;
+    .legend-overlay {
+      width: 160px;
     }
   }
 </style>

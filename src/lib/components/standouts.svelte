@@ -1,5 +1,6 @@
 <script>
   export let onApplyStep = (step) => {};
+  export let activeStep = null;
 
   const steps = [
     {
@@ -35,7 +36,9 @@
     {#each steps as step, i}
       <div
         class="suggestion"
+        class:active={step.id === activeStep}
         on:click={() => onApplyStep(step.id)}
+        on:keydown={(e) => e.key === 'Enter' && onApplyStep(step.id)}
         role="button"
         tabindex="0"
       >
@@ -102,6 +105,21 @@
     background: #3b82f6;
     color: white;
     border-color: #3b82f6;
+  }
+
+  .suggestion.active {
+    border-color: #3b82f6;
+    background: #eff6ff;
+  }
+
+  .suggestion.active .dot {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+
+  .suggestion.active .title {
+    color: #1d4ed8;
   }
 
   .dot {

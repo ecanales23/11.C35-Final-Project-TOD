@@ -24,7 +24,7 @@
     <g transform={`translate(${margin.left},${margin.top})`}>
 
       <text x={innerWidth / 2.23} y="-38" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b">
-        Project supply vs. Nearby Demand
+        Project Supply vs. Nearby Demand
       </text>
 
 
@@ -81,8 +81,43 @@
 
     </g>
   </svg>
+
+  <div class="term-defs">
+    <div class="term">
+      <span class="swatch" style="background:#2f7f5f;"></span>
+      <span><strong>Affordable share</strong> — % of this project's units designated as deed-restricted affordable housing</span>
+    </div>
+    <div class="term">
+      <span class="swatch" style="background:#d80073;"></span>
+      <span><strong>Low-income demand</strong> — % of nearby renter households earning below the selected income threshold</span>
+    </div>
+  </div>
 </div>
 
 <style>
   .chart-wrap { width: 100%; }
+
+  .term-defs {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 6px 4px 2px;
+  }
+
+  .term {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 0.73rem;
+    color: #475569;
+    line-height: 1.4;
+  }
+
+  .swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
 </style>
