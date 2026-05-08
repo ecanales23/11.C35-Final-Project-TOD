@@ -59,15 +59,48 @@
 
   onMount(async () => {
     await tick();
+    
+    let lastScrollY = window.scrollY;
+    let stepRatios = new Array(steps.length).fill(0); // track each step's ratio
+
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]) activeStep = Number(visible[0].target.dataset.step);
+        // Update ratios for all entries that fired
+        entries.forEach((e) => {
+          const idx = Number(e.target.dataset.step);
+          stepRatios[idx] = e.isIntersecting ? e.intersectionRatio : 0;
+        });
+
+        const currentScrollY = window.scrollY;
+        const scrollingDown = currentScrollY >= lastScrollY;
+        lastScrollY = currentScrollY;
+
+        // Find the step with the highest visibility
+        let bestIdx = activeStep;
+        let bestRatio = stepRatios[activeStep];
+
+        stepRatios.forEach((ratio, idx) => {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestIdx = idx;
+          }
+          // Tiebreak: if ratios are close (within 15%), prefer the
+          // direction we're scrolling toward
+          if (Math.abs(ratio - bestRatio) < 0.15) {
+            if (scrollingDown && idx > bestIdx) bestIdx = idx;
+            if (!scrollingDown && idx < bestIdx) bestIdx = idx;
+          }
+        });
+
+        activeStep = bestIdx;
       },
-      { root: null, threshold: [0.15, 0.4, 0.65], rootMargin: "0px 0px -30% 0px" }
+      {
+        root: null,
+        threshold: Array.from({ length: 21 }, (_, i) => i * 0.05), // 0, 0.05, 0.1 ... 1.0
+        rootMargin: "0px 0px -20% 0px",
+      }
     );
+
     stepEls.forEach((el) => el && observer.observe(el));
     return () => observer.disconnect();
   });
@@ -152,7 +185,7 @@
               </div>
             </div>
             <div class="budget-callout">
-              Only <strong>1 in 10</strong> units in this "mixed-income" building is actually affordable
+              Only <strong>10%</strong> of units in this "mixed-income" building are actually affordable
             </div>
 
           {:else if activeStep === 2}

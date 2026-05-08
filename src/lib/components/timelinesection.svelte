@@ -148,6 +148,23 @@
     <p>Loading neighborhood data…</p>
   </div>
 {:else}
+  <section class="research-summary container">
+    <div class="context-grid">
+      <div class="info-card">
+        <span class="label">Research question</span>
+        <p class="main-q">To what extent does the affordable share of current TOD projects in Greater Boston align with nearby lower-income renter demand?</p>
+        <p class="sub-text">
+          We provide planners and policymakers with an "opportunity score" measuring the gap between new supply and local demand, analyzing data within a 0.5-mile radius of each station.
+        </p>
+      </div>
+      <div class="info-card secondary">
+        <span class="label">Why affordability near transit matters</span>
+        <p>
+          When housing costs exceed 30% of income, families cut back on healthcare, food, and savings. A lack of affordable housing near transit pushes lower-income workers further from reliable transportation — and further from opportunity.
+        </p>
+      </div>
+    </div>
+  </section>
   <section class="timeline-container">
 
     <header class="hero-header">
@@ -164,23 +181,6 @@
       </div>
     </header>
 
-    <section class="research-summary container">
-      <div class="context-grid">
-        <div class="info-card">
-          <span class="label">Research question</span>
-          <p class="main-q">To what extent does the affordable share of current TOD projects in Greater Boston align with nearby lower-income renter demand?</p>
-          <p class="sub-text">
-            We provide planners and policymakers with an "opportunity score" measuring the gap between new supply and local demand, analyzing data within a 0.5-mile radius of each station.
-          </p>
-        </div>
-        <div class="info-card secondary">
-          <span class="label">Why affordability near transit matters</span>
-          <p>
-            When housing costs exceed 30% of income, families cut back on healthcare, food, and savings. A lack of affordable housing near transit pushes lower-income workers further from reliable transportation — and further from opportunity.
-          </p>
-        </div>
-      </div>
-    </section>
 
     <Narrativestory />
 
@@ -195,7 +195,7 @@
         <div class="graphic-pair" class:waffle-visible={waffleVisible}>
           <div class="graphic-card">
             <p class="graphic-title">Who's renting near Boston's transit?</p>
-            <p class="graphic-subtitle">Each figure = 1 in 100 renters near MBTA stations</p>
+            <p class="graphic-subtitle">Each figure = ~1,400 renters near MBTA stations</p>
             <div class="icon-grid">
               {#each Array(100) as _, i}
                 <svg
@@ -251,7 +251,7 @@
                 <span>Market-rate units</span>
               </div>
             </div>
-            <p class="graphic-source">Source: Our analysis of 9 Greater Boston TOD projects (2,400+ units)</p>
+            <p class="graphic-source">Source: MBTARealty.com, 9 Greater Boston TOD projects (2,400+ units)</p>
           </div>
         </div>
 
