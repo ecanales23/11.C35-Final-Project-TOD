@@ -12,16 +12,13 @@
   let loading = true;
   let activeSection = "timeline";
 
-  let demandThreshold = "50k";
-  let showOnlyAffordable = false;
   let showUnderServingOnly = false;
   let showOverServingOnly = false;
   let minUnits = 0;
   let sortBy = "name";
   let activeStep = null;
-  let minRenterShare = 0;
-  let minLowIncomeDemand = 0;
-  let minCostBurden = 0;
+  let showLowIncomeChoropleth = false;
+  let showCostBurdenChoropleth = false;
 
   const guidedViewHints = {
     "largest-gaps": {
@@ -95,15 +92,11 @@
   }
 
   function updateDerived() {
-    const enriched = enrichTodWithThreshold(baseTodData, demandThreshold);
+    const enriched = enrichTodWithThreshold(baseTodData, "50k");
     let filtered = enriched.filter(d => {
-      if (showOnlyAffordable && d.affordableUnits <= 0) return false;
       if (showUnderServingOnly && d.mismatchScore >= 0) return false;
       if (showOverServingOnly && d.mismatchScore <= 0) return false;
       if (d.totalUnits < minUnits) return false;
-      if (d.renterShare < minRenterShare) return false;
-      if (d.lowerIncomeDemandShare < minLowIncomeDemand) return false;
-      if (d.costBurdenShare < minCostBurden) return false;
       return true;
     });
     todData = sortData(filtered);
@@ -112,14 +105,8 @@
   }
 
   $: if (baseTodData.length) {
-    void [demandThreshold, showOnlyAffordable, showUnderServingOnly, showOverServingOnly,
-          minUnits, sortBy, minRenterShare, minLowIncomeDemand, minCostBurden];
+    void [showUnderServingOnly, showOverServingOnly, minUnits, sortBy];
     updateDerived();
-  }
-
-  function handleDropdown(event) {
-    const id = event.target.value;
-    selectedTod = todData.find(d => d.id === id) ?? null;
   }
 
   function handleSelect(d) {
@@ -129,28 +116,21 @@
   function applyStoryStep(step) {
     activeStep = step === "all" ? null : step;
     if (step === "all") {
-      showOnlyAffordable = false;
       showUnderServingOnly = false;
       showOverServingOnly = false;
       minUnits = 0;
-      minRenterShare = 0;
-      minLowIncomeDemand = 0;
-      minCostBurden = 0;
       sortBy = "name";
     } else if (step === "largest-gaps") {
       showUnderServingOnly = true;
       showOverServingOnly = false;
-      showOnlyAffordable = false;
       minUnits = 0;
       sortBy = "gap";
     } else if (step === "high-affordable") {
       showOverServingOnly = true;
       showUnderServingOnly = false;
-      showOnlyAffordable = false;
       minUnits = 0;
       sortBy = "affordable";
     } else if (step === "large-projects") {
-      showOnlyAffordable = false;
       showUnderServingOnly = false;
       showOverServingOnly = false;
       minUnits = 150;
@@ -200,75 +180,36 @@
     <div class="dashboard-shell" id="dashboard">
       <div class="controls-col">
 
-        <div class="controls-header">
-          <p class="eyebrow">Filters &amp; Controls</p>
-        </div>
-
         <div class="controls-block">
-          <div class="control-group">
-            <label for="tod-select">Selected TOD project</label>
-            {#if selectedTod}
-              <select id="tod-select" on:change={handleDropdown} bind:value={selectedTod.id}>
-                {#each todData as d}
-                  <option value={d.id}>{d.project}</option>
-                {/each}
-              </select>
-            {/if}
-          </div>
+          <p class="controls-block-label">Map layers</p>
 
-          <div class="control-group">
-            <label for="threshold">Income threshold for demand</label>
-            <select id="threshold" bind:value={demandThreshold}>
-              <option value="35k">Renters under $35k</option>
-              <option value="50k">Renters under $50k</option>
-              <option value="75k">Renters under $75k</option>
-            </select>
-          </div>
+          <button
+            class="choropleth-toggle"
+            class:active-blue={showLowIncomeChoropleth}
+            on:click={() => showLowIncomeChoropleth = !showLowIncomeChoropleth}
+          >
+            <span class="toggle-swatch" style="background: linear-gradient(135deg, #deebf7, #08519c);"></span>
+            <span class="toggle-text">
+              <strong>Low-income demand</strong>
+              <span>% of nearby renters earning under $50k</span>
+            </span>
+            <span class="toggle-indicator">{showLowIncomeChoropleth ? "On" : "Off"}</span>
+          </button>
 
-          <div class="control-group">
-            <label for="min-units">Min project size: <strong>{minUnits} units</strong></label>
-            <input id="min-units" type="range" min="0" max="400" step="10" bind:value={minUnits} />
-          </div>
-
-          <div class="check-stack">
-            <label class="custom-check">
-              <input type="checkbox" bind:checked={showUnderServingOnly} />
-              <span>Only projects providing less opportunity than demand</span>
-            </label>
-          </div>
+          <button
+            class="choropleth-toggle"
+            class:active-red={showCostBurdenChoropleth}
+            on:click={() => showCostBurdenChoropleth = !showCostBurdenChoropleth}
+          >
+            <span class="toggle-swatch" style="background: linear-gradient(135deg, #fee5d9, #a50f15);"></span>
+            <span class="toggle-text">
+              <strong>Cost-burdened rate</strong>
+              <span>% of nearby renters spending 30%+ on rent</span>
+            </span>
+            <span class="toggle-indicator">{showCostBurdenChoropleth ? "On" : "Off"}</span>
+          </button>
         </div>
 
-        <div class="controls-block">
-          <p class="controls-block-label">Neighborhood filters</p>
-
-          <div class="control-group">
-            <label for="min-renter-share">
-              Min renter share nearby: <strong>{Math.round(minRenterShare * 100)}%</strong>
-            </label>
-            <input id="min-renter-share" type="range" min="0" max="1" step="0.05" bind:value={minRenterShare} />
-            <p class="filter-note">% of nearby housing that is renter-occupied</p>
-          </div>
-
-          <div class="control-group">
-            <label for="min-low-income">
-              Min low-income demand: <strong>{Math.round(minLowIncomeDemand * 100)}%</strong>
-            </label>
-            <input id="min-low-income" type="range" min="0" max="1" step="0.05" bind:value={minLowIncomeDemand} />
-            <p class="filter-note">% of nearby renters earning below the selected threshold</p>
-          </div>
-
-          <div class="control-group">
-            <label for="min-cost-burden">
-              Min cost-burdened rate: <strong>{Math.round(minCostBurden * 100)}%</strong>
-            </label>
-            <input id="min-cost-burden" type="range" min="0" max="1" step="0.05" bind:value={minCostBurden} />
-            <p class="filter-note">% of nearby renters spending 30%+ of income on rent</p>
-          </div>
-        </div>
-
-        <div class="status-bar">
-          <strong>{todData.length}</strong> projects visible &nbsp;·&nbsp; Threshold: <strong>{demandThreshold}</strong>
-        </div>
         <div class="story-block">
           <p class="section-label">Guided views</p>
           <StorySteps onApplyStep={applyStoryStep} {activeStep} />
@@ -300,7 +241,13 @@
 
         <div class="map-and-panel">
           <div class="map-container">
-            <Map data={todData} selectedId={selectedTod?.id} onSelect={handleSelect} />
+            <Map
+              data={todData}
+              selectedId={selectedTod?.id}
+              onSelect={handleSelect}
+              {showLowIncomeChoropleth}
+              {showCostBurdenChoropleth}
+            />
           </div>
           <aside class="detail-sidebar">
             <TodDetailPanel tod={selectedTod} />
@@ -458,10 +405,6 @@
     overflow-y: auto;
   }
 
-  .controls-header {
-    padding: 0 2px;
-  }
-
   .data-note-inline {
     margin: 6px 0 0;
     font-size: 0.78rem;
@@ -505,59 +448,73 @@
     margin: 0 0 2px;
   }
 
-  .control-group {
+  .choropleth-toggle {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: #faf7f0;
+    border: 1px solid #e2d8cc;
+    border-radius: 12px;
+    padding: 10px 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s;
   }
 
-  .control-group label {
-    font-size: 11px;
+  .choropleth-toggle:hover {
+    border-color: #c0b09a;
+    background: #f3ede4;
+  }
+
+  .choropleth-toggle.active-blue {
+    background: #eff6ff;
+    border-color: #3b82f6;
+  }
+
+  .choropleth-toggle.active-red {
+    background: #fff5f0;
+    border-color: #ef4444;
+  }
+
+  .toggle-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .toggle-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .toggle-text strong {
+    font-size: 12px;
+    color: #1a0f00;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+  }
+
+  .toggle-text span {
+    font-size: 10px;
     color: #92846e;
-    white-space: normal;
     line-height: 1.3;
   }
 
-  .filter-note {
+  .toggle-indicator {
     font-size: 10px;
-    color: #a89880;
-    margin: 0;
-    line-height: 1.4;
-  }
-
-  select {
-    width: 100%;
-    height: 38px;
-    padding: 0 10px;
-    border-radius: 10px;
-    border: 1px solid #d6cfc3;
-    font-size: 13px;
-    background: #faf7f0;
-  }
-
-  input[type="range"] { width: 100%; cursor: pointer; }
-
-  .check-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .custom-check {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 12px;
-    color: #5a5040;
-  }
-
-  .status-bar {
-    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     color: #92846e;
+    flex-shrink: 0;
   }
+
+  .active-blue .toggle-indicator { color: #2563eb; }
+  .active-red .toggle-indicator { color: #dc2626; }
 
   .guided-banner {
     display: flex;

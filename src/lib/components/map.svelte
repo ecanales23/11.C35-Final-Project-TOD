@@ -6,11 +6,14 @@
   export let data = [];
   export let selectedId = null;
   export let onSelect = (d) => {};
+  export let showLowIncomeChoropleth = false;
+  export let showCostBurdenChoropleth = false;
 
   let geojson = null;
   let neighborhoods = [];
   let projects = [];
   let transitLines = [];
+  let bufferGeoFeatures = [];
 
   let width = 900;
   let height = 480;
@@ -21,10 +24,11 @@
   let homeTransform = d3.zoomIdentity;
 
   onMount(async () => {
-    const [geoRes, nhoodRes, transitRes] = await Promise.all([
+    const [geoRes, nhoodRes, transitRes, bufferRes] = await Promise.all([
       fetch(`${base}/data/TODLocations_4.4.26.geojson`),
       fetch(`${base}/data/MAPC_census_tracts/mapc_census_tracts.geojson`),
-      fetch(`${base}/data/mbta_transit_lines.geojson`)
+      fetch(`${base}/data/mbta_transit_lines.geojson`),
+      fetch(`${base}/data/TOD_2024_WeightedDemographics.geojson`)
     ]);
 
     geojson = await geoRes.json();
@@ -32,6 +36,8 @@
     neighborhoods = nhoodData.features;
     const transitData = await transitRes.json();
     transitLines = transitData.features;
+    const bufferData = await bufferRes.json();
+    bufferGeoFeatures = bufferData.features;
 
     zoomBehavior = d3.zoom()
       .scaleExtent([0.7, 18])
@@ -39,7 +45,6 @@
         transform = event.transform;
       });
 
-    // 3.3× zoom, shifted up and slightly left to center on the project cluster
     const k = 3.3;
     homeTransform = d3.zoomIdentity
       .translate(width * (1 - k) / 2 - 45, height * (1 - k) / 2 - 80)
@@ -79,10 +84,30 @@
 
   $: pathGenerator = projection ? d3.geoPath().projection(projection) : null;
 
+  // 0.5 miles = 2640 US survey feet (EPSG:2249 units)
+  $: bufferRadius = projection ? 2640 * projection.scale() : 0;
+
   $: colorScale = d3.scaleLinear()
       .domain([-0.5, 0, 0.5])
       .range(["#d80073", "#f5f4ef", "#2f7f5f"])
       .clamp(true);
+
+  $: bufferProjects = bufferGeoFeatures
+    .map(feature => {
+      const match = data.find(d => d.project === feature.properties.Project);
+      return match ? { ...match, geometry: feature.geometry } : null;
+    })
+    .filter(Boolean);
+
+  const lowIncomeScale = d3.scaleSequential()
+    .domain([0.2, 0.65])
+    .interpolator(d3.interpolateBlues)
+    .clamp(true);
+
+  const costBurdenScale = d3.scaleSequential()
+    .domain([0.35, 0.65])
+    .interpolator(d3.interpolateOrRd)
+    .clamp(true);
 
   function getProjectedCoords(geometry) {
     if (!projection) return [0, 0];
@@ -124,6 +149,40 @@
           {/each}
         </g>
 
+        {#if showLowIncomeChoropleth}
+          <g class="choropleth-low-income">
+            {#each bufferProjects as bp}
+              {#if pathGenerator}
+                <path
+                  d={pathGenerator({ type: "Feature", geometry: bp.geometry })}
+                  fill={lowIncomeScale(bp.lowerIncomeDemandShare)}
+                  opacity="0.75"
+                  stroke="rgba(8,81,156,0.4)"
+                  stroke-width="1.5"
+                  style="vector-effect: non-scaling-stroke; pointer-events:none;"
+                />
+              {/if}
+            {/each}
+          </g>
+        {/if}
+
+        {#if showCostBurdenChoropleth}
+          <g class="choropleth-cost-burden">
+            {#each bufferProjects as bp}
+              {#if pathGenerator}
+                <path
+                  d={pathGenerator({ type: "Feature", geometry: bp.geometry })}
+                  fill={costBurdenScale(bp.costBurdenShare)}
+                  opacity="0.75"
+                  stroke="rgba(165,15,21,0.4)"
+                  stroke-width="1.5"
+                  style="vector-effect: non-scaling-stroke; pointer-events:none;"
+                />
+              {/if}
+            {/each}
+          </g>
+        {/if}
+
         <g class="transit-lines">
           {#each transitLines as line}
             {#if pathGenerator}
@@ -150,12 +209,12 @@
             <circle
               cx={x}
               cy={y}
-              r={32 / transform.k}
+              r={bufferRadius}
               fill="rgba(31, 41, 55, 0.04)"
               stroke={isSelected ? "#111827" : "#c6ced6"}
-              stroke-dasharray="4 4"
-              stroke-width={1 / transform.k}
-              style="pointer-events:none;"
+              stroke-dasharray={`${4 / transform.k} ${4 / transform.k}`}
+              stroke-width="1"
+              style="vector-effect: non-scaling-stroke; pointer-events:none;"
             />
 
             <circle
@@ -194,6 +253,29 @@
         <span>Meeting needs</span>
         <span>More opportunity</span>
       </div>
+
+      {#if showLowIncomeChoropleth}
+        <div class="choropleth-legend-entry">
+          <p class="choropleth-legend-label">Low-income demand (buffer)</p>
+          <div class="choropleth-gradient-bar" style="background: linear-gradient(to right, #deebf7, #08519c);"></div>
+          <div class="choropleth-bar-ends">
+            <span>20%</span>
+            <span>65%+</span>
+          </div>
+        </div>
+      {/if}
+
+      {#if showCostBurdenChoropleth}
+        <div class="choropleth-legend-entry">
+          <p class="choropleth-legend-label">Cost-burdened rate (buffer)</p>
+          <div class="choropleth-gradient-bar" style="background: linear-gradient(to right, #fee5d9, #a50f15);"></div>
+          <div class="choropleth-bar-ends">
+            <span>35%</span>
+            <span>65%+</span>
+          </div>
+        </div>
+      {/if}
+
       <div class="legend-symbols">
         <div class="sym-item">
           <span class="sym dashed-sym"></span>
@@ -387,6 +469,33 @@
     margin-top: 4px;
     margin-bottom: 8px;
     line-height: 1.3;
+  }
+
+  .choropleth-legend-entry {
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .choropleth-legend-label {
+    margin: 0 0 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #374151;
+  }
+
+  .choropleth-gradient-bar {
+    height: 8px;
+    border-radius: 4px;
+  }
+
+  .choropleth-bar-ends {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6rem;
+    color: #6b7280;
+    margin-top: 2px;
+    margin-bottom: 4px;
   }
 
   .legend-symbols {
