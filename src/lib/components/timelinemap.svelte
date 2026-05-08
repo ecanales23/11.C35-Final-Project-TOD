@@ -64,7 +64,7 @@
         (props["j_wtd_C_Total: Renter-occupied housing units: $75,000 or more: 30 percent or more"] ?? 0);
       totalRenter = props["j_wtd_C_Total: Renter-occupied housing units:"] ?? 0;
     } else {
-      return null; 
+      return null;
     }
     return totalRenter > 0 ? burdened / totalRenter : null;
   }
@@ -213,7 +213,7 @@
           {@const isUnfocused = !!step?.focusProject && !isFocused}
           {@const isHovered = hoveredTod === feature}
           {@const [cx, cy] = pathGenerator.centroid(feature)}
-      
+
           <path
             d={pathGenerator(feature)}
             fill="none"
@@ -399,12 +399,6 @@
     font-size: 0.68rem;
     color: #475569;
     line-height: 1.3;
-  }
-
-  .legend-sub-label {
-    margin: 0 0 5px;
-    font-size: 0.65rem;
-    color: #94a3b8;
   }
 
   .legend-divider {

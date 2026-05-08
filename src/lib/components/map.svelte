@@ -114,7 +114,21 @@
         <div class="details-content">
           <p>
             TOD projects are often evaluated by how many total units they add, but that does not show whether they are creating housing that matches the needs of nearby residents.
-            This visualization helps planners and policymakers compare where projects appear to under-serve or better match nearby lower-income renter demand, using a simple affordability-gap measure.
+            This visualization helps planners and policymakers compare where projects appear to under-serve or better match nearby lower-income renter demand.
+          </p>
+        </div>
+      </details>
+
+      <details class="info-box yellow">
+        <summary>
+          <div class="summary-content">
+            <p class="eyebrow">Data selection</p>
+            <h2>Why we chose these projects</h2>
+          </div>
+        </summary>
+        <div class="details-content">
+          <p>
+            We utilized the 15 "Completed TOD Projects" available via MBTA Realty. Projects where project-level affordability data was incomplete were excluded from the analysis, resulting in the final 9 projects shown here.
           </p>
         </div>
       </details>
@@ -269,7 +283,7 @@
 
   .intro-inner {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     margin-bottom: 8px;
   }
