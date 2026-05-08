@@ -1,6 +1,5 @@
 <script>
   import * as d3 from "d3";
-  import DemandByIncomeChart from "./demandbyincome.svelte";
   import DemandFitChart from "./demandbyhousingstock.svelte";
 
   export let tod = null;
@@ -56,10 +55,6 @@
       <DemandFitChart {tod} />
     </div>
 
-    <div class="chart-group">
-      <DemandByIncomeChart {tod} />
-    </div>
-    
     <div class="note-box">
       <p>
         {#if tod.mismatchScore < 0}
