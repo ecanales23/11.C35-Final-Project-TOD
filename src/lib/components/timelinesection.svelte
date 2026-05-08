@@ -182,7 +182,9 @@
     </header>
 
 
-    <Narrativestory />
+    <div id="maya-story">
+      <Narrativestory />
+    </div>
 
     <section class="maya-humanize" bind:this={waffleEl}>
       <div class="container humanize-inner">
@@ -292,7 +294,7 @@
       </div>
     </section>
 
-    <div class="scrolly-grid">
+    <div class="scrolly-grid" id="timeline-details">
       <div class="map-viewport">
         <div class="map-inner">
           <TimelineMap {timelineRows} step={steps[activeStep]} />

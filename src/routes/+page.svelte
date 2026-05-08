@@ -39,27 +39,26 @@
     baseTodData = await loadTodData();
     loading = false;
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          activeSection = entry.target.id;
+    const sectionIds = ['timeline', 'maya-story', 'timeline-details', 'dashboard'];
+    const NAV_HEIGHT = 80;
+
+    function updateActiveSection() {
+      let current = 'timeline';
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= NAV_HEIGHT) {
+          current = id;
         }
-      });
-    }, {
-      threshold: 0.2,
-      rootMargin: "-80px 0px -20% 0px"
-    });
+      }
+      activeSection = current;
+    }
 
     setTimeout(() => {
-      const targets = [
-        document.getElementById('timeline'),
-        document.getElementById('maya-story'),
-        document.getElementById('timeline-details'),
-        document.getElementById('dashboard')
-      ].filter(Boolean);
-
-      targets.forEach(t => observer.observe(t));
+      window.addEventListener('scroll', updateActiveSection, { passive: true });
+      updateActiveSection();
     }, 600);
+
+    return () => window.removeEventListener('scroll', updateActiveSection);
   });
 
   function scrollToSection(id, storyStep = null) {
