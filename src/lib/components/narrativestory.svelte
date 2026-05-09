@@ -1,11 +1,12 @@
 <script>
   import { onMount, tick } from "svelte";
+  import { base } from "$app/paths";
 
   const steps = [
     {
       eyebrow: "Step 1 · Meet Maya",
       title: "Meet Maya who is raising her daughter in Dorchester, searching for a home near the T",
-      body: "Maya is 31 years old. She works as a dental hygienist in Dorchester, earns about $52,000 a year, and is raising her 4-year-old daughter Lily on her own. On weekends, she helps care for her mother who lives nearby. She's one of thousands of lower-income renters across Boston who work here, depend on the T, and are looking for housing they can actually afford near transit. Her maximum budget: $1,300/month for rent.",
+      body: "Maya is 31 years old. She works as a pre-school teacher in Dorchester, earns about $52,000 a year, and is raising her 4-year-old daughter Lily on her own. On weekends, she helps care for her mother who lives nearby. She's one of thousands of lower-income renters across Boston who work here, depend on the T, and are looking for housing they can actually afford near transit. Her maximum budget: $1,300/month for rent.",
       stats: [
         { label: "Annual income", val: "$52k" },
         { label: "Max rent (30%)", val: "$1,300/mo" },
@@ -112,41 +113,31 @@
     <div class="sticky-panel">
       <div class="panel-inner">
         <div class="visual-area">
-
           {#if activeStep === 0}
             <p class="vis-title">Meet Maya</p>
-            <div class="profile-card">
-              <div class="avatar-row">
-                <div class="avatar">
-                  <svg viewBox="0 0 48 48" width="48" height="48">
-                    <circle cx="24" cy="18" r="10" fill="#fcd34d"/>
-                    <path d="M6 46c0-9.9 8.1-18 18-18s18 8.1 18 18" fill="#fcd34d"/>
-                  </svg>
-                </div>
-                <div class="avatar-info">
-                  <p class="avatar-name">Maya, 31</p>
-                  <p class="avatar-job">Early childhood educator · Roxbury</p>
-                </div>
+            <div class="persona-card">
+              <div class="persona-photo-wrap">
+                <img src="images/MayaImg.png" alt="Maya" class="persona-photo" />
               </div>
-              <div class="family-row">
-                <div class="family-item">
-                  <span class="family-icon">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#f59e0b"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
-                  </span>
+              <div class="persona-identity">
+                <p class="persona-name">Maya</p>
+                <p class="persona-tagline">31, Single mother · Dorchester</p>
+              </div>
+              <div class="persona-details">
+                <div class="persona-detail-row">
+                  <span class="detail-icon"></span>
+                  <span>Pre-School teacher in Dorchester</span>
+                </div>
+                <div class="persona-detail-row">
+                  <span class="detail-icon"></span>
                   <span>Raising <strong>Lily</strong>, age 4, on her own</span>
                 </div>
-                <div class="family-item">
-                  <span class="family-icon">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#a3a3a3"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
-                  </span>
-                  <span>Helps care for her <strong>mother</strong> on weekends</span>
-                </div>
-                <div class="family-item">
-                  <span class="family-icon">🚇</span>
+                <div class="persona-detail-row">
+                  <span class="detail-icon">🚇</span>
                   <span>No car — depends on the Orange Line</span>
                 </div>
               </div>
-              <div class="budget-card">
+              <div class="persona-budget">
                 <div class="budget-row">
                   <span class="budget-label">Annual income</span>
                   <span class="budget-val">$52,000 <span class="budget-ami">~50% AMI</span></span>
@@ -158,6 +149,7 @@
                 </div>
               </div>
             </div>
+
 
           {:else if activeStep === 1}
             <p class="vis-title">200 units: who are they for?</p>
@@ -349,30 +341,75 @@
     margin: 0 0 14px;
   }
 
-  .profile-card { display: flex; flex-direction: column; gap: 14px; }
+  .persona-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
 
-  .avatar-row { display: flex; align-items: center; gap: 14px; }
-  .avatar {
-    width: 52px; height: 52px;
+  .persona-photo-wrap {
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
-    background: #fff7ed;
-    border: 2px solid #fed7aa;
-    display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
-  .avatar-name { font-family: 'Lora', Georgia, serif; font-size: 1.1rem; font-weight: 700; color: #1a0f00; margin: 0 0 2px; }
-  .avatar-job { font-size: 0.82rem; color: #92846e; margin: 0; }
 
-  .family-row { display: flex; flex-direction: column; gap: 8px; }
-  .family-item { display: flex; align-items: flex-start; gap: 10px; font-size: 0.88rem; color: #5a5040; line-height: 1.4; }
-  .family-icon { flex-shrink: 0; display: flex; align-items: center; margin-top: 1px; }
+  .persona-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;   
+    object-position: center center;
+  }
 
-  .budget-card {
+  .persona-identity {
+    text-align: center;
+  }
+
+  .persona-name {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a0f00;
+    margin: 0 0 2px;
+  }
+
+  .persona-tagline {
+    font-size: 0.82rem;
+    color: #92846e;
+    margin: 0;
+  }
+
+  .persona-details {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .persona-detail-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: #5a5040;
+    line-height: 1.4;
+  }
+
+  .detail-icon {
+    flex-shrink: 0;
+    font-size: 1rem;
+    margin-top: 1px;
+  }
+
+  .persona-budget {
+    width: 100%;
     background: #faf7f0;
     border: 1px solid #e8e0d4;
     border-radius: 12px;
     padding: 14px 16px;
   }
+  
   .budget-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
   .budget-label { font-size: 0.82rem; color: #5a5040; }
   .budget-val { font-size: 0.9rem; font-weight: 800; color: #1a0f00; }
