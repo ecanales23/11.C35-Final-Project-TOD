@@ -70,9 +70,15 @@
       const elementRect = el.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;
       const offsetPosition = elementPosition - offset;
-      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
     }
-    if (storyStep) applyStoryStep(storyStep);
+    if (storyStep) {
+      applyStoryStep(storyStep);
+    }
   }
 
   function sortData(data) {
@@ -139,16 +145,24 @@
 {:else}
   <nav class="sticky-nav">
     <div class="nav-inner">
-      <button class:active={activeSection === 'timeline'} on:click={() => scrollToSection('timeline')}>
+      <button
+        class:active={activeSection === 'timeline'}
+        on:click={() => scrollToSection('timeline')}>
         1. Start
       </button>
-      <button class:active={activeSection === 'maya-story'} on:click={() => scrollToSection('maya-story')}>
+      <button
+        class:active={activeSection === 'maya-story'}
+        on:click={() => scrollToSection('maya-story')}>
         2. Maya's Story
       </button>
-      <button class:active={activeSection === 'timeline-details'} on:click={() => scrollToSection('timeline-details')}>
+      <button
+        class:active={activeSection === 'timeline-details'}
+        on:click={() => scrollToSection('timeline-details')}>
         3. Timeline
       </button>
-      <button class:active={activeSection === 'dashboard'} on:click={() => scrollToSection('dashboard', 'all')}>
+      <button
+        class:active={activeSection === 'dashboard'}
+        on:click={() => scrollToSection('dashboard', 'all')}>
         4. Dashboard
       </button>
     </div>
@@ -162,28 +176,23 @@
       <TimelineSection />
     </section>
 
+    <header class="map-header">
+      <p class="eyebrow">Greater Boston TOD Opportunity Dashboard</p>
+      <h1>Which TOD projects are opening doors for renters like Maya?</h1>
+      <p class="subtitle">
+        Compare each TOD's affordable share against nearby lower-income renter demand.
+      </p>
+      <p class="data-note-inline">
+        Analysis draws from the 15 completed TOD projects available via MBTA Realty.
+        Projects with incomplete affordability data were excluded, leaving the 9 shown here.
+      </p>
+    </header>
+
     <div class="dashboard-shell" id="dashboard">
-
-      <!-- Full-width header spanning both columns -->
-      <header class="map-header">
-        <p class="eyebrow">Greater Boston TOD Opportunity Dashboard</p>
-        <h1>Which TOD projects are opening doors for renters like Maya?</h1>
-        <p class="subtitle">Compare each TOD's affordable share against nearby lower-income renter demand.</p>
-        <p class="data-note-inline">
-          Analysis draws from the 15 completed TOD projects available via MBTA Realty.
-          Projects with incomplete affordability data were excluded, leaving the 9 shown here.
-        </p>
-      </header>
-
-      <!-- Left: controls -->
       <div class="controls-col">
-        <div class="story-block">
-          <p class="section-label">Guided views</p>
-          <StorySteps onApplyStep={applyStoryStep} {activeStep} />
-        </div>
-
         <div class="controls-block">
           <p class="controls-block-label">Map layers</p>
+
           <button
             class="choropleth-toggle"
             class:active-blue={showLowIncomeChoropleth}
@@ -210,9 +219,13 @@
             <span class="toggle-indicator">{showCostBurdenChoropleth ? "On" : "Off"}</span>
           </button>
         </div>
+
+        <div class="story-block">
+          <p class="section-label">Guided views</p>
+          <StorySteps onApplyStep={applyStoryStep} {activeStep} />
+        </div>
       </div>
 
-      <!-- Right: map + detail panel -->
       <div class="map-col">
         {#if activeStep}
           <div class="guided-banner">
@@ -239,7 +252,6 @@
           </aside>
         </div>
       </div>
-
     </div>
   </main>
 
@@ -255,7 +267,7 @@
       </div>
       <div class="credits-section">
         <p class="credits-label">Data Sources</p>
-        <ul>
+        <ul class="sources-list">
           <li>U.S. Census Bureau, American Community Survey (ACS) 5-Year Estimates, 2010–2014, 2015–2019, and 2020–2024</li>
           <li>U.S. Census Bureau, Decennial Census 2020</li>
           <li>MAPC Census Tract Boundaries, Metropolitan Area Planning Commission</li>
@@ -341,21 +353,11 @@
     color: #92846e;
   }
 
-  /* ── Dashboard shell ───────────────────────────────── */
-  .dashboard-shell {
-    display: grid;
-    grid-template-columns: 380px 1fr;
-    grid-template-rows: auto 1fr;
-    gap: 12px 24px;
-    height: 100vh;
-    padding: 24px;
-    box-sizing: border-box;
-    min-height: 800px;
-  }
-
   .map-header {
-    grid-column: 1 / -1;
-    flex-shrink: 0;
+    text-align: center;
+    max-width: 900px;
+    margin: 48px auto 32px;
+    padding: 0 24px;
   }
 
   .eyebrow {
@@ -364,37 +366,75 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #b45309;
-    margin: 0 0 6px;
+    margin: 0 0 12px;
+    display: block;
   }
 
   h1 {
     font-family: 'Lora', Georgia, serif;
-    font-size: 1.6rem;
+    font-size: 1.85rem;
     font-weight: 700;
-    margin: 0 0 6px;
+    margin: 0 0 12px;
+    line-height: 1.3;
   }
 
   .subtitle {
-    font-size: 0.9rem;
+    font-size: 1rem;
     line-height: 1.6;
     color: #5a5040;
-    margin: 0;
+    margin: 0 auto;
   }
 
   .data-note-inline {
-    margin: 6px 0 0;
-    font-size: 0.78rem;
+    margin: 12px auto 0;
+    font-size: 0.8rem;
     color: #92846e;
     line-height: 1.5;
+    max-width: 750px;
   }
 
-  /* ── Left column ───────────────────────────────────── */
+  .dashboard-shell {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    padding: 0 24px 24px;
+    box-sizing: border-box;
+    align-items: start;
+  }
+
+  .map-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+  }
+
+  .map-and-panel {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 16px;
+    height: 700px;
+  }
+
+  .map-container {
+    background: white;
+    border: 1px solid #e8e0d4;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+  }
+
+  .detail-sidebar {
+    background: white;
+    border: 1px solid #e8e0d4;
+    border-radius: 20px;
+    overflow-y: auto;
+  }
+
   .controls-col {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    overflow-y: auto;
-    align-self: start;
   }
 
   .section-label {
@@ -410,7 +450,6 @@
     border: 1px solid #e8e0d4;
     border-radius: 16px;
     padding: 20px;
-    flex-shrink: 0;
   }
 
   .controls-block {
@@ -421,7 +460,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    flex-shrink: 0;
   }
 
   .controls-block-label {
@@ -444,7 +482,7 @@
     padding: 10px 12px;
     cursor: pointer;
     text-align: left;
-    transition: border-color 0.15s, background 0.15s;
+    transition: all 0.15s;
   }
 
   .choropleth-toggle:hover {
@@ -452,15 +490,8 @@
     background: #f3ede4;
   }
 
-  .choropleth-toggle.active-blue {
-    background: #eff6ff;
-    border-color: #3b82f6;
-  }
-
-  .choropleth-toggle.active-red {
-    background: #fff5f0;
-    border-color: #ef4444;
-  }
+  .choropleth-toggle.active-blue { background: #eff6ff; border-color: #3b82f6; }
+  .choropleth-toggle.active-red { background: #fff5f0; border-color: #ef4444; }
 
   .toggle-swatch {
     width: 28px;
@@ -493,21 +524,11 @@
     font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
     color: #92846e;
-    flex-shrink: 0;
   }
 
   .active-blue .toggle-indicator { color: #2563eb; }
   .active-red .toggle-indicator { color: #dc2626; }
-
-  /* ── Right column ──────────────────────────────────── */
-  .map-col {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-height: 0;
-  }
 
   .guided-banner {
     display: flex;
@@ -517,82 +538,34 @@
     background: #eff6ff;
     border: 1px solid #bfdbfe;
     border-radius: 12px;
-    flex-shrink: 0;
   }
 
-  .banner-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .banner-tag {
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #1d4ed8;
-  }
-
-  .banner-hint {
-    margin: 0;
-    font-size: 0.8rem;
-    color: #1e40af;
-    line-height: 1.5;
-  }
-
+  .banner-body { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+  .banner-tag { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #1d4ed8; }
+  .banner-hint { margin: 0; font-size: 0.8rem; color: #1e40af; line-height: 1.5; }
   .banner-clear {
-    background: none;
-    border: 1px solid #93c5fd;
-    border-radius: 6px;
-    padding: 3px 8px;
-    font-size: 11px;
-    color: #3b82f6;
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-    margin-top: 2px;
+    background: none; border: 1px solid #93c5fd; border-radius: 6px;
+    padding: 3px 8px; font-size: 11px; color: #3b82f6; cursor: pointer;
   }
 
-  .banner-clear:hover { background: #dbeafe; }
-
-  .map-and-panel {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 16px;
-    flex: 1;
-    min-height: 0;
+  @media (max-width: 1100px) {
+    .dashboard-shell { grid-template-columns: 1fr; }
+    .map-and-panel { grid-template-columns: 1fr; height: 600px; }
+    .detail-sidebar { display: none; }
   }
 
-  .map-container {
-    background: white;
-    border: 1px solid #e8e0d4;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
-  }
-
-  .detail-sidebar {
-    background: white;
-    border: 1px solid #e8e0d4;
-    border-radius: 20px;
-    overflow-y: auto;
-  }
-
-  /* ── Footer ────────────────────────────────────────── */
   .credits-footer {
     background: #1a0f00;
     color: #c9b99a;
     padding: 48px 40px;
-    margin-top: 48px;
+    margin-top: 64px;
   }
 
   .credits-inner {
-    max-width: 900px;
+    max-width: 1500px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr 1.5fr 1.5fr;
+    grid-template-columns: 1fr 1.5fr 2.5fr;
     gap: 40px;
   }
 
@@ -602,46 +575,16 @@
     text-transform: uppercase;
     letter-spacing: 0.12em;
     color: #b45309;
-    margin: 0 0 10px;
+    margin: 0 0 12px;
   }
 
-  .credits-section p,
-  .credits-section ul {
-    font-size: 0.82rem;
-    line-height: 1.7;
-    margin: 0;
-    color: #c9b99a;
-  }
-
-  .credits-section ul { padding-left: 16px; }
-  .credits-section li { margin-bottom: 6px; }
-
-  .credits-section a {
-    color: #f59e0b;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  .credits-section a:hover { color: #fbbf24; }
-
-  @media (max-width: 1100px) {
-    .dashboard-shell {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto 1fr;
-      height: auto;
-    }
-    .map-header { grid-column: 1; }
-    .map-and-panel {
-      grid-template-columns: 1fr;
-      height: 600px;
-    }
-    .detail-sidebar { display: none; }
-  }
+  .credits-section p, .credits-section ul { font-size: 0.85rem; line-height: 1.7; color: #c9b99a; margin: 0; }
+  .credits-section a { color: #f59e0b; text-decoration: underline; }
+  .sources-list { padding-left: 16px; column-count: 2; column-gap: 30px; }
+  .sources-list li { margin-bottom: 8px; break-inside: avoid; }
 
   @media (max-width: 900px) {
-    .credits-inner {
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
+    .credits-inner { grid-template-columns: 1fr; gap: 32px; }
+    .sources-list { column-count: 1; }
   }
 </style>

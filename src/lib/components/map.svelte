@@ -18,8 +18,7 @@
   let mapcBostonGeojson = null;
 
   let width = 900;
-  let containerHeight = 480;
-  $: height = containerHeight;
+  let height = 480;
   let hoveredProject = null;
   let svgElement;
   let transform = d3.zoomIdentity;
@@ -47,17 +46,14 @@
     mapcBostonGeojson = await mapcBostonRes.json();
 
     zoomBehavior = d3.zoom()
-      .scaleExtent([0.7, 18])
+      .scaleExtent([1, 10])
       .on("zoom", (event) => {
         transform = event.transform;
       });
 
-    const k = 3.3;
-    homeTransform = d3.zoomIdentity
-      .translate(width * (1 - k) / 2 - 45, height * (1 - k) / 2 - 80)
-      .scale(k);
-
+    homeTransform = d3.zoomIdentity;
     transform = homeTransform;
+
     d3.select(svgElement).call(zoomBehavior);
     d3.select(svgElement).call(zoomBehavior.transform, homeTransform);
   });
@@ -73,21 +69,19 @@
     projects = [];
   }
 
-  $: featureCollection =
-    projects.length || neighborhoods.length
-      ? {
-          type: "FeatureCollection",
-          features: [
-            ...neighborhoods,
-            ...projects.map(p => ({ type: "Feature", geometry: p.geometry }))
-          ]
-        }
-      : null;
+  $: projectFeatures = projects.map(p => ({
+    type: "Feature",
+    geometry: p.geometry
+  }));
 
-  $: projection =
-    featureCollection
-      ? d3.geoIdentity().reflectY(true).fitSize([width, height], featureCollection)
-      : null;
+  $: projection = projectFeatures.length
+    ? d3.geoIdentity()
+        .reflectY(true)
+        .fitExtent([[50, 50], [width - 50, height - 50]], {
+          type: "FeatureCollection",
+          features: projectFeatures
+        })
+    : null;
 
   $: pathGenerator = projection ? d3.geoPath().projection(projection) : null;
 
@@ -138,7 +132,7 @@
     <button class="reset" on:click={resetZoom}>Reset view</button>
   </div>
 
-  <div class="map-container" bind:clientWidth={width} bind:clientHeight={containerHeight}>
+  <div class="map-container" bind:clientWidth={width}>
     <svg bind:this={svgElement} {width} {height}>
       <g transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}>
         <g class="basemap">
@@ -396,7 +390,6 @@
       </div>
     {/if}
   </div>
-
 </div>
 
 {#if data.length}
@@ -420,9 +413,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    min-height: 0;
     box-sizing: border-box;
-    overflow: hidden;
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
@@ -462,7 +453,7 @@
     overflow: hidden;
     cursor: grab;
     flex-grow: 1;
-    min-height: 0px;
+    min-height: 350px;
   }
 
   .map-container:active {
