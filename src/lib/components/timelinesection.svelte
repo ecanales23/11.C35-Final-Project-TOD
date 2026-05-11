@@ -154,7 +154,7 @@
         <span class="label">Research question</span>
         <p class="main-q">To what extent does the affordable share of current TOD projects in Greater Boston align with nearby lower-income renter demand?</p>
         <p class="sub-text">
-          We provide planners and policymakers with an "opportunity score" measuring the gap between new supply and local demand, analyzing data within a 0.5-mile radius of each station.
+          We provide planners and policymakers with an "opportunity score" measuring the gap between new supply and local demand, analyzing data within a 0.5-mile radius (ten-minute walk) of each station.
         </p>
       </div>
       <div class="info-card secondary">
@@ -170,7 +170,7 @@
     <header class="hero-header">
       <div class="container hero-inner">
         <p class="section-eyebrow">Transit-Oriented Development & Affordability in Greater Boston</p>
-        <h1>Boston is adding transit housing.<br><span class="highlight">But for whom?</span></h1>
+        <h1>Boston is creating more Transit-Oriented Development<br><span class="highlight">But for whom?</span></h1>
         <p class="hero-desc">
           Transit-oriented developments (TODs) put housing near jobs, transit, and opportunity. But do Boston's TODs actually serve the people already living near transit? Follow Maya's story — then explore a decade of neighborhood data.
         </p>
@@ -239,7 +239,16 @@
                   aria-hidden="true"
                   style="transition-delay: {waffleVisible ? i * 7 + 300 : 0}ms"
                 >
-                  <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                  <rect x="2" y="2" width="20" height="20" rx="1"/>
+                  <rect x="5" y="6" width="3" height="3" fill="white" opacity="0.7"/>
+                  <rect x="10.5" y="6" width="3" height="3" fill="white" opacity="0.7"/>
+                  <rect x="16" y="6" width="3" height="3" fill="white" opacity="0.7"/>
+                  <rect x="5" y="12" width="3" height="3" fill="white" opacity="0.7"/>
+                  <rect x="10.5" y="12" width="3" height="3" fill="white" opacity="0.7"/>
+                  <rect x="16" y="12" width="3" height="3" fill="white" opacity="0.7"/>
+                  <rect x="5" y="18" width="3" height="3" fill="white" opacity="0.7"/>
+                  <rect x="10.5" y="18" width="3" height="3" fill="white" opacity="0.7"/>
+                  <rect x="16" y="18" width="3" height="3" fill="white" opacity="0.7"/>
                 </svg>
               {/each}
             </div>
@@ -256,7 +265,43 @@
             <p class="graphic-source">Source: MBTARealty.com, 9 Greater Boston TOD projects (2,400+ units)</p>
           </div>
         </div>
+        <details class="ami-explainer">
+              <summary class="ami-summary">
+                <div class="ami-summary-inner">
+                  <span class="ami-eyebrow">Key term</span>
+                  <span class="ami-title">What is AMI and why does it matter?</span>
+                </div>
+                <span class="ami-expand">Learn more ↓</span>
+              </summary>
 
+              <div class="ami-content">
+                <div class="ami-grid">
+                  <div class="ami-block">
+                    <p class="ami-block-label">What AMI means</p>
+                    <p>AMI stands for <strong>Area Median Income</strong> — the midpoint income for a given metro area. In Greater Boston, the 2024 AMI for a single person is around <strong>$103,000/year</strong>. Half of all households earn above this, half earn below.</p>
+                    <p>Affordable housing programs use AMI as a benchmark. A unit "affordable at 80% AMI" means it's priced so that a household earning 80% of the area median — around <strong>$82,400</strong> for a single person — spends no more than 30% of their income on rent.</p>
+                  </div>
+
+                  <div class="ami-block">
+                    <p class="ami-block-label">Why ≤80% AMI is the threshold</p>
+                    <p>Federal and state housing programs define <strong>"low income"</strong> as households earning at or below 80% AMI. This is the cutoff that makes someone eligible for most deed-restricted affordable units in TOD developments.</p>
+                    <p>Maya earns about <strong>$52,000/year — roughly 50% AMI</strong>. She qualifies for units restricted to ≤80% AMI, but those units are scarce. Most TODs dedicate only 10–15% of units to income-restricted housing, and those slots are filled by lottery.</p>
+                  </div>
+
+                  <div class="ami-block">
+                    <p class="ami-block-label">The affordability cliff</p>
+                    <p>Even qualifying for affordable housing doesn't guarantee access. A unit at 80% AMI might still cost <strong>$1,600–1,900/month</strong> for a studio in Boston — still out of reach for someone earning 50% AMI like Maya, whose budget tops out at $1,300/month.</p>
+                    <p>This is why AMI-based thresholds matter: a development can technically include "affordable" units while still being unaffordable to the lowest-income renters who need housing most.</p>
+                  </div>
+
+                  <div class="ami-block">
+                    <p class="ami-block-label">How we use AMI in this project</p>
+                    <p>We measure <strong>nearby lower-income renter demand</strong> as the share of renters within 0.5 miles of each TOD who earn under $50,000/year — roughly 50% AMI. We then compare this to each TOD's affordable unit share to compute an <strong>opportunity score</strong>.</p>
+                    <p>A negative score means the TOD's affordable share falls short of local lower-income demand. A positive score means it exceeds it — opening more doors for renters like Maya.</p>
+                  </div>
+                </div>
+              </div>
+            </details>
         <div class="gap-callout">
           <strong>TOD is a vehicle, not a guarantee.</strong> When it includes affordable units, it can open access to neighborhoods with better transit, jobs, and services for renters like Maya. Without them, these developments largely remain out of reach and can increase pressure on the communities they're built in.
         </div>
@@ -286,7 +331,7 @@
                 <span class="stat-affordable" class:stat-high={p.affordablePct >= 50} class:stat-low={p.affordablePct < 15}>
                   {p.affordablePct}% affordable
                 </span>
-                <span class="stat-total">{p.totalUnits} units</span>
+                <span class="stat-total"> out of {p.totalUnits} units</span>
               </div>
             </div>
           {/each}
@@ -1144,5 +1189,97 @@
 
   @media (max-width: 600px) {
     .tod-cards-grid { grid-template-columns: 1fr; }
+  }
+  .ami-explainer {
+    background: #faf7f0;
+    border: 1px solid #e8e0d4;
+    border-radius: 16px;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .ami-summary {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .ami-summary::-webkit-details-marker { display: none; }
+
+  .ami-summary-inner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .ami-eyebrow {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #b45309;
+    background: #fff7ed;
+    border: 1px solid #ffedd5;
+    padding: 3px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .ami-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a0f00;
+  }
+
+  .ami-expand {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #b45309;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+
+  .ami-explainer[open] .ami-expand {
+    content: "Close ↑";
+  }
+
+  .ami-content {
+    border-top: 1px solid #e8e0d4;
+    padding: 24px;
+  }
+
+  .ami-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 32px;
+  }
+
+  .ami-block-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #b45309;
+    margin: 0 0 8px;
+  }
+
+  .ami-block p {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: #5a5040;
+    margin: 0 0 10px;
+  }
+
+  .ami-block p:last-child { margin-bottom: 0; }
+
+  .ami-block strong { color: #1a0f00; }
+
+  @media (max-width: 768px) {
+    .ami-grid { grid-template-columns: 1fr; }
   }
 </style>

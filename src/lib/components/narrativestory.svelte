@@ -217,7 +217,18 @@
                 <p class="gap-col-label supply">Affordable TOD units</p>
                 <div class="gap-houses">
                   {#each Array(10) as _}
-                    <svg class="gap-house supply" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                    <svg class="gap-house supply" viewBox="0 0 24 24">
+                      <rect x="2" y="2" width="20" height="20" rx="1"/>
+                      <rect x="5" y="6" width="3" height="3" fill="white" opacity="0.7"/>
+                      <rect x="10.5" y="6" width="3" height="3" fill="white" opacity="0.7"/>
+                      <rect x="16" y="6" width="3" height="3" fill="white" opacity="0.7"/>
+                      <rect x="5" y="12" width="3" height="3" fill="white" opacity="0.7"/>
+                      <rect x="10.5" y="12" width="3" height="3" fill="white" opacity="0.7"/>
+                      <rect x="16" y="12" width="3" height="3" fill="white" opacity="0.7"/>
+                      <rect x="5" y="18" width="3" height="3" fill="white" opacity="0.7"/>
+                      <rect x="10.5" y="18" width="3" height="3" fill="white" opacity="0.7"/>
+                      <rect x="16" y="18" width="3" height="3" fill="white" opacity="0.7"/>
+                    </svg>
                   {/each}
                 </div>
                 <p class="gap-pct supply">10%</p>
