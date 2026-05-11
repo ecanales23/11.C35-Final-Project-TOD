@@ -74,10 +74,10 @@
     geometry: p.geometry
   }));
 
-  $: projection = projectFeatures.length
+  $: projection = projectFeatures.length && width && height
     ? d3.geoIdentity()
         .reflectY(true)
-        .fitExtent([[50, 50], [width - 50, height - 50]], {
+        .fitExtent([[80, 80], [width - 80, height - 80]], {
           type: "FeatureCollection",
           features: projectFeatures
         })
@@ -132,8 +132,8 @@
     <button class="reset" on:click={resetZoom}>Reset view</button>
   </div>
 
-  <div class="map-container" bind:clientWidth={width}>
-    <svg bind:this={svgElement} {width} {height}>
+  <div class="map-container" bind:clientWidth={width} bind:clientHeight={height}>
+    <svg bind:this={svgElement} width="100%" height="100%">
       <g transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}>
         <g class="basemap">
           {#each neighborhoods as feature}
@@ -320,7 +320,7 @@
 
       {#if showLowIncomeChoropleth}
         <div class="choropleth-legend-entry">
-          <p class="choropleth-legend-label">Low-income demand (buffer)</p>
+          <p class="choropleth-legend-label">Low-income demand</p>
           <div class="choropleth-gradient-bar" style="background: linear-gradient(to right, #deebf7, #08519c);"></div>
           <div class="choropleth-bar-ends">
             <span>20%</span>
@@ -331,7 +331,7 @@
 
       {#if showCostBurdenChoropleth}
         <div class="choropleth-legend-entry">
-          <p class="choropleth-legend-label">Cost-burdened rate (buffer)</p>
+          <p class="choropleth-legend-label">Cost-burdened rate</p>
           <div class="choropleth-gradient-bar" style="background: linear-gradient(to right, #fee5d9, #a50f15);"></div>
           <div class="choropleth-bar-ends">
             <span>35%</span>
@@ -347,7 +347,7 @@
         </div>
         <div class="sym-item">
           <span class="sym dashed-sym"></span>
-          <span>0.5 mi buffer (Hover)</span>
+          <span>Buffer (Hover)</span>
         </div>
         <div class="sym-item">
           <span class="sym transit-sym"></span>
@@ -355,15 +355,15 @@
         </div>
         <div class="sym-item">
           <span class="sym boundary-sym"></span>
-          <span>City / Neighborhood</span>
+          <span>Boundary</span>
         </div>
       </div>
     </div>
 
     {#if hoveredProject}
       {@const [tx, ty] = getProjectedCoords(hoveredProject.geometry)}
-      {@const tooltipX = tx + 280 > width ? tx - 275 : tx + 15}
-      {@const tooltipY = ty + 190 > height ? ty - 180 : Math.max(12, ty - 18)}
+      {@const tooltipX = tx + 245 > width ? tx - 240 : tx + 15}
+      {@const tooltipY = ty + 170 > height ? ty - 160 : Math.max(12, ty - 18)}
       <div class="tooltip" style={`left:${tooltipX}px; top:${tooltipY}px;`}>
         <p class="tooltip-title">{hoveredProject.project}</p>
         <p class="tooltip-address">{hoveredProject.address}</p>
@@ -374,7 +374,7 @@
             <strong>{(hoveredProject.affordableShare * 100).toFixed(0)}%</strong>
           </div>
           <div class="stat-row">
-            <span>Nearby lower-income demand</span>
+            <span>Nearby low-income demand</span>
             <strong>{(hoveredProject.lowerIncomeDemandShare * 100).toFixed(0)}%</strong>
           </div>
           <div class="stat-row">
@@ -384,28 +384,13 @@
         </div>
 
         <div class="mismatch-flag" style={`background:${colorScale(hoveredProject.mismatchScore)}22`}>
-          <strong>Gap: {(hoveredProject.mismatchScore * 100).toFixed(1)} percentage points</strong>
-          <p>{hoveredProject.mismatchScore < 0 ? "Affordable share falls short of nearby lower-income demand." : "Affordable share is above nearby lower-income demand share."}</p>
+          <strong>Gap: {(hoveredProject.mismatchScore * 100).toFixed(1)} pts</strong>
+          <p>{hoveredProject.mismatchScore < 0 ? "Affordability falls short of demand." : "Affordability is above local demand."}</p>
         </div>
       </div>
     {/if}
   </div>
 </div>
-
-{#if data.length}
-  {@const worst = [...data].sort((a, b) => a.mismatchScore - b.mismatchScore)[0]}
-  <footer class="insight-bar">
-    <div class="insight-icon">💡</div>
-    <div class="insight-content">
-      <span class="insight-label">Current Takeaway</span>
-      <p>
-        In the current filtered view, the largest affordability gap appears at <strong>{worst.project}</strong>,
-        where the project’s affordable unit share falls below nearby demand by
-        <strong>{(Math.abs(worst.mismatchScore) * 100).toFixed(1)}</strong> percentage points.
-      </p>
-    </div>
-  </footer>
-{/if}
 
 <style>
   .map-wrapper {
@@ -413,6 +398,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    max-height: calc(100vh - 40px);
     box-sizing: border-box;
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
@@ -453,7 +439,11 @@
     overflow: hidden;
     cursor: grab;
     flex-grow: 1;
-    min-height: 350px;
+    min-height: 0;
+  }
+
+  svg {
+    display: block;
   }
 
   .map-container:active {
@@ -462,41 +452,41 @@
 
   .tooltip {
     position: absolute;
-    width: 260px;
+    width: 220px;
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(8px);
     border: 1px solid #cfd8df;
-    border-radius: 12px;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
-    padding: 14px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+    padding: 10px 12px;
     pointer-events: none;
     z-index: 10;
   }
 
   .tooltip-title {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     font-weight: 800;
     color: #0f172a;
   }
 
   .tooltip-address {
-    margin: 4px 0 10px 0;
+    margin: 2px 0 6px 0;
     color: #64748b;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
 
   .stats {
     display: grid;
-    gap: 6px;
+    gap: 4px;
   }
 
   .stat-row {
     display: flex;
     justify-content: space-between;
     gap: 8px;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: #334155;
   }
 
@@ -505,90 +495,101 @@
   }
 
   .mismatch-flag {
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 0.78rem;
+    margin-top: 6px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 0.65rem;
     color: #1e293b;
   }
 
   .mismatch-flag p {
-    margin: 4px 0 0 0;
-    line-height: 1.3;
+    margin: 2px 0 0 0;
+    line-height: 1.2;
   }
 
   .legend-overlay {
     position: absolute;
-    bottom: 12px;
-    left: 12px;
+    bottom: 16px;
+    left: 16px;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(8px);
     border: 1px solid #d1d5db;
-    border-radius: 10px;
-    padding: 10px 14px;
-    width: 200px;
+    border-radius: 8px;
+    padding: 8px 10px;
+    width: 210px;
+    max-height: calc(100% - 32px);
+    overflow-y: auto;
     z-index: 5;
-    pointer-events: none;
-    box-shadow: 0 4px 12px rgba(15,23,42,0.05);
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+  }
+
+  .legend-overlay::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .legend-overlay::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
   }
 
   .legend-gradient-bar {
-    height: 8px;
-    border-radius: 4px;
+    height: 6px;
+    border-radius: 3px;
     background: linear-gradient(to right, #d80073, #f5f4ef, #2f7f5f);
   }
 
   .legend-bar-labels {
     display: flex;
     justify-content: space-between;
-    font-size: 0.65rem;
+    font-size: 0.55rem;
     color: #475569;
     margin-top: 4px;
-    margin-bottom: 8px;
-    line-height: 1.3;
-    font-weight: 500;
+    margin-bottom: 2px;
+    line-height: 1.2;
+    font-weight: 600;
   }
 
   .choropleth-legend-entry {
-    margin-top: 8px;
-    padding-top: 7px;
+    margin-top: 6px;
+    padding-top: 6px;
     border-top: 1px solid #e5e7eb;
   }
 
   .choropleth-legend-label {
-    margin: 0 0 4px;
-    font-size: 0.65rem;
+    margin: 0 0 3px;
+    font-size: 0.55rem;
     font-weight: 700;
     color: #374151;
   }
 
   .choropleth-gradient-bar {
-    height: 8px;
-    border-radius: 4px;
+    height: 6px;
+    border-radius: 3px;
   }
 
   .choropleth-bar-ends {
     display: flex;
     justify-content: space-between;
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     color: #6b7280;
     margin-top: 2px;
-    margin-bottom: 4px;
   }
 
   .legend-symbols {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 8px;
     border-top: 1px solid #e5e7eb;
-    padding-top: 8px;
+    padding-top: 6px;
+    margin-top: 6px;
   }
 
   .sym-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.7rem;
+    gap: 4px;
+    font-size: 0.55rem;
     color: #475569;
     font-weight: 500;
   }
@@ -599,28 +600,28 @@
   }
 
   .dashed-sym {
-    width: 14px;
-    height: 14px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     border: 1.5px dashed #64748b;
   }
 
   .dot-sym {
-    width: 14px;
-    height: 14px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     background: #f5f4ef;
     border: 1.5px solid #6b7280;
   }
 
   .boundary-sym {
-    width: 16px;
+    width: 12px;
     height: 0;
     border-top: 1.5px solid #94a3b8;
   }
 
   .transit-sym {
-    width: 16px;
+    width: 12px;
     height: 0;
     border-top: 2.5px solid #1e40af;
     border-radius: 1px;
@@ -632,59 +633,9 @@
     transition: opacity 0.15s ease, r 0.2s ease, stroke-width 0.2s ease;
   }
 
-  .insight-bar {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-top: 16px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    color: #475569;
-    padding: 10px 14px;
-    border-radius: 10px;
-    width: fit-content;
-    max-width: 100%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-
-  .insight-icon {
-    font-size: 14px;
-    background: #fef3c7;
-    padding: 6px;
-    border-radius: 6px;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .insight-content {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .insight-label {
-    font-size: 9px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #64748b;
-  }
-
-  .insight-bar p {
-    margin: 0;
-    font-size: 12px;
-    line-height: 1.5;
-    color: #334155;
-  }
-
-  .insight-bar strong {
-    color: #0f172a;
-    font-weight: 700;
-  }
-
   @media (max-width: 900px) {
     .legend-overlay {
-      width: 160px;
+      width: 180px;
     }
   }
 </style>
