@@ -312,9 +312,9 @@
   .scrolly-grid {
     display: flex;
     position: relative;
-    max-width: 1100px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 12px;
   }
 
   .sticky-panel {
@@ -322,7 +322,7 @@
     height: 100vh;
     position: sticky;
     top: 0;
-    padding: 32px;
+    padding: 24px 16px 24px 12px;
     display: flex;
     align-items: center;
   }
@@ -639,7 +639,7 @@
   .progress-dot.active { background: #b45309; transform: scale(1.4); }
   .progress-label { font-size: 0.68rem; font-weight: 700; color: #92846e; margin: 0 0 0 8px; text-transform: uppercase; letter-spacing: 0.08em; }
 
-  .text-stream { flex: 0.7; padding: 0 40px 0 0; }
+  .text-stream { flex: 0.7; padding: 0 16px 0 0; }
 
   .step-card {
     min-height: 100vh;
@@ -653,7 +653,7 @@
 
   .step-content {
     background: white;
-    padding: 36px;
+    padding: 44px 40px;
     border-radius: 24px;
     box-shadow: 0 16px 24px -8px rgba(80,40,0,0.07);
     border: 1px solid #e8e0d4;
