@@ -3,9 +3,15 @@
   import DemandFitChart from "./demandbyhousingstock.svelte";
 
   export let tod = null;
+
+  let stableTod = null;
+
+  $: if (tod && (!stableTod || stableTod.project !== tod.project)) {
+    stableTod = tod;
+  }
 </script>
 
-{#if tod}
+{#if stableTod}
   <div class="panel">
     <details class="intro-box">
       <summary>About this panel</summary>
@@ -20,64 +26,58 @@
 
     <div class="header">
       <p class="eyebrow">Selected project</p>
-      <h2>{tod.project}</h2>
-      <p class="address">{tod.address}</p>
+      <h2>{stableTod.project}</h2>
+      <p class="address">{stableTod.address}</p>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card">
         <span class="label">Total units</span>
-        <span class="value">{tod.totalUnits}</span>
+        <span class="value">{stableTod.totalUnits}</span>
       </div>
       <div class="stat-card">
         <span class="label">Affordable units</span>
-        <span class="value">{tod.affordableUnits}</span>
+        <span class="value">{stableTod.affordableUnits}</span>
       </div>
       <div class="stat-card">
-        <span class="label">Share of Affordable Units</span>
-        <span class="value">{d3.format(".0%")(tod.affordableShare)}</span>
+        <span class="label">Share of Affordable</span>
+        <span class="value">{d3.format(".0%")(stableTod.affordableShare)}</span>
       </div>
-      <div class="stat-card highlight" class:negative={tod.mismatchScore < 0}>
+      <div class="stat-card highlight" class:negative={stableTod.mismatchScore < 0}>
         <span class="label">Opportunity score</span>
-        <span class="value">{d3.format("+.0%")(tod.mismatchScore)}</span>
+        <span class="value">{d3.format("+.0%")(stableTod.mismatchScore)}</span>
       </div>
     </div>
 
-    <!-- <div class="description-card">
-      <p>
-        For <strong>{tod.project}</strong>, the affordability rate is <strong>{d3.format(".0%")(tod.affordableShare)}</strong>
-        because this TOD includes <strong>{tod.affordableUnits}</strong> affordable units and
-        <strong>{tod.marketRateUnits}</strong> market-rate units out of <strong>{tod.totalUnits}</strong> total units.
-      </p>
-    </div> -->
-
     <div class="chart-container">
-      <DemandFitChart {tod} />
+      {#key stableTod.project}
+        <DemandFitChart tod={stableTod} />
+      {/key}
     </div>
 
     <div class="analysis-box">
-      <div class="status-indicator" class:status-alert={tod.mismatchScore < 0}>
-        {#if tod.mismatchScore < 0}
+      <div class="status-indicator" class:status-alert={stableTod.mismatchScore < 0}>
+        {#if stableTod.mismatchScore < 0}
           <p>
             <strong>Providing less opportunity than local demand:</strong>
-            This project’s affordable share is <strong>{Math.abs(tod.mismatchScore * 100).toFixed(1)} percentage points below</strong> the nearby lower-income renter share. There are more lower-income renters in this neighborhood than the development is built to serve.
+            This project’s affordable share is <strong>{Math.abs(stableTod.mismatchScore * 100).toFixed(1)} percentage points below</strong> the nearby lower-income renter share. There are more lower-income renters in this neighborhood than the development is built to serve.
           </p>
         {:else}
           <p>
             <strong>Providing more opportunity than local demand:</strong>
-            This project’s affordable share is <strong>{Math.abs(tod.mismatchScore * 100).toFixed(1)} percentage points above</strong> the nearby lower-income renter share — opening doors for renters to access this neighborhood.
+            This project’s affordable share is <strong>{Math.abs(stableTod.mismatchScore * 100).toFixed(1)} percentage points above</strong> the nearby lower-income renter share — opening doors for renters to access this neighborhood.
           </p>
         {/if}
       </div>
 
       <div class="meta-info">
-        <p>
-          <strong>Affordable units per 100 nearby lower-income renters:</strong>
-          {tod.affordableUnitsPer100LowIncomeRenters.toFixed(1)}
-        </p>
+        <div class="meta-stat-row">
+          <span class="meta-label">Affordable units per 100 nearby lower-income renters:</span>
+          <span class="meta-value">{stableTod.affordableUnitsPer100LowIncomeRenters.toFixed(1)}</span>
+        </div>
 
-        {#if tod.note}
-          <p class="project-note"><strong>Project note:</strong> {tod.note}</p>
+        {#if stableTod.note}
+          <p class="project-note"><strong>Project note:</strong> {stableTod.note}</p>
         {/if}
 
         <p class="disclaimer">
@@ -92,9 +92,10 @@
 <style>
   .panel {
     padding: 24px;
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #1e293b;
     max-width: 500px;
+    box-sizing: border-box;
   }
 
   .header {
@@ -102,8 +103,8 @@
   }
 
   .eyebrow {
-    margin: 0 0 4px 0;
-    font-size: 10px;
+    margin: 0 0 6px 0;
+    font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #64748b;
@@ -111,34 +112,36 @@
   }
 
   h2 {
-    margin: 0 0 2px 0;
-    font-size: 1.0rem;
+    margin: 0 0 4px 0;
+    font-size: 1.15rem;
     font-weight: 800;
     color: #0f172a;
     letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   .address {
     margin: 0;
     color: #64748b;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
 
   .intro-box {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 0.7rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
   }
 
   summary {
-    padding: 10px 14px;
+    padding: 12px 16px;
     cursor: pointer;
     font-weight: 600;
     color: #475569;
     list-style: none;
     outline: none;
+    user-select: none;
   }
 
   summary::-webkit-details-marker {
@@ -146,9 +149,13 @@
   }
 
   .details-content {
-    padding: 0 14px 12px 14px;
-    color: #64748b;
+    padding: 0 16px 16px 16px;
+    color: #475569;
     line-height: 1.5;
+  }
+
+  .details-content p {
+    margin: 0;
   }
 
   .stats-grid {
@@ -162,87 +169,115 @@
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    padding: 14px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
     display: flex;
     flex-direction: column;
   }
 
   .label {
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 700;
     color: #64748b;
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
   }
 
   .value {
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 700;
-    color: #1e293b;
+    color: #0f172a;
   }
 
   .stat-card.highlight .value {
-    color: #10b981;
+    color: #059669;
   }
 
   .stat-card.highlight.negative .value {
-    color: #ef4444;
-  }
-
-  .description-card {
-    background: #f1f5f9;
-    padding: 16px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    line-height: 1.6;
-    margin-bottom: 24px;
-    color: #334155;
+    color: #e11d48;
   }
 
   .chart-container {
     margin-bottom: 24px;
-    padding: 16px;
+    padding: 20px;
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05);
+    min-height: 250px;
+    position: relative;
+    overflow: hidden;
   }
 
   .analysis-box {
     border-top: 1px solid #e2e8f0;
-    padding-top: 20px;
+    padding-top: 24px;
   }
 
   .status-indicator {
     padding-left: 16px;
-    border-left: 4px solid #10b981;
-    margin-bottom: 20px;
-    font-size: 0.7rem;
+    border-left: 4px solid #059669;
+    margin-bottom: 24px;
+    font-size: 0.8rem;
     line-height: 1.6;
+    color: #334155;
   }
 
   .status-indicator.status-alert {
-    border-left-color: #f59e0b;
+    border-left-color: #d97706;
+  }
+
+  .status-indicator p {
+    margin: 0;
+  }
+
+  .status-indicator strong {
+    color: #0f172a;
   }
 
   .meta-info {
-    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 0.8rem;
     color: #475569;
   }
 
+  .meta-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+  }
+
+  .meta-label {
+    font-weight: 600;
+  }
+
+  .meta-value {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 0.9rem;
+  }
+
   .project-note {
-    background: #fff7ed;
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid #ffedd5;
-    margin: 12px 0;
+    background: #fffbeb;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid #fef3c7;
+    margin: 4px 0;
+    line-height: 1.5;
+    color: #92400e;
   }
 
   .disclaimer {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: #94a3b8;
-    margin-top: 16px;
-    font-style: italic;
+    margin: 8px 0 0 0;
+    line-height: 1.5;
   }
 </style>

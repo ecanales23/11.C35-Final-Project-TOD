@@ -2,8 +2,9 @@
   export let tod;
 
   let hoveredKey = null;
+  let selectedKey = null;
 
-  const BAR_HEIGHT = 200; 
+  const BAR_HEIGHT = 200;
 
   const INCOME_TIERS = [
     {
@@ -84,7 +85,9 @@
   $: marketRateUnits  = tod?.marketRateUnits  || 0;
   $: lowerIncomeShare = tod?.lowerIncomeDemandShare || 0;
 
-  $: hovered = demandSegments.find(s => s.key === hoveredKey) ?? null;
+  // Active key is hovered, otherwise selected, otherwise null
+  $: activeKey = hoveredKey || selectedKey;
+  $: activeItem = demandSegments.find(s => s.key === activeKey) ?? null;
 
   $: boundaryPx = Math.round(lowerIncomeShare * BAR_HEIGHT);
 
@@ -100,6 +103,14 @@
         return { key: seg.key, midY, share: seg.share, color: seg.color };
       });
   })();
+
+  function handleInteraction(key) {
+    if (selectedKey === key) {
+      selectedKey = null; // Toggle off if already selected
+    } else {
+      selectedKey = key;
+    }
+  }
 </script>
 
 <div class="chart-wrap">
@@ -150,11 +161,13 @@
             {#if seg.share > 0}
               <button
                 class="vbar-seg"
-                class:seg-hovered={hoveredKey === seg.key}
-                class:seg-dim={hoveredKey && hoveredKey !== seg.key}
+                class:seg-active={activeKey === seg.key}
+                class:seg-selected={selectedKey === seg.key}
+                class:seg-dim={activeKey && activeKey !== seg.key}
                 style="height:{seg.share * 100}%; background:{seg.color};"
                 on:mouseenter={() => (hoveredKey = seg.key)}
                 on:mouseleave={() => (hoveredKey = null)}
+                on:click={() => handleInteraction(seg.key)}
                 aria-label="{seg.range}: {Math.round(seg.share * 100)}% of renters"
               ></button>
             {/if}
@@ -163,7 +176,7 @@
         {#each segmentMids as m}
           <span
             class="ext-pct"
-            class:ext-hovered={hoveredKey === m.key}
+            class:ext-active={activeKey === m.key}
             style="top:{m.midY}px; color:{m.key === 'x75plus' ? '#6b21a8' : m.color};"
           >{Math.round(m.share * 100)}%</span>
         {/each}
@@ -182,32 +195,37 @@
         </div>
       </div>
 
-      <div class="info-panel" class:info-active={!!hovered} style="min-height:{BAR_HEIGHT}px;">
-        {#if hovered}
-          <div class="info-swatch" style="background:{hovered.color};"></div>
-          <div class="info-range">{hovered.range}</div>
-          <div class="info-ami">{hovered.ami} · {hovered.amiLevel}</div>
-          <div class="info-count">
-            <strong>{hovered.value.toLocaleString()}</strong> hh
-            <span class="info-pct">({Math.round(hovered.share * 100)}%)</span>
+      <div class="info-panel" class:info-active={!!activeItem} class:info-locked={!!selectedKey} style="height:{BAR_HEIGHT}px; overflow-y: auto; overflow-x: hidden;">
+        {#if activeItem}
+          <div class="info-header">
+            <div class="info-swatch" style="background:{activeItem.color};"></div>
+            {#if selectedKey === activeItem.key}
+              <span class="locked-badge">Selected</span>
+            {/if}
           </div>
-          <p class="info-note">{hovered.amiNote}</p>
+          <div class="info-range">{activeItem.range}</div>
+          <div class="info-ami">{activeItem.ami} · {activeItem.amiLevel}</div>
+          <div class="info-count">
+            <strong>{activeItem.value.toLocaleString()}</strong> hh
+            <span class="info-pct">({Math.round(activeItem.share * 100)}%)</span>
+          </div>
+          <p class="info-note">{activeItem.amiNote}</p>
           <div
             class="info-badge"
-            class:badge-yes={hovered.qualifies === 'yes'}
-            class:badge-maybe={hovered.qualifies === 'maybe'}
-            class:badge-no={hovered.qualifies === 'no'}
+            class:badge-yes={activeItem.qualifies === 'yes'}
+            class:badge-maybe={activeItem.qualifies === 'maybe'}
+            class:badge-no={activeItem.qualifies === 'no'}
           >
-            {#if hovered.qualifies === 'yes'}
+            {#if activeItem.qualifies === 'yes'}
               Qualifies for affordable units
-            {:else if hovered.qualifies === 'maybe'}
+            {:else if activeItem.qualifies === 'maybe'}
               May qualify by household size
             {:else}
               Above typical income limits
             {/if}
           </div>
         {:else}
-          <p class="info-empty">← Hover a segment for income tier details</p>
+          <p class="info-empty">← Hover or click a segment for income tier details</p>
         {/if}
       </div>
 
@@ -217,14 +235,19 @@
       {#each demandSegments as seg}
         <button
           class="tier-chip"
-          class:chip-hovered={hoveredKey === seg.key}
+          class:chip-active={activeKey === seg.key}
+          class:chip-selected={selectedKey === seg.key}
           on:mouseenter={() => (hoveredKey = seg.key)}
           on:mouseleave={() => (hoveredKey = null)}
+          on:click={() => handleInteraction(seg.key)}
         >
           <span class="chip-dot" style="background:{seg.color}; {seg.key === 'x75plus' ? 'border:1px solid #d8b4fe;' : ''}"></span>
           <span class="chip-label">{seg.label}</span>
         </button>
       {/each}
+      {#if selectedKey}
+        <button class="clear-btn" on:click={() => selectedKey = null}>Clear selection ✕</button>
+      {/if}
     </div>
   </div>
 
@@ -364,11 +387,12 @@
     border: none;
     padding: 0;
     cursor: pointer;
-    transition: opacity 0.1s;
+    transition: opacity 0.1s, box-shadow 0.1s;
   }
 
-  .vbar-seg.seg-dim     { opacity: 0.35; }
-  .vbar-seg.seg-hovered { outline: 2px solid #1e293b; outline-offset: -2px; z-index: 1; opacity: 1; }
+  .vbar-seg.seg-dim { opacity: 0.35; }
+  .vbar-seg.seg-active { outline: 2px solid #1e293b; outline-offset: -2px; z-index: 1; opacity: 1; }
+  .vbar-seg.seg-selected { box-shadow: inset 0 0 0 2px #ffffff, 0 0 0 2px #0f172a; z-index: 2; }
 
   .ext-pct {
     position: absolute;
@@ -378,10 +402,10 @@
     font-weight: 700;
     white-space: nowrap;
     pointer-events: none;
-    transition: opacity 0.1s;
+    transition: opacity 0.1s, font-size 0.1s;
   }
 
-  .ext-pct.ext-hovered { font-size: 0.62rem; }
+  .ext-pct.ext-active { font-size: 0.62rem; color: #1e293b !important; }
 
   .ann-col {
     display: flex;
@@ -421,10 +445,20 @@
     flex-direction: column;
     gap: 4px;
     box-sizing: border-box;
-    transition: border-color 0.15s;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .info-panel::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .info-panel::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
   }
 
   .info-panel.info-active { border-color: #a855f7; }
+  .info-panel.info-locked { background: #fdfcff; border-color: #7c3aed; box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08); }
 
   .info-empty {
     font-size: 0.6rem;
@@ -433,12 +467,29 @@
     margin: auto 0;
   }
 
+  .info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
   .info-swatch {
     width: 22px;
     height: 6px;
     border-radius: 3px;
     flex-shrink: 0;
     margin-bottom: 2px;
+  }
+
+  .locked-badge {
+    font-size: 0.5rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    background: #e2e8f0;
+    color: #475569;
+    padding: 2px 6px;
+    border-radius: 4px;
   }
 
   .info-range {
@@ -481,6 +532,7 @@
   .tier-legend {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 3px 5px;
     margin-top: 8px;
   }
@@ -498,9 +550,15 @@
   }
 
   .tier-chip:hover,
-  .tier-chip.chip-hovered {
+  .tier-chip.chip-active {
     border-color: #a855f7;
     background: #f5f3ff;
+  }
+
+  .tier-chip.chip-selected {
+    border-color: #7c3aed;
+    background: #ede9fe;
+    box-shadow: 0 1px 2px rgba(124, 58, 237, 0.1);
   }
 
   .chip-dot {
@@ -512,6 +570,23 @@
   }
 
   .chip-label { font-size: 0.6rem; color: #475569; font-weight: 500; }
+  .chip-selected .chip-label { color: #1e293b; font-weight: 600; }
+
+  .clear-btn {
+    font-size: 0.55rem;
+    color: #64748b;
+    background: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    padding: 2px 6px;
+    margin-left: auto;
+    border-radius: 4px;
+  }
+
+  .clear-btn:hover {
+    color: #0f172a;
+    background: #f1f5f9;
+  }
 
   .footnote {
     font-size: 0.58rem;
