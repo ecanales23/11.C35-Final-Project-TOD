@@ -43,13 +43,7 @@
       </div>
     </div>
 
-    <div class="sentence-box">
-      <p>
-        For <strong>{tod.project}</strong>, the affordability rate is <strong>{d3.format(".0%")(tod.affordableShare)}</strong>
-        because this TOD includes <strong>{tod.affordableUnits}</strong> affordable units and
-        <strong>{tod.marketRateUnits}</strong> market-rate units out of <strong>{tod.totalUnits}</strong> total units.
-      </p>
-    </div>
+
 
     <div class="chart-group">
       <DemandFitChart {tod} />
@@ -216,7 +210,7 @@
     padding: 12px;
     background: #f8fafc;
     border-radius: 12px;
-    font-size: 0.84rem;
+    font-size: 0.74rem;
     color: #334155;
     line-height: 1.45;
   }

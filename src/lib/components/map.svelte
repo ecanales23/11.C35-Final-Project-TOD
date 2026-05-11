@@ -18,7 +18,8 @@
   let mapcBostonGeojson = null;
 
   let width = 900;
-  let height = 480;
+  let containerHeight = 480;
+  $: height = containerHeight;
   let hoveredProject = null;
   let svgElement;
   let transform = d3.zoomIdentity;
@@ -137,7 +138,7 @@
     <button class="reset" on:click={resetZoom}>Reset view</button>
   </div>
 
-  <div class="map-container" bind:clientWidth={width}>
+  <div class="map-container" bind:clientWidth={width} bind:clientHeight={containerHeight}>
     <svg bind:this={svgElement} {width} {height}>
       <g transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}>
         <g class="basemap">
@@ -419,7 +420,9 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-height: 0;
     box-sizing: border-box;
+    overflow: hidden;
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
@@ -459,7 +462,7 @@
     overflow: hidden;
     cursor: grab;
     flex-grow: 1;
-    min-height: 350px;
+    min-height: 0px;
   }
 
   .map-container:active {

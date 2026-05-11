@@ -70,15 +70,9 @@
       const elementRect = el.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;
       const offsetPosition = elementPosition - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
-    if (storyStep) {
-      applyStoryStep(storyStep);
-    }
+    if (storyStep) applyStoryStep(storyStep);
   }
 
   function sortData(data) {
@@ -145,24 +139,16 @@
 {:else}
   <nav class="sticky-nav">
     <div class="nav-inner">
-      <button
-        class:active={activeSection === 'timeline'}
-        on:click={() => scrollToSection('timeline')}>
+      <button class:active={activeSection === 'timeline'} on:click={() => scrollToSection('timeline')}>
         1. Start
       </button>
-      <button
-        class:active={activeSection === 'maya-story'}
-        on:click={() => scrollToSection('maya-story')}>
+      <button class:active={activeSection === 'maya-story'} on:click={() => scrollToSection('maya-story')}>
         2. Maya's Story
       </button>
-      <button
-        class:active={activeSection === 'timeline-details'}
-        on:click={() => scrollToSection('timeline-details')}>
+      <button class:active={activeSection === 'timeline-details'} on:click={() => scrollToSection('timeline-details')}>
         3. Timeline
       </button>
-      <button
-        class:active={activeSection === 'dashboard'}
-        on:click={() => scrollToSection('dashboard', 'all')}>
+      <button class:active={activeSection === 'dashboard'} on:click={() => scrollToSection('dashboard', 'all')}>
         4. Dashboard
       </button>
     </div>
@@ -177,11 +163,27 @@
     </section>
 
     <div class="dashboard-shell" id="dashboard">
+
+      <!-- Full-width header spanning both columns -->
+      <header class="map-header">
+        <p class="eyebrow">Greater Boston TOD Opportunity Dashboard</p>
+        <h1>Which TOD projects are opening doors for renters like Maya?</h1>
+        <p class="subtitle">Compare each TOD's affordable share against nearby lower-income renter demand.</p>
+        <p class="data-note-inline">
+          Analysis draws from the 15 completed TOD projects available via MBTA Realty.
+          Projects with incomplete affordability data were excluded, leaving the 9 shown here.
+        </p>
+      </header>
+
+      <!-- Left: controls -->
       <div class="controls-col">
+        <div class="story-block">
+          <p class="section-label">Guided views</p>
+          <StorySteps onApplyStep={applyStoryStep} {activeStep} />
+        </div>
 
         <div class="controls-block">
           <p class="controls-block-label">Map layers</p>
-
           <button
             class="choropleth-toggle"
             class:active-blue={showLowIncomeChoropleth}
@@ -208,26 +210,10 @@
             <span class="toggle-indicator">{showCostBurdenChoropleth ? "On" : "Off"}</span>
           </button>
         </div>
-
-        <div class="story-block">
-          <p class="section-label">Guided views</p>
-          <StorySteps onApplyStep={applyStoryStep} {activeStep} />
-        </div>
       </div>
 
+      <!-- Right: map + detail panel -->
       <div class="map-col">
-        <header class="map-header">
-          <p class="eyebrow">Greater Boston TOD Opportunity Dashboard</p>
-          <h1>Which TOD projects are opening doors for renters like Maya?</h1>
-          <p class="subtitle">
-            Compare each TOD's affordable share against nearby lower-income renter demand.
-          </p>
-          <p class="data-note-inline">
-            Analysis draws from the 15 completed TOD projects available via MBTA Realty.
-            Projects with incomplete affordability data were excluded, leaving the 9 shown here.
-          </p>
-        </header>
-
         {#if activeStep}
           <div class="guided-banner">
             <div class="banner-body">
@@ -253,21 +239,20 @@
           </aside>
         </div>
       </div>
+
     </div>
   </main>
+
   <footer class="credits-footer">
     <div class="credits-inner">
-
       <div class="credits-section">
         <p class="credits-label">Developed by</p>
         <p>Emily Canales, Amira Ravshanova, Courtney Ma</p>
       </div>
-
       <div class="credits-section">
         <p class="credits-label">Partner</p>
         <p>This project was developed with guidance and feedback from the <a href="https://www.mapc.org/" target="_blank" rel="noopener">Metropolitan Area Planning Commission (MAPC)</a>.</p>
       </div>
-
       <div class="credits-section">
         <p class="credits-label">Data Sources</p>
         <ul>
@@ -277,7 +262,6 @@
           <li>TOD Project Locations and Unit Data, MBTA Realty</li>
         </ul>
       </div>
-
     </div>
   </footer>
 {/if}
@@ -357,24 +341,22 @@
     color: #92846e;
   }
 
+  /* ── Dashboard shell ───────────────────────────────── */
   .dashboard-shell {
     display: grid;
     grid-template-columns: 380px 1fr;
-    gap: 24px;
+    grid-template-rows: auto 1fr;
+    gap: 12px 24px;
     height: 100vh;
     padding: 24px;
     box-sizing: border-box;
     min-height: 800px;
   }
 
-  .map-col {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-height: 0;
+  .map-header {
+    grid-column: 1 / -1;
+    flex-shrink: 0;
   }
-
-  .map-header { flex-shrink: 0; }
 
   .eyebrow {
     font-size: 11px;
@@ -382,14 +364,14 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #b45309;
-    margin: 0 0 8px;
+    margin: 0 0 6px;
   }
 
   h1 {
     font-family: 'Lora', Georgia, serif;
     font-size: 1.6rem;
     font-weight: 700;
-    margin: 0 0 8px;
+    margin: 0 0 6px;
   }
 
   .subtitle {
@@ -399,41 +381,20 @@
     margin: 0;
   }
 
-  .map-and-panel {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 16px;
-    flex: 1;
-    min-height: 0;
-  }
-
-  .map-container {
-    background: white;
-    border: 1px solid #e8e0d4;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
-  }
-
-  .detail-sidebar {
-    background: white;
-    border: 1px solid #e8e0d4;
-    border-radius: 20px;
-    overflow-y: auto;
-  }
-
-  .controls-col {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    overflow-y: auto;
-  }
-
   .data-note-inline {
     margin: 6px 0 0;
     font-size: 0.78rem;
     color: #92846e;
     line-height: 1.5;
+  }
+
+  /* ── Left column ───────────────────────────────────── */
+  .controls-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    align-self: start;
   }
 
   .section-label {
@@ -540,6 +501,14 @@
   .active-blue .toggle-indicator { color: #2563eb; }
   .active-red .toggle-indicator { color: #dc2626; }
 
+  /* ── Right column ──────────────────────────────────── */
+  .map-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+  }
+
   .guided-banner {
     display: flex;
     align-items: flex-start;
@@ -586,75 +555,93 @@
     margin-top: 2px;
   }
 
-  .banner-clear:hover {
-    background: #dbeafe;
+  .banner-clear:hover { background: #dbeafe; }
+
+  .map-and-panel {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
   }
+
+  .map-container {
+    background: white;
+    border: 1px solid #e8e0d4;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.04);
+  }
+
+  .detail-sidebar {
+    background: white;
+    border: 1px solid #e8e0d4;
+    border-radius: 20px;
+    overflow-y: auto;
+  }
+
+  /* ── Footer ────────────────────────────────────────── */
+  .credits-footer {
+    background: #1a0f00;
+    color: #c9b99a;
+    padding: 48px 40px;
+    margin-top: 48px;
+  }
+
+  .credits-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1.5fr;
+    gap: 40px;
+  }
+
+  .credits-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #b45309;
+    margin: 0 0 10px;
+  }
+
+  .credits-section p,
+  .credits-section ul {
+    font-size: 0.82rem;
+    line-height: 1.7;
+    margin: 0;
+    color: #c9b99a;
+  }
+
+  .credits-section ul { padding-left: 16px; }
+  .credits-section li { margin-bottom: 6px; }
+
+  .credits-section a {
+    color: #f59e0b;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .credits-section a:hover { color: #fbbf24; }
 
   @media (max-width: 1100px) {
     .dashboard-shell {
       grid-template-columns: 1fr;
+      grid-template-rows: auto auto 1fr;
       height: auto;
     }
+    .map-header { grid-column: 1; }
     .map-and-panel {
       grid-template-columns: 1fr;
       height: 600px;
     }
     .detail-sidebar { display: none; }
   }
-  .credits-footer {
-  background: #1a0f00;
-  color: #c9b99a;
-  padding: 48px 40px;
-  margin-top: 48px;
-}
 
-.credits-inner {
-  max-width: 900px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1.5fr 1.5fr;
-  gap: 40px;
-}
-
-.credits-label {
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #b45309;
-  margin: 0 0 10px;
-}
-
-.credits-section p,
-.credits-section ul {
-  font-size: 0.82rem;
-  line-height: 1.7;
-  margin: 0;
-  color: #c9b99a;
-}
-
-.credits-section ul {
-  padding-left: 16px;
-}
-
-.credits-section li {
-  margin-bottom: 6px;
-}
-
-.credits-section a {
-  color: #f59e0b;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.credits-section a:hover {
-  color: #fbbf24;
-}
-
-@media (max-width: 900px) {
-  .credits-inner {
-    grid-template-columns: 1fr;
-    gap: 24px;
+  @media (max-width: 900px) {
+    .credits-inner {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
   }
-}
 </style>
