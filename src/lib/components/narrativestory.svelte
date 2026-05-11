@@ -7,49 +7,26 @@
       eyebrow: "Step 1 · Meet Maya",
       title: "Meet Maya who is raising her daughter in Dorchester, searching for a home near the T",
       body: "Maya is 31 years old. She works as a pre-school teacher in Dorchester, earns about $52,000 a year, and is raising her 4-year-old daughter Lily on her own. On weekends, she helps care for her mother who lives nearby. She's one of thousands of lower-income renters across Boston who work here, depend on the T, and are looking for housing they can actually afford near transit. Her maximum budget: $1,300/month for rent.",
-      stats: [
-        { label: "Annual income", val: "$52k" },
-        { label: "Max rent (30%)", val: "$1,300/mo" },
-        { label: "Boston AMI (Area Median Income)", val: "~50% AMI" },
-      ],
     },
     {
       eyebrow: "Step 2 · What's being built",
       title: "A new TOD opens near her target station, but TOD doesn't automatically mean affordable",
       body: "A developer recently completed a 200-unit transit-oriented development half a mile from Forest Hills. TOD is an important tool for creating new housing, typically combining market-rate units with a smaller share of income-restricted homes. But for Maya, the key question isn’t how much housing is built - it’s whether any of it is affordable to her.",
-      stats: [
-        { label: "Total units", val: "200" },
-        { label: "Affordable units", val: "20 (10%)" },
-        { label: "AMI (Area Median Income) target", val: "≤80% AMI" },
-      ],
     },
     {
       eyebrow: "Step 3 · The mismatch",
       title: "She qualifies, but the odds are stacked against her",
       body: "Maya earns about 50% AMI, so she qualifies for the affordable units. But those 20 units received over 400 applications in the lottery. The other 180 market-rate units start at $2,400/month which is nearly double her entire budget.",
-      stats: [
-        { label: "Lottery odds", val: "1 in 20" },
-        { label: "Market-rate starting rent", val: "$2,400/mo" },
-        { label: "Over Maya's budget by", val: "+$1,100/mo" },
-      ],
     },
     {
       eyebrow: "Step 4 · The neighborhood",
       title: "She's not alone with most nearby renters facing the same gap",
       body: "Within a 10-minute walk of this station, 48% of renters earn under $50k. But only 10% of the new development's units are affordable. This gap — the opportunity score — is what we measure across all Boston TODs.",
-      stats: [
-        { label: "Nearby renters under $50k", val: "48%" },
-        { label: "Affordable share of TOD", val: "10%" },
-        { label: "Opportunity score", val: "−38 pts" },
-      ],
     },
     {
       eyebrow: "Step 5 · What we can do",
       title: "Understanding the gap is the first step to closing it",
       body: "Maya ends up commuting 45 minutes from Brockton because no affordable unit opened near her station. But her story doesn't have to be the norm. When TODs include more affordable units, they open doors for people like Maya and help diversify neighborhoods that have historically been out of reach for lower-income renters.",
-      stats: [
-
-      ],
     },
   ];
 
@@ -64,7 +41,6 @@
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Update ratios for all entries that fired
         entries.forEach((e) => {
           const idx = Number(e.target.dataset.step);
           stepRatios[idx] = e.isIntersecting ? e.intersectionRatio : 0;
@@ -74,7 +50,6 @@
         const scrollingDown = currentScrollY >= lastScrollY;
         lastScrollY = currentScrollY;
 
-        // Find the step with the highest visibility
         let bestIdx = activeStep;
         let bestRatio = stepRatios[activeStep];
 
@@ -83,8 +58,6 @@
             bestRatio = ratio;
             bestIdx = idx;
           }
-          // Tiebreak: if ratios are close (within 15%), prefer the
-          // direction we're scrolling toward
           if (Math.abs(ratio - bestRatio) < 0.15) {
             if (scrollingDown && idx > bestIdx) bestIdx = idx;
             if (!scrollingDown && idx < bestIdx) bestIdx = idx;
@@ -132,13 +105,13 @@
                 </div>
                 <div class="persona-detail-row">
                   <span class="detail-icon">🚇</span>
-                  <span>No car — depends on the Orange Line</span>
+                  <span>No car; depends on the Orange Line</span>
                 </div>
               </div>
               <div class="persona-budget">
                 <div class="budget-row">
                   <span class="budget-label">Annual income</span>
-                  <span class="budget-val">$52,000 <span class="budget-ami">~50%  AMI</span></span>
+                  <span class="budget-val">$52,000 <span class="budget-ami">~50%  AMI (Area Median Income)</span></span>
                 </div>
                 <div class="budget-divider"></div>
                 <div class="budget-row">

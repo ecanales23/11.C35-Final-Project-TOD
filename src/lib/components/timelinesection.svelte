@@ -172,7 +172,7 @@
         <p class="section-eyebrow">Transit-Oriented Development & Affordability in Greater Boston</p>
         <h1>Boston is creating more Transit-Oriented Development<br><span class="highlight">But for whom?</span></h1>
         <p class="hero-desc">
-          Transit-oriented developments (TODs) put housing near jobs, transit, and opportunity. But do Boston's TODs actually serve the people already living near transit? Follow Maya's story — then explore a decade of neighborhood data.
+          Transit-oriented developments (TODs) put housing near jobs, transit, and opportunity. But do Boston's TODs actually serve the people already living near transit? Follow Maya's story and then explore a decade of neighborhood data.
         </p>
         <div class="hero-scroll-hint">
           <span class="scroll-arrow">↓</span>
@@ -303,7 +303,7 @@
               </div>
             </details>
         <div class="gap-callout">
-          <strong>TOD is a vehicle, not a guarantee.</strong> When it includes affordable units, it can open access to neighborhoods with better transit, jobs, and services for renters like Maya. Without them, these developments largely remain out of reach and can increase pressure on the communities they're built in.
+          <strong>New TODs do not automatically mean accessible housing.</strong> When it includes affordable units, it can open access to neighborhoods with better transit, jobs, and services for renters like Maya. Without them, these developments largely remain out of reach and can increase pressure on the communities they're built in.
         </div>
       </div>
     </section>
