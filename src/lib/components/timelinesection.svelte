@@ -876,7 +876,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: 120px 0 30px 20px;
+    margin: 120px 0 20px 20px;
   }
 
   .part-marker .pill { background: #2563eb; color: white; font-size: 0.65rem; font-weight: 900; padding: 4px 12px; border-radius: 99px; }
