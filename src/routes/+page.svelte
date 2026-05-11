@@ -255,6 +255,31 @@
       </div>
     </div>
   </main>
+  <footer class="credits-footer">
+    <div class="credits-inner">
+
+      <div class="credits-section">
+        <p class="credits-label">Developed by</p>
+        <p>Emily Canales, Amira Ravshanova, Courtney Ma</p>
+      </div>
+
+      <div class="credits-section">
+        <p class="credits-label">Partner</p>
+        <p>This project was developed with guidance and feedback from the <a href="https://www.mapc.org/" target="_blank" rel="noopener">Metropolitan Area Planning Commission (MAPC)</a>.</p>
+      </div>
+
+      <div class="credits-section">
+        <p class="credits-label">Data Sources</p>
+        <ul>
+          <li>U.S. Census Bureau, American Community Survey (ACS) 5-Year Estimates, 2010–2014, 2015–2019, and 2020–2024</li>
+          <li>U.S. Census Bureau, Decennial Census 2020</li>
+          <li>MAPC Census Tract Boundaries, Metropolitan Area Planning Commission</li>
+          <li>TOD Project Locations and Unit Data, MBTA Realty</li>
+        </ul>
+      </div>
+
+    </div>
+  </footer>
 {/if}
 
 <style>
@@ -576,4 +601,60 @@
     }
     .detail-sidebar { display: none; }
   }
+  .credits-footer {
+  background: #1a0f00;
+  color: #c9b99a;
+  padding: 48px 40px;
+  margin-top: 48px;
+}
+
+.credits-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1.5fr;
+  gap: 40px;
+}
+
+.credits-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #b45309;
+  margin: 0 0 10px;
+}
+
+.credits-section p,
+.credits-section ul {
+  font-size: 0.82rem;
+  line-height: 1.7;
+  margin: 0;
+  color: #c9b99a;
+}
+
+.credits-section ul {
+  padding-left: 16px;
+}
+
+.credits-section li {
+  margin-bottom: 6px;
+}
+
+.credits-section a {
+  color: #f59e0b;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.credits-section a:hover {
+  color: #fbbf24;
+}
+
+@media (max-width: 900px) {
+  .credits-inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
 </style>
