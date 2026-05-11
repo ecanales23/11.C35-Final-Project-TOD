@@ -10,7 +10,7 @@
       stats: [
         { label: "Annual income", val: "$52k" },
         { label: "Max rent (30%)", val: "$1,300/mo" },
-        { label: "Boston AMI", val: "~50% AMI" },
+        { label: "Boston AMI (Area Median Income)", val: "~50% AMI" },
       ],
     },
     {
@@ -20,7 +20,7 @@
       stats: [
         { label: "Total units", val: "200" },
         { label: "Affordable units", val: "20 (10%)" },
-        { label: "AMI target", val: "≤80% AMI" },
+        { label: "AMI (Area Median Income) target", val: "≤80% AMI" },
       ],
     },
     {
@@ -36,7 +36,7 @@
     {
       eyebrow: "Step 4 · The neighborhood",
       title: "She's not alone with most nearby renters facing the same gap",
-      body: "Within 0.5 miles of this station, 48% of renters earn under $50k. But only 10% of the new development's units are affordable. This gap — the opportunity score — is what we measure across all Boston TODs.",
+      body: "Within a 10-minute walk of this station, 48% of renters earn under $50k. But only 10% of the new development's units are affordable. This gap — the opportunity score — is what we measure across all Boston TODs.",
       stats: [
         { label: "Nearby renters under $50k", val: "48%" },
         { label: "Affordable share of TOD", val: "10%" },
@@ -46,11 +46,9 @@
     {
       eyebrow: "Step 5 · What we can do",
       title: "Understanding the gap is the first step to closing it",
-      body: "Maya ends up commuting 45 minutes from Brockton because no affordable unit opened near her station. But her story doesn't have to be the norm. When TODs include more affordable units, they open doors for people like Maya and help diversify neighborhoods that have historically been out of reach for lower-income renters. The dashboard below shows where Boston's TODs are providing opportunity, and where they're falling short.",
+      body: "Maya ends up commuting 45 minutes from Brockton because no affordable unit opened near her station. But her story doesn't have to be the norm. When TODs include more affordable units, they open doors for people like Maya and help diversify neighborhoods that have historically been out of reach for lower-income renters.",
       stats: [
-        { label: "Maya's commute if priced out", val: "45 min" },
-        { label: "TODs with more opportunity", val: "3 of 9" },
-        { label: "TODs falling below demand", val: "6 of 9" },
+ 
       ],
     },
   ];
@@ -140,7 +138,7 @@
               <div class="persona-budget">
                 <div class="budget-row">
                   <span class="budget-label">Annual income</span>
-                  <span class="budget-val">$52,000 <span class="budget-ami">~50% AMI</span></span>
+                  <span class="budget-val">$52,000 <span class="budget-ami">~50%  AMI</span></span>
                 </div>
                 <div class="budget-divider"></div>
                 <div class="budget-row">
@@ -164,7 +162,7 @@
                   <span class="bleg-dot affordable"></span>
                   <div>
                     <strong>20 affordable units</strong>
-                    <p>Reserved for renters ≤80% AMI<br>like Maya — via lottery</p>
+                    <p>Reserved for renters ≤80% AMI <br>like Maya — via lottery</p>
                   </div>
                 </div>
                 <div class="bleg-row">
