@@ -8,6 +8,7 @@
   export let onSelect = (d) => {};
   export let showLowIncomeChoropleth = false;
   export let showCostBurdenChoropleth = false;
+  export let activeStep = null;
 
   let geojson = null;
   let neighborhoods = [];
@@ -262,51 +263,110 @@
           {/each}
         </g>
 
-        {#each projects as project}
-          {#if projection}
-            {@const [x, y] = projection(project.geometry.coordinates)}
-            {@const isSelected = selectedId === project.id}
-            {@const isHovered = hoveredProject?.id === project.id}
+        {#if !activeStep}
+          {#each projects as project}
+            {#if projection}
+              {@const [x, y] = projection(project.geometry.coordinates)}
+              {@const isSelected = selectedId === project.id}
+              {@const isHovered = hoveredProject?.id === project.id}
 
-            <circle
-              cx={x}
-              cy={y}
-              r={bufferRadius}
-              fill="rgba(31, 41, 55, 0.04)"
-              stroke="#64748b"
-              stroke-dasharray={`${4 / transform.k} ${4 / transform.k}`}
-              stroke-width={(isSelected ? 1.5 : 1) / transform.k}
-              opacity={isSelected || isHovered ? 1 : 0}
-              style="pointer-events:none; transition: opacity 0.2s ease;"
-            />
+              <circle cx={x} cy={y} r={bufferRadius}
+                fill="rgba(31,41,55,0.04)" stroke="#64748b"
+                stroke-dasharray={`${4/transform.k} ${4/transform.k}`}
+                stroke-width={(isSelected ? 1.5 : 1)/transform.k}
+                opacity={isSelected || isHovered ? 1 : 0}
+                style="pointer-events:none; transition:opacity 0.2s ease;" />
 
-            <circle
-              cx={x}
-              cy={y}
-              r={(isSelected ? 16 : isHovered ? 12 : 8.5) / transform.k}
-              fill={colorScale(project.mismatchScore)}
-              stroke={isSelected ? "#111827" : "white"}
-              stroke-width={(isSelected ? 3 : 2) / transform.k}
-              class="project-node"
-              on:mouseenter={() => hoveredProject = project}
-              on:mouseleave={() => hoveredProject = null}
-              on:click={() => onSelect(project)}
-            />
+              <circle cx={x} cy={y}
+                r={(isSelected ? 16 : isHovered ? 12 : 8.5)/transform.k}
+                fill={colorScale(project.mismatchScore)}
+                stroke={isSelected ? "#111827" : "white"}
+                stroke-width={(isSelected ? 3 : 2)/transform.k}
+                class="project-node"
+                on:mouseenter={() => hoveredProject = project}
+                on:mouseleave={() => hoveredProject = null}
+                on:click={() => onSelect(project)} />
 
-            {#if isSelected || isHovered}
-              <text
-                x={x + 15 / transform.k}
-                y={y - 5 / transform.k}
-                font-size={isSelected ? 12 / transform.k : 10 / transform.k}
-                font-weight="700"
-                fill="#0f172a"
-                style="paint-order: stroke fill; stroke: rgba(255,255,255,0.95); stroke-width: {3.5 / transform.k}; stroke-linejoin: round; pointer-events: none;"
-              >
-                {project.project}
-              </text>
+              {#if isSelected || isHovered}
+                <text x={x + 15/transform.k} y={y - 5/transform.k}
+                  font-size={isSelected ? 12/transform.k : 10/transform.k}
+                  font-weight="700" fill="#0f172a"
+                  style="paint-order:stroke fill; stroke:rgba(255,255,255,0.95); stroke-width:{3.5/transform.k}; stroke-linejoin:round; pointer-events:none;">
+                  {project.project}
+                </text>
+              {/if}
             {/if}
-          {/if}
-        {/each}
+          {/each}
+        {:else}
+          <!-- Pass 1: non-highlighted dots behind the dark overlay -->
+          {#each projects as project}
+            {#if projection}
+              {@const isHighlighted =
+                (activeStep === 'largest-gaps' && project.mismatchScore < 0) ||
+                (activeStep === 'high-affordable' && project.mismatchScore > 0)}
+              {#if !isHighlighted}
+                {@const [x, y] = projection(project.geometry.coordinates)}
+                <circle cx={x} cy={y} r={8.5/transform.k}
+                  fill={colorScale(project.mismatchScore)}
+                  stroke="white" stroke-width={2/transform.k}
+                  style="pointer-events:none;" />
+              {/if}
+            {/if}
+          {/each}
+
+          <!-- Dark overlay covering the full viewport in SVG user coords -->
+          <rect
+            x={-transform.x / transform.k}
+            y={-transform.y / transform.k}
+            width={width / transform.k}
+            height={height / transform.k}
+            fill="rgba(15, 23, 42, 0.58)"
+            style="pointer-events:none;" />
+
+          <!-- Pass 2: highlighted dots rendered above the dark overlay -->
+          {#each projects as project}
+            {#if projection}
+              {@const isHighlighted =
+                (activeStep === 'largest-gaps' && project.mismatchScore < 0) ||
+                (activeStep === 'high-affordable' && project.mismatchScore > 0)}
+              {#if isHighlighted}
+                {@const [x, y] = projection(project.geometry.coordinates)}
+                {@const isSelected = selectedId === project.id}
+                {@const isHovered = hoveredProject?.id === project.id}
+
+                <circle cx={x} cy={y} r={bufferRadius}
+                  fill="rgba(31,41,55,0.04)" stroke="#64748b"
+                  stroke-dasharray={`${4/transform.k} ${4/transform.k}`}
+                  stroke-width={(isSelected ? 1.5 : 1)/transform.k}
+                  opacity={isSelected || isHovered ? 1 : 0}
+                  style="pointer-events:none; transition:opacity 0.2s ease;" />
+
+                <circle cx={x} cy={y} r={17/transform.k}
+                  fill="none" stroke="#b45309" stroke-width={2.5/transform.k}
+                  style="pointer-events:none;" />
+
+                <circle cx={x} cy={y}
+                  r={(isSelected ? 16 : isHovered ? 12 : 8.5)/transform.k}
+                  fill={colorScale(project.mismatchScore)}
+                  stroke={isSelected ? "#111827" : "white"}
+                  stroke-width={(isSelected ? 3 : 2)/transform.k}
+                  class="project-node"
+                  on:mouseenter={() => hoveredProject = project}
+                  on:mouseleave={() => hoveredProject = null}
+                  on:click={() => onSelect(project)} />
+
+                {#if isSelected || isHovered}
+                  <text x={x + 15/transform.k} y={y - 5/transform.k}
+                    font-size={isSelected ? 12/transform.k : 10/transform.k}
+                    font-weight="700" fill="#0f172a"
+                    style="paint-order:stroke fill; stroke:rgba(255,255,255,0.95); stroke-width:{3.5/transform.k}; stroke-linejoin:round; pointer-events:none;">
+                    {project.project}
+                  </text>
+                {/if}
+              {/if}
+            {/if}
+          {/each}
+        {/if}
       </g>
     </svg>
 

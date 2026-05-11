@@ -20,20 +20,15 @@
   let showLowIncomeChoropleth = false;
   let showCostBurdenChoropleth = false;
 
-  const guidedViewHints = {
-    "largest-gaps": {
-      badge: "Largest Gaps",
-      hint: "Look for the deepest pink dots on the map — these projects have the biggest gap between their affordable share and nearby lower-income renter demand. Click any dot to see the full breakdown in the panel."
-    },
-    "high-affordable": {
-      badge: "High Affordable Share",
-      hint: "Look for the green dots — these projects provide more affordable housing than local lower-income renter demand requires. Click a dot to see how far above local demand they sit."
-    },
-    "large-projects": {
-      badge: "Large Projects (150+ units)",
-      hint: "Only the largest developments remain on the map. See whether scale comes with greater affordability — or whether big projects are building mostly market-rate units."
-    }
+  const guidedBlurb = {
+    "largest-gaps": "These properties have the widest gap between their affordable unit share and the surrounding concentration of lower-income renters. Local renters have the fewest options here.",
+    "high-affordable": "These properties provide more affordable units than the surrounding concentration of lower-income renters requires."
   };
+
+  $: highlightedProjects = !activeStep ? []
+    : activeStep === 'largest-gaps' ? todData.filter(d => d.mismatchScore < 0)
+    : activeStep === 'high-affordable' ? todData.filter(d => d.mismatchScore > 0)
+    : [];
 
   onMount(async () => {
     baseTodData = await loadTodData();
@@ -114,27 +109,10 @@
 
   function applyStoryStep(step) {
     activeStep = step === "all" ? null : step;
-    if (step === "all") {
-      showUnderServingOnly = false;
-      showOverServingOnly = false;
-      minUnits = 0;
-      sortBy = "name";
-    } else if (step === "largest-gaps") {
-      showUnderServingOnly = true;
-      showOverServingOnly = false;
-      minUnits = 0;
-      sortBy = "gap";
-    } else if (step === "high-affordable") {
-      showOverServingOnly = true;
-      showUnderServingOnly = false;
-      minUnits = 0;
-      sortBy = "affordable";
-    } else if (step === "large-projects") {
-      showUnderServingOnly = false;
-      showOverServingOnly = false;
-      minUnits = 150;
-      sortBy = "units";
-    }
+    showUnderServingOnly = false;
+    showOverServingOnly = false;
+    minUnits = 0;
+    sortBy = "name";
   }
 </script>
 
@@ -188,7 +166,7 @@
       </p>
     </header>
 
-    <div class="dashboard-shell" id="dashboard">
+    <div class="dashboard-shell" id="dashboard" class:mode-active={!!activeStep}>
       <div class="controls-col">
         <div class="controls-block">
           <p class="controls-block-label">Map layers</p>
@@ -196,7 +174,7 @@
           <button
             class="choropleth-toggle"
             class:active-blue={showLowIncomeChoropleth}
-            on:click={() => showLowIncomeChoropleth = !showLowIncomeChoropleth}
+            on:click={() => { showLowIncomeChoropleth = !showLowIncomeChoropleth; if (showLowIncomeChoropleth) showCostBurdenChoropleth = false; }}
           >
             <span class="toggle-swatch" style="background: linear-gradient(135deg, #deebf7, #08519c);"></span>
             <span class="toggle-text">
@@ -209,7 +187,7 @@
           <button
             class="choropleth-toggle"
             class:active-red={showCostBurdenChoropleth}
-            on:click={() => showCostBurdenChoropleth = !showCostBurdenChoropleth}
+            on:click={() => { showCostBurdenChoropleth = !showCostBurdenChoropleth; if (showCostBurdenChoropleth) showLowIncomeChoropleth = false; }}
           >
             <span class="toggle-swatch" style="background: linear-gradient(135deg, #fee5d9, #a50f15);"></span>
             <span class="toggle-text">
@@ -221,22 +199,41 @@
         </div>
 
         <div class="story-block">
-          <p class="section-label">Guided views</p>
           <StorySteps onApplyStep={applyStoryStep} {activeStep} />
         </div>
+
+        {#if activeStep}
+          <div class="mode-popup">
+            <div class="mode-popup-top">
+              <div class="mode-popup-info">
+                <span class="mode-popup-badge">
+                  {activeStep === 'largest-gaps' ? 'The biggest affordability gaps' : 'The strongest performers'}
+                </span>
+                <p class="mode-popup-blurb">{guidedBlurb[activeStep]}</p>
+              </div>
+              <button class="mode-popup-x" on:click={() => applyStoryStep("all")}>✕</button>
+            </div>
+            {#if highlightedProjects.length}
+              <div class="mode-popup-props">
+                <p class="mode-popup-props-label">
+                  {highlightedProjects.length === 1 ? '1 highlighted property' : `${highlightedProjects.length} highlighted properties`}
+                </p>
+                <div class="mode-popup-chips">
+                  {#each highlightedProjects as p}
+                    <button
+                      class="mode-chip"
+                      class:selected={selectedTod?.id === p.id}
+                      on:click={() => handleSelect(p)}
+                    >{p.project}</button>
+                  {/each}
+                </div>
+              </div>
+            {/if}
+          </div>
+        {/if}
       </div>
 
       <div class="map-col">
-        {#if activeStep}
-          <div class="guided-banner">
-            <div class="banner-body">
-              <span class="banner-tag">{guidedViewHints[activeStep].badge}</span>
-              <p class="banner-hint">{guidedViewHints[activeStep].hint}</p>
-            </div>
-            <button class="banner-clear" on:click={() => applyStoryStep("all")}>Clear ×</button>
-          </div>
-        {/if}
-
         <div class="map-and-panel">
           <div class="map-container">
             <Map
@@ -245,6 +242,7 @@
               onSelect={handleSelect}
               {showLowIncomeChoropleth}
               {showCostBurdenChoropleth}
+              {activeStep}
             />
           </div>
           <aside class="detail-sidebar">
@@ -395,7 +393,7 @@
 
   .dashboard-shell {
     display: grid;
-    grid-template-columns: 380px 1fr;
+    grid-template-columns: 300px 1fr;
     gap: 24px;
     padding: 0 24px 24px;
     box-sizing: border-box;
@@ -411,7 +409,7 @@
 
   .map-and-panel {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr 380px;
     gap: 16px;
     height: 700px;
   }
@@ -437,12 +435,16 @@
     gap: 12px;
   }
 
-  .section-label {
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: #92846e;
-    margin: 0 0 10px;
+  .mode-active .controls-block {
+    opacity: 0.25;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .mode-active .story-block {
+    opacity: 0.25;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
   }
 
   .story-block {
@@ -530,22 +532,96 @@
   .active-blue .toggle-indicator { color: #2563eb; }
   .active-red .toggle-indicator { color: #dc2626; }
 
-  .guided-banner {
+  .mode-popup {
+    background: white;
+    border: 1px solid #e8e0d4;
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .mode-popup-top {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    padding: 10px 14px;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 12px;
   }
 
-  .banner-body { flex: 1; display: flex; flex-direction: column; gap: 3px; }
-  .banner-tag { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #1d4ed8; }
-  .banner-hint { margin: 0; font-size: 0.8rem; color: #1e40af; line-height: 1.5; }
-  .banner-clear {
-    background: none; border: 1px solid #93c5fd; border-radius: 6px;
-    padding: 3px 8px; font-size: 11px; color: #3b82f6; cursor: pointer;
+  .mode-popup-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+  .mode-popup-badge {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #b45309;
+  }
+
+  .mode-popup-blurb {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #5a5040;
+    line-height: 1.55;
+  }
+
+  .mode-popup-x {
+    background: none;
+    border: 1px solid #e8e0d4;
+    border-radius: 8px;
+    padding: 4px 9px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #92846e;
+    flex-shrink: 0;
+    line-height: 1;
+    transition: all 0.15s;
+  }
+
+  .mode-popup-x:hover { background: #faf0e8; color: #1a0f00; border-color: #c0b09a; }
+
+  .mode-popup-props {
+    border-top: 1px solid #f0ede8;
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mode-popup-props-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #92846e;
+    margin: 0;
+  }
+
+  .mode-popup-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .mode-chip {
+    background: #faf7f0;
+    border: 1px solid #e2d8cc;
+    border-radius: 20px;
+    padding: 4px 11px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #1a0f00;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .mode-chip:hover { background: #f3ede4; border-color: #c0b09a; }
+
+  .mode-chip.selected {
+    background: #b45309;
+    border-color: #b45309;
+    color: white;
   }
 
   @media (max-width: 1100px) {

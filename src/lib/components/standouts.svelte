@@ -4,45 +4,30 @@
 
   const steps = [
     {
-      id: "all",
-      title: "All projects",
-      description: "Start with the full set of TOD projects across Greater Boston."
-    },
-    {
       id: "largest-gaps",
-      title: "Less opportunity than demand",
-      description: "Projects where affordable share falls furthest below local lower-income renter share."
+      title: "The biggest affordability gaps",
+      description: "Properties where the affordable unit share falls furthest below the surrounding share of lower-income renters."
     },
     {
       id: "high-affordable",
-      title: "More opportunity than demand",
-      description: "Projects providing more affordable housing than local lower-income renter share requires."
-    },
-    {
-      id: "large-projects",
-      title: "Large projects only",
-      description: "Focus on high-unit developments with the largest neighborhood impact."
+      title: "The strongest performers",
+      description: "Properties providing more affordable units than the surrounding concentration of lower-income renters requires."
     }
   ];
 </script>
 
 <div class="guide-wrapper">
-  <div class="guide-intro">
-    <span class="eyebrow">Story mode</span>
-    <h3>Suggested ways to read the data</h3>
-  </div>
-
-  <div class="suggestions-grid">
-    {#each steps as step, i}
+  <p class="guide-heading">Suggested ways to read the data</p>
+  <div class="suggestions-list">
+    {#each steps as step}
       <div
         class="suggestion"
         class:active={step.id === activeStep}
-        on:click={() => onApplyStep(step.id)}
-        on:keydown={(e) => e.key === 'Enter' && onApplyStep(step.id)}
+        on:click={() => onApplyStep(step.id === activeStep ? "all" : step.id)}
+        on:keydown={(e) => e.key === 'Enter' && onApplyStep(step.id === activeStep ? "all" : step.id)}
         role="button"
         tabindex="0"
       >
-        <span class="dot">{i + 1}</span>
         <strong class="title">{step.title}</strong>
         <p class="desc">{step.description}</p>
       </div>
@@ -52,36 +37,23 @@
 
 <style>
   .guide-wrapper {
-    padding: 16px;
-    background: #ffffff;
-    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  .guide-intro {
-    margin-bottom: 12px;
-  }
-
-  .eyebrow {
-    display: block;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: #3b82f6;
-    margin-bottom: 4px;
-  }
-
-  h3 {
+  .guide-heading {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 10px;
     font-weight: 800;
-    color: #0f172a;
-    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #92846e;
   }
 
-  .suggestions-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  .suggestions-list {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
   }
 
@@ -91,64 +63,38 @@
     gap: 4px;
     cursor: pointer;
     padding: 10px 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e2d8cc;
     border-radius: 10px;
+    background: #faf7f0;
     transition: border-color 0.2s ease, background 0.2s ease;
   }
 
   .suggestion:hover {
-    border-color: #3b82f6;
-    background: #eff6ff;
-  }
-
-  .suggestion:hover .dot {
-    background: #3b82f6;
-    color: white;
-    border-color: #3b82f6;
+    border-color: #b45309;
+    background: #fdf3e0;
   }
 
   .suggestion.active {
-    border-color: #3b82f6;
-    background: #eff6ff;
-  }
-
-  .suggestion.active .dot {
-    background: #3b82f6;
-    color: white;
-    border-color: #3b82f6;
+    border-color: #b45309;
+    background: #fdf3e0;
   }
 
   .suggestion.active .title {
-    color: #1d4ed8;
-  }
-
-  .dot {
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #e2e8f0;
-    border-radius: 50%;
-    font-size: 9px;
-    font-weight: 800;
-    color: #94a3b8;
-    margin-bottom: 4px;
-    transition: all 0.2s ease;
+    color: #b45309;
   }
 
   .title {
     display: block;
     font-size: 0.78rem;
     font-weight: 700;
-    color: #1e293b;
+    color: #1a0f00;
     line-height: 1.3;
   }
 
   .desc {
     margin: 0;
     font-size: 0.72rem;
-    color: #64748b;
+    color: #92846e;
     line-height: 1.5;
   }
 </style>

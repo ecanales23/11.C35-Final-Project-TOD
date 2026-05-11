@@ -65,7 +65,7 @@
         {:else}
           <p>
             <strong>Providing more opportunity than local demand:</strong>
-            This project’s affordable share is <strong>{Math.abs(stableTod.mismatchScore * 100).toFixed(1)} percentage points above</strong> the nearby lower-income renter share — opening doors for renters to access this neighborhood.
+            This project’s affordable share is <strong>{Math.abs(stableTod.mismatchScore * 100).toFixed(1)} percentage points above</strong> the nearby lower-income renter share.
           </p>
         {/if}
       </div>
