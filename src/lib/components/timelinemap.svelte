@@ -358,7 +358,9 @@
     {@const val = getMetricValue(props, periodKey, metric)}
     {@const total = getTotalHouseholds(props, periodKey)}
     {@const [tx, ty] = centroidScreen(hoveredTod)}
-    <div class="tooltip" style="left:{Math.min(tx + 20, width - 260)}px; top:{Math.max(ty - 70, 20)}px;">
+    {@const tooltipX = tx + 280 > width ? Math.max(8, tx - 275) : tx + 15}
+    {@const tooltipY = ty + 160 > height ? ty - 140 : Math.max(12, ty - 60)}
+    <div class="tooltip" style="left:{tooltipX}px; top:{tooltipY}px;">
       <p class="tt-name">{props.Project} Station Area</p>
       <div class="tt-grid">
         <span class="tt-label">{metric === "costBurdenedRenterShare" ? "Renters paying >30% on rent" : "Renters earning under $50k/yr"}</span>
@@ -512,7 +514,8 @@
 
   .tooltip {
     position: absolute;
-    width: 240px;
+    width: 260px;
+    box-sizing: border-box;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(16px);
     border-radius: 12px;
@@ -566,7 +569,6 @@
     font-size: 0.9rem;
   }
 
-  /* Consolidated Single Legend - Bottom Left Only */
   .legend {
     position: absolute;
     bottom: 16px;

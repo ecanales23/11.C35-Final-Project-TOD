@@ -10,7 +10,7 @@
       stats: [
         { label: "Annual income", val: "$52k" },
         { label: "Max rent (30%)", val: "$1,300/mo" },
-        { label: "Boston AMI", val: "~50% AMI" },
+        { label: "Area Median Income (AMI) in Boston", val: "~50% AMI" },
       ],
     },
     {
@@ -60,7 +60,7 @@
 
   onMount(async () => {
     await tick();
-    
+
     let lastScrollY = window.scrollY;
     let stepRatios = new Array(steps.length).fill(0); // track each step's ratio
 
@@ -369,7 +369,7 @@
   .persona-photo {
     width: 100%;
     height: 100%;
-    object-fit: contain;   
+    object-fit: contain;
     object-position: center center;
   }
 
@@ -420,7 +420,7 @@
     border-radius: 12px;
     padding: 14px 16px;
   }
-  
+
   .budget-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
   .budget-label { font-size: 0.82rem; color: #5a5040; }
   .budget-val { font-size: 0.9rem; font-weight: 800; color: #1a0f00; }

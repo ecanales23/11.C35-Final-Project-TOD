@@ -14,6 +14,8 @@
   let projects = [];
   let transitLines = [];
   let bufferGeoFeatures = [];
+  let bostonGeojson = null;
+  let mapcBostonGeojson = null;
 
   let width = 900;
   let height = 480;
@@ -24,11 +26,13 @@
   let homeTransform = d3.zoomIdentity;
 
   onMount(async () => {
-    const [geoRes, nhoodRes, transitRes, bufferRes] = await Promise.all([
+    const [geoRes, nhoodRes, transitRes, bufferRes, bostonRes, mapcBostonRes] = await Promise.all([
       fetch(`${base}/data/TODLocations_4.4.26.geojson`),
       fetch(`${base}/data/MAPC_census_tracts/mapc_census_tracts.geojson`),
       fetch(`${base}/data/mbta_transit_lines.geojson`),
-      fetch(`${base}/data/TOD_2024_WeightedDemographics.geojson`)
+      fetch(`${base}/data/TOD_2024_WeightedDemographics.geojson`),
+      fetch(`${base}/data/bostonn.geojson`),
+      fetch(`${base}/data/mapc_boston.geojson`)
     ]);
 
     geojson = await geoRes.json();
@@ -38,6 +42,8 @@
     transitLines = transitData.features;
     const bufferData = await bufferRes.json();
     bufferGeoFeatures = bufferData.features;
+    bostonGeojson = await bostonRes.json();
+    mapcBostonGeojson = await mapcBostonRes.json();
 
     zoomBehavior = d3.zoom()
       .scaleExtent([0.7, 18])
@@ -84,7 +90,6 @@
 
   $: pathGenerator = projection ? d3.geoPath().projection(projection) : null;
 
-  // 0.5 miles = 2640 US survey feet (EPSG:2249 units)
   $: bufferRadius = projection ? 2640 * projection.scale() : 0;
 
   $: colorScale = d3.scaleLinear()
@@ -141,8 +146,8 @@
               <path
                 d={pathGenerator(feature)}
                 fill="#f7f8fa"
-                stroke="#cfd8df"
-                stroke-width={0.6 / transform.k}
+                stroke="#e2e8f0"
+                stroke-width={0.4 / transform.k}
                 style="vector-effect: non-scaling-stroke;"
               />
             {/if}
@@ -156,10 +161,9 @@
                 <path
                   d={pathGenerator({ type: "Feature", geometry: bp.geometry })}
                   fill={lowIncomeScale(bp.lowerIncomeDemandShare)}
-                  opacity="0.75"
-                  stroke="rgba(8,81,156,0.4)"
-                  stroke-width="1.5"
-                  style="vector-effect: non-scaling-stroke; pointer-events:none;"
+                  opacity="0.8"
+                  stroke="none"
+                  style="pointer-events:none;"
                 />
               {/if}
             {/each}
@@ -173,11 +177,74 @@
                 <path
                   d={pathGenerator({ type: "Feature", geometry: bp.geometry })}
                   fill={costBurdenScale(bp.costBurdenShare)}
-                  opacity="0.75"
-                  stroke="rgba(165,15,21,0.4)"
-                  stroke-width="1.5"
-                  style="vector-effect: non-scaling-stroke; pointer-events:none;"
+                  opacity="0.8"
+                  stroke="none"
+                  style="pointer-events:none;"
                 />
+              {/if}
+            {/each}
+          </g>
+        {/if}
+
+        {#if pathGenerator && mapcBostonGeojson}
+          <g class="mapc-boston-boundaries">
+            {#each mapcBostonGeojson.features as feature}
+              <path
+                d={pathGenerator(feature)}
+                fill="none"
+                stroke="#94a3b8"
+                stroke-width={0.6 / transform.k}
+                style="pointer-events: none; opacity: 0.3;"
+              />
+              {@const [cx, cy] = pathGenerator.centroid(feature)}
+              {#if cx && cy && feature.properties.municipal}
+                <text
+                  x={cx}
+                  y={cy}
+                  text-anchor="middle"
+                  dominant-baseline="middle"
+                  font-size={8.5 / transform.k}
+                  fill="rgba(30, 41, 59, 0.25)"
+                  stroke="rgba(255, 255, 255, 0.5)"
+                  stroke-width={1.5 / transform.k}
+                  paint-order="stroke"
+                  stroke-linejoin="round"
+                  style="pointer-events: none; font-weight: 700; font-family: ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.1em;"
+                >
+                  {feature.properties.municipal}
+                </text>
+              {/if}
+            {/each}
+          </g>
+        {/if}
+
+        {#if pathGenerator && bostonGeojson}
+          <g class="boston-neighborhoods">
+            {#each bostonGeojson.features as feature}
+              <path
+                d={pathGenerator(feature)}
+                fill="none"
+                stroke="#cbd5e1"
+                stroke-width={0.5 / transform.k}
+                style="pointer-events: none; opacity: 0.3;"
+              />
+              {@const [cx, cy] = pathGenerator.centroid(feature)}
+              {#if cx && cy && feature.properties.name}
+                <text
+                  x={cx}
+                  y={cy}
+                  text-anchor="middle"
+                  dominant-baseline="middle"
+                  font-size={7 / transform.k}
+                  fill="rgba(30, 41, 59, 0.25)"
+                  stroke="rgba(255, 255, 255, 0.5)"
+                  stroke-width={1.5 / transform.k}
+                  paint-order="stroke"
+                  stroke-linejoin="round"
+                  style="pointer-events: none; font-weight: 600; font-family: ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.1em;"
+                >
+                  {feature.properties.name}
+                </text>
               {/if}
             {/each}
           </g>
@@ -189,11 +256,11 @@
               <path
                 d={pathGenerator(line)}
                 fill="none"
-                stroke={line.properties.color}
-                stroke-width={3 / transform.k}
+                stroke="#1e40af"
+                stroke-width={1.5 / transform.k}
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                opacity="0.7"
+                opacity="0.4"
                 style="pointer-events:none;"
               />
             {/if}
@@ -211,36 +278,38 @@
               cy={y}
               r={bufferRadius}
               fill="rgba(31, 41, 55, 0.04)"
-              stroke={isSelected ? "#111827" : "#c6ced6"}
+              stroke="#64748b"
               stroke-dasharray={`${4 / transform.k} ${4 / transform.k}`}
-              stroke-width="1"
-              style="vector-effect: non-scaling-stroke; pointer-events:none;"
+              stroke-width={(isSelected ? 1.5 : 1) / transform.k}
+              opacity={isSelected || isHovered ? 1 : 0}
+              style="pointer-events:none; transition: opacity 0.2s ease;"
             />
 
             <circle
               cx={x}
               cy={y}
-              r={(isSelected ? 13 : isHovered ? 10 : 7) / transform.k}
+              r={(isSelected ? 16 : isHovered ? 12 : 8.5) / transform.k}
               fill={colorScale(project.mismatchScore)}
               stroke={isSelected ? "#111827" : "white"}
-              stroke-width={(isSelected ? 2.4 : 1.5) / transform.k}
+              stroke-width={(isSelected ? 3 : 2) / transform.k}
               class="project-node"
               on:mouseenter={() => hoveredProject = project}
               on:mouseleave={() => hoveredProject = null}
               on:click={() => onSelect(project)}
             />
 
-            <text
-              x={x + 10 / transform.k}
-              y={y - 4 / transform.k}
-              font-size={isSelected ? 11 / transform.k : 9 / transform.k}
-              font-weight={isSelected ? "700" : "500"}
-              fill={isSelected ? "#1a0f00" : "#374151"}
-              opacity={isSelected ? 1 : 0.8}
-              style="paint-order: stroke fill; stroke: white; stroke-width: {3 / transform.k}; stroke-linejoin: round; pointer-events: none;"
-            >
-              {project.project}
-            </text>
+            {#if isSelected || isHovered}
+              <text
+                x={x + 15 / transform.k}
+                y={y - 5 / transform.k}
+                font-size={isSelected ? 12 / transform.k : 10 / transform.k}
+                font-weight="700"
+                fill="#0f172a"
+                style="paint-order: stroke fill; stroke: rgba(255,255,255,0.95); stroke-width: {3.5 / transform.k}; stroke-linejoin: round; pointer-events: none;"
+              >
+                {project.project}
+              </text>
+            {/if}
           {/if}
         {/each}
       </g>
@@ -278,28 +347,29 @@
 
       <div class="legend-symbols">
         <div class="sym-item">
-          <span class="sym dashed-sym"></span>
-          <span>0.5 mi buffer</span>
-        </div>
-        <div class="sym-item">
           <span class="sym dot-sym"></span>
-          <span>TOD project (click to select)</span>
+          <span>Station Area</span>
         </div>
         <div class="sym-item">
-          <span class="transit-multi-sym">
-            <span style="background:#DA291C;"></span>
-            <span style="background:#ED8B00;"></span>
-            <span style="background:#00843D;"></span>
-            <span style="background:#7C878E;"></span>
-          </span>
+          <span class="sym dashed-sym"></span>
+          <span>0.5 mi buffer (Hover)</span>
+        </div>
+        <div class="sym-item">
+          <span class="sym transit-sym"></span>
           <span>MBTA lines</span>
+        </div>
+        <div class="sym-item">
+          <span class="sym boundary-sym"></span>
+          <span>City / Neighborhood</span>
         </div>
       </div>
     </div>
 
     {#if hoveredProject}
       {@const [tx, ty] = getProjectedCoords(hoveredProject.geometry)}
-      <div class="tooltip" style={`left:${tx + 16}px; top:${ty - 18}px;`}>
+      {@const tooltipX = tx + 280 > width ? tx - 275 : tx + 15}
+      {@const tooltipY = ty + 190 > height ? ty - 180 : Math.max(12, ty - 18)}
+      <div class="tooltip" style={`left:${tooltipX}px; top:${tooltipY}px;`}>
         <p class="tooltip-title">{hoveredProject.project}</p>
         <p class="tooltip-address">{hoveredProject.address}</p>
 
@@ -350,6 +420,7 @@
     flex-direction: column;
     height: 100%;
     box-sizing: border-box;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
   .header {
@@ -398,19 +469,22 @@
   .tooltip {
     position: absolute;
     width: 260px;
-    background: white;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
     border: 1px solid #cfd8df;
     border-radius: 12px;
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
-    padding: 12px;
+    padding: 14px;
     pointer-events: none;
     z-index: 10;
   }
 
   .tooltip-title {
     margin: 0;
-    font-size: 0.92rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #0f172a;
   }
 
   .tooltip-address {
@@ -429,30 +503,39 @@
     justify-content: space-between;
     gap: 8px;
     font-size: 0.8rem;
+    color: #334155;
+  }
+
+  .stat-row strong {
+    color: #0f172a;
   }
 
   .mismatch-flag {
     margin-top: 10px;
-    padding: 8px;
+    padding: 10px;
     border-radius: 8px;
     font-size: 0.78rem;
+    color: #1e293b;
   }
 
   .mismatch-flag p {
     margin: 4px 0 0 0;
+    line-height: 1.3;
   }
 
   .legend-overlay {
     position: absolute;
     bottom: 12px;
     left: 12px;
-    background: rgba(255, 255, 255, 0.93);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
     border: 1px solid #d1d5db;
     border-radius: 10px;
-    padding: 10px 12px;
+    padding: 10px 14px;
     width: 200px;
     z-index: 5;
     pointer-events: none;
+    box-shadow: 0 4px 12px rgba(15,23,42,0.05);
   }
 
   .legend-gradient-bar {
@@ -469,6 +552,7 @@
     margin-top: 4px;
     margin-bottom: 8px;
     line-height: 1.3;
+    font-weight: 500;
   }
 
   .choropleth-legend-entry {
@@ -501,17 +585,18 @@
   .legend-symbols {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
     border-top: 1px solid #e5e7eb;
-    padding-top: 7px;
+    padding-top: 8px;
   }
 
   .sym-item {
     display: flex;
     align-items: center;
-    gap: 7px;
-    font-size: 0.67rem;
+    gap: 8px;
+    font-size: 0.7rem;
     color: #475569;
+    font-weight: 500;
   }
 
   .sym {
@@ -520,38 +605,37 @@
   }
 
   .dashed-sym {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    border: 1.5px dashed #6b7280;
-    background: rgba(31, 41, 55, 0.04);
+    border: 1.5px dashed #64748b;
   }
 
   .dot-sym {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: #f5f4ef;
     border: 1.5px solid #6b7280;
   }
 
-  .transit-multi-sym {
-    display: flex;
-    gap: 2px;
-    flex-shrink: 0;
-    margin-top: 5px;
+  .boundary-sym {
+    width: 16px;
+    height: 0;
+    border-top: 1.5px solid #94a3b8;
   }
 
-  .transit-multi-sym span {
-    width: 7px;
-    height: 4px;
+  .transit-sym {
+    width: 16px;
+    height: 0;
+    border-top: 2.5px solid #1e40af;
     border-radius: 1px;
-    display: block;
+    opacity: 0.6;
   }
 
   .project-node {
     cursor: pointer;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.15s ease, r 0.2s ease, stroke-width 0.2s ease;
   }
 
   .insight-bar {
